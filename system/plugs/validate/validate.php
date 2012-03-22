@@ -1,0 +1,104 @@
+<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+
+/**
+ * Avrelia
+ * ----
+ * Validate Static Class and Validate Assign Class
+ * ----
+ * @package    Avrelia
+ * @author     Avrelia.com
+ * @copyright  Copyright (c) 2010, Avrelia.com
+ * @license    http://framework.avrelia.com/license
+ * @link       http://framework.avrelia.com
+ * @since      Version 0.80
+ * @since      2011-11-19
+ */
+
+class cValidate
+{
+	private static $ValidationsList = array();
+
+	/**
+	 * Get files, ...
+	 * ---
+	 * @return true
+	 */
+	public static function _DoInit()
+	{
+		# Get validate asssign
+		include ds(dirname(__FILE__) . '/validate_assign.php');
+
+		# Get language
+		Plug::GetLanguage(__FILE__);
+
+		return true;
+	}
+	//-
+
+	/**
+	 * Will add new filed to validate it.
+	 * ---
+	 * @param mixed  $value
+	 * @param string $name  -- if there's no name, no message will be set!
+	 * ---
+	 * @return avrValidateAssign
+	 */
+	public static function Add($value, $name=false)
+	{
+		$Validator = new avrValidateAssign($value, $name);
+		self::$ValidationsList[] = $Validator;
+		return $Validator;
+	}
+	//-
+
+	/**
+	 * Check if every field is valid...
+	 * ---
+	 * @return boolean
+	 */
+	public static function IsValid()
+	{
+		if (is_array(self::$ValidationsList) && (!empty(self::$ValidationsList))) {
+			foreach (self::$ValidationsList as $Obj) {
+				if ($Obj->isValid() === false) {
+					return false;
+				}
+			}
+		}
+		else {
+			Log::Add('WAR', "You run validation with empty list!?", __LINE__, __FILE__);
+			return true;
+		}
+
+		return true;
+	}
+	//-
+
+	/**
+	 * Will add new simple filed to validate it.
+	 * ---
+	 * @param mixed  $value
+	 * ---
+	 * @return avrValidateAssign
+	 */
+	private static function AddSimple($value)
+	{
+		return new avrValidateAssign($value, false);
+	}
+	//-
+
+	/**
+	 * Check if value is valid e-mail address
+	 * ---
+	 * @param string $value
+	 * @param string $domain -- check if is on particular domain (example: @gmail.com)
+	 * ---
+	 * @return boolean
+	 */
+	public static function isEmail($value, $domain=null)
+	{
+		return self::AddSimple($value)->hasValue()->isEmail($domain)->isValid();
+	}
+	//-
+}
+//--

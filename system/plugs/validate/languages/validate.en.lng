@@ -1,0 +1,20 @@
+!VAL_FIELD_CANT_BE_EMPTY:			The field `%s` can't be empty.
+!VAL_FIELD_DOESNT_VALID_EMAIL:		The field `%s` doesn't contain valid e-mail address.
+!VAL_FIELD_MUST_EMAIL_ON_DOMAIN:	The field `%s` must contain e-mail, which is on domain `%s`.
+!VAL_FIELD_MUST_VALID_IP_ADDRESS:	The field `%s` doesn't contain valid IP address.
+!VAL_FIELD_IP_MUST_EQ_MASK:			IP address in the field `%s` must match following mask `%s`.
+!VAL_FIELD_MUST_MATCH_PATTERN:		The field `%s` must match following pattern: `%s`.
+!VAL_FIELD_MUST_VALID_WEB_ADDRESS:	The field `%s` must contain valid web-address.
+!VAL_FIELD_NUM_MIN_AT_LEAST:		The field `%s` must contain number above `%s`.
+!VAL_FIELD_NUM_MAX_CANT_MORE_THAN:	The field `%s` must contain number bellow `%s`.
+!VAL_FIELD_MUST_BE_NUMERIC:			The field `%s` can contain only numbers.
+!VAL_FIELD_MUST_BE_WHOLE_NUMBER:	The field `%s` must contain the whole number.
+!VAL_FIELD_MUST_BE_POSITIVE_NUMER:	The field `%s` must contain positive number.
+!VAL_FIELD_MUST_CONTAIN_BOOLEAN:	The field `%s` must contain boolean value.
+!VAL_FIELD_MUST_BE_SET_TO_TRUE:		The field `%s` must be set to true.
+!VAL_FIELD_MUST_BE_SET_TO_FALSE:	The field `%s` must be set to false.
+!VAL_FIELD_MUST_CONTAIN_AT_LEAST:	The field `%s` must have at least `%s` characters.
+!VAL_FIELD_MUST_HAVE_NOT_MORE_THAN:	The field `%s` must not have more than `%s` characters.
+!VAL_FIELD_MUST_HAVE_VALID_DATE:	The field `%s` must contain valid date (in format `%s`).
+!VAL_FIELD_MUST_BE_VALUES:			The filed `%s` must contain one of the following values: `%s`.
+!VAL_FIELD_MUST_BE_THE_SAME_AS:		The field `%s` must contain same value as field `%s`.

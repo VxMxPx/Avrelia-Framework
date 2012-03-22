@@ -1,0 +1,41 @@
+#!/usr/bin/php
+<?php
+
+/**
+ * Avrelia
+ * ----
+ * CLI Communication!
+ * ----
+ * @package    Avrelia
+ * @author     Avrelia.com
+ * @copyright  Copyright (c) 2009, Avrelia.com
+ * @license    http://avrelia.com/license
+ * @link       http://avrelia.com
+ * @since      Version 0.80
+ * @since      Wed Mar 23 20:22:43 2011
+ */
+
+# Define Avrelia (needed to prevent direct calls to files)
+define('AVRELIA', true);
+define('IN_CLI',  true);
+
+# Turn Error Reporting ON for All ++ Set Error Displaying
+error_reporting(E_ALL);
+ini_set('display_errors', true);
+
+# Try to include paths file (change this in case of problems!)
+$configPath = realpath(dirname(__FILE__).'/application/config/define.php');
+if (file_exists($configPath)) {
+	include($configPath);
+}
+else {
+	echo "Application folder can't be found. You can try to get system by typing:\n",
+		 "./dot get\n";
+	exit(0);
+}
+
+# Load Functions
+include(realpath(SYSPATH . '/core/functions.php'));
+
+# Init CLI!
+initCli();
