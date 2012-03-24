@@ -42,9 +42,9 @@ class Log
 
 	/**
 	 * Init the Log
-	 *
+	 * ---
 	 * @param array $Config -- Log configurations array!
-	 *
+	 * ---
 	 * @return void
 	 */
 	public static function Init()
