@@ -24,13 +24,12 @@ error_reporting(E_ALL);
 ini_set('display_errors', true);
 
 # Try to include paths file (change this in case of problems!)
-$configPath = realpath(dirname(__FILE__).'/application/config/define.php');
+$configPath = realpath(dirname(__FILE__).'/config/define.php');
 if (file_exists($configPath)) {
 	include($configPath);
 }
 else {
-	echo "Application folder can't be found. You can try to get system by typing:\n",
-		 "./dot get\n";
+	echo "Application folder can't be found.\n",
 	exit(0);
 }
 
