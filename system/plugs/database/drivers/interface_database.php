@@ -54,7 +54,7 @@ interface interfaceDatabase
 	 * ---
 	 * @return boolean
 	 */
-	function create();
+	function _create();
 	//-
 
 	/**
@@ -62,7 +62,7 @@ interface interfaceDatabase
 	 * ---
 	 * @return boolean
 	 */
-	function destroy();
+	function _destroy();
 	//-
 }
 //--

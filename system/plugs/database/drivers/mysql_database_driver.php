@@ -65,7 +65,7 @@ class mysqlDatabaseDriver extends baseDatabase implements interfaceDatabase
 	 * ---
 	 * @return boolean
 	 */
-	public function create()
+	public function _create()
 	{
 		return $this->query('CREATE DATABASE ' . $this->Config['mysql']['database']);
 	}
@@ -76,7 +76,7 @@ class mysqlDatabaseDriver extends baseDatabase implements interfaceDatabase
 	 * ---
 	 * @return boolean
 	 */
-	public function destroy()
+	public function _destroy()
 	{
 		return $this->query('DROP DATABASE ' . $this->Config['mysql']['database']);
 	}

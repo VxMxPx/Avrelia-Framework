@@ -97,7 +97,7 @@ class cDatabase
 		if (!self::$Driver->connect()) {
 
 			# Try to create it!
-			self::$Driver->create();
+			self::$Driver->_create();
 
 			if (!self::$Driver->connect()) {
 				Log::Add('ERR', "Can't connect to or create database.", __LINE__, __FILE__);
@@ -121,7 +121,7 @@ class cDatabase
 	 */
 	public static function _doDisable()
 	{
-		return self::$Driver->destroy();
+		return self::$Driver->_destroy();
 	}
 	//-
 

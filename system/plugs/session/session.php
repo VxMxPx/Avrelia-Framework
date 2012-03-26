@@ -12,17 +12,19 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-01-19
+ * ---
+ * @property	interfaceSessionDriver	$Driver	Session driver instance
+ * ---
+ * @method	boolean		_doInit
  */
-
 class cSession
 {
-	# Session driver
 	private static $Driver;
 
 	/**
 	 * Cload config and apropriate driver
-	 * ---
-	 * @return true
+	 * --
+	 * @return	boolean
 	 */
 	public static function _doInit()
 	{
@@ -34,9 +36,20 @@ class cSession
 		$driver = $Config['driver'];
 		$class  = $driver.'SessionDriver';
 
+		# Load interface first
+		if (!class_exists('interfaceSessionDriver', false)) {
+			if (file_exists(ds($path."/drivers/interface_session_driver.php"))) {
+				include(ds($path."/drivers/interface_session_driver.php"));
+			}
+			else {
+				Log::Add('WAR', "Can't load interface driver: " . ds($path."/drivers/interface_session_driver.php"), __LINE__, __FILE__);
+				return false;
+			}
+		}
+
 		if (!class_exists($class, false)) {
-			if (file_exists(ds($path . "/libraries/{$driver}_session_driver.php"))) {
-				include(ds($path . "/libraries/{$driver}_session_driver.php"));
+			if (file_exists(ds($path . "/drivers/{$driver}_session_driver.php"))) {
+				include(ds($path . "/drivers/{$driver}_session_driver.php"));
 			}
 		}
 
@@ -48,46 +61,64 @@ class cSession
 
 		# Create new driver instance
 		if (!$class::_canConstruct($Config)) {
-			if (!$class::_doEnable($Config)) {
+			if (!$class::_create($Config)) {
 				Log::Add('ERR', "Failed to enable session driver: `{$class}`.", __LINE__, __FILE__);
 				return false;
 			}
 		}
 
 		self::$Driver = new $class($Config);
-
 		return true;
 	}
 	//-
 
 	/**
-	 * Get Session's Driver
-	 * ---
-	 * @param string $info -- if info provided, instead of object, you'll get
-	 * returned string, with user's info, and false if user isn't loggedin!
-	 * Use: 'email' or 'access/main'
-	 * ---
-	 * @return jsonSessionDriver
+	 * Login the user
+	 * --
+	 * @param	string	$username
+	 * @param	string	$password
+	 * --
+	 * @return	boolean
 	 */
-	public static function Get($info=false)
+	public static function Login($username, $password)
 	{
-		if ($info) {
-			return self::Get()->userGetInfo($info);
-		}
-		else {
-			return self::$Driver;
-		}
+		return self::$Driver ? self::$Driver->login($username, $password) : false;
+	}
+	//-
+
+	/**
+	 * Logout the user
+	 * --
+	 * @return	void
+	 */
+	public static function Logout()
+	{
+		return self::$Driver ? self::$Driver->logout() : false;
 	}
 	//-
 
 	/**
 	 * Is User logged in?
-	 * ---
-	 * @return bool
+	 * --
+	 * @return	boolean
 	 */
 	public static function IsLoggedin()
 	{
-		return self::Get() ? self::Get()->isLoggedin() : false;
+		return self::$Driver ? self::$Driver->isLoggedin() : false;
+	}
+	//-
+
+	/**
+	 * Return user's information as an array. If key provided, then only particular
+	 * info can be returned. For example $key = uname
+	 * --
+	 * @param	string	$key
+	 * --
+	 * @return	mixed
+	 */
+	public static function AsArray($key=false)
+	{
+		return self::$Driver ? self::$Driver->asArray($key) : false;
 	}
 	//-
 }

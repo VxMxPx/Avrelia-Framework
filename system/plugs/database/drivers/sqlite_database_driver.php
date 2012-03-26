@@ -78,7 +78,7 @@ class sqliteDatabaseDriver extends baseDatabase implements interfaceDatabase
 	 * ---
 	 * @return boolean
 	 */
-	public function create()
+	public function _create()
 	{
 		# Create dummy file
 		FileSystem::Write('', $this->Config['databasePath']);
@@ -106,7 +106,7 @@ class sqliteDatabaseDriver extends baseDatabase implements interfaceDatabase
 	 * ---
 	 * @return boolean
 	 */
-	public function destroy()
+	public function _destroy()
 	{
 		return FileSystem::Remove($this->Config['databasePath']);
 	}

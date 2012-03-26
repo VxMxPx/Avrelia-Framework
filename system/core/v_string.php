@@ -17,46 +17,115 @@
 class vString
 {
 	/**
-	 * Create hash (sha1) from string (and add salt to it)
-	 * --------
-	 * @param string $string
-	 * @param string $salt
-	 * --------
-	 * @return string
+	 * This function works similar as native crypt in PHP.
+	 *
+	 * You can provide salt to it, if you don't the salt will be auto-generated.
+	 * When comparing, you must use hash itself as salt. So:
+	 * if ($input === vString::Hash($input, $hashedPassword)) ...
+	 *
+	 * The output will be slightly modified sha1: ah10salt.hash:
+	 * a(vrelia)
+	 * h(ash)
+	 * 1(version)
+	 * 0(method, currently only: sha1)
+	 * salt
+	 * .
+	 * hash
+	 * --
+	 * @param	string	$string
+	 * @param	string	$salt
+	 * @param	boolean	$attachSalt
+	 * --
+	 * @return	string
 	 */
-	public static function Hash($string, $salt=false)
+	public static function Hash($string, $salt=false, $attachSalt=false)
 	{
-		if ($salt) {
-			return sha1( sha1 ($string) . sha1 ($salt) );
+		if ($attachSalt) {
+			if (!$salt) {
+				$salt = str_replace('.', '+', md5(self::Random(12)));
+			}
+			else {
+				# Check if we have anything meaningful
+				if (substr($salt, 0, 4) === 'ah10') {
+					$salt = substr($salt, 4);
+					$salt = explode('.', $salt, 2);
+					$salt = $salt[0];
+				}
+				else {
+					$salt = str_replace('.', '+', $salt);
+				}
+			}
+
+			return 'ah10' . $salt . '.' . sha1( sha1 ($string) . sha1 ($salt) );
 		}
 		else {
-			return sha1( sha1 ($string) );
+			if ($salt) {
+				return sha1( sha1 ($string) . sha1 ($salt) );
+			}
+			else {
+				return sha1( sha1 ($string) );
+			}
 		}
 	}
 	//-
 
 	/**
-	 * Generate Random Code (string)
-	 * --------
-	 * @param int $length
-	 * @param str $type    --- a A 1 s => lower case, upper case, numeric, special: ~#$%&()=?*<>-_:.;,+!
-	 * --------
-	 * @return string
+	 * Convert signs (like €, $, #) to regular words.
+	 * --
+	 * @param	string	$string
+	 * --
+	 * @return	string
 	 */
-	public static function Random($length, $type='a A 1 s')
+	public static function SymbolsToWords($string)
+	{
+		$signs = array(
+			'’' => 'apostrophe', "'" => 'apostrophe', '[' => 'left square bracket',
+			']' => 'right square bracket', '(' => 'left bracket', ')' => 'right bracket',
+			'{' => 'left curly bracket', '}' => 'right curly bracket', ':' => 'colon',
+			',' => 'comma', '‒' => 'dash', '–' => 'dash', '—' => 'dash', '―' => 'dash',
+			'…' => 'ellipsis', '...' => 'ellipsis', '. . .' => 'ellipsis', '!' => 'exclamation',
+			'.' => 'period', '«' => 'left guillemet', '»' => 'right guillemet', '-' => 'minus',
+			'?' => 'question', '‘' => 'left quote', '’' => 'right quote', '“' => 'left quote',
+			'”' => 'right quote', '“' => 'left quote', '"' => 'quote', ';' => 'semicolon',
+			'/' => 'slash‌', '⁄' => 'slash‌', ' ' => 'space', '·' => 'interpunct', '&' => 'and',
+			'@' => 'at', '*' => 'asterisk', '\\' => 'backslash', '•' => 'bullet', '^' => 'caret',
+			'†' => 'dagger', '‡' => 'dagger', '°' => 'degree', '〃' => 'ditto', '¡' => 'inverted exclamation',
+			'¿' => 'inverted question', '#' => 'hash', '№' => 'numero', '÷' => 'obelus',
+			'º' => 'ordinal', 'ª' => 'ordinal', '%' => 'percent', '‰' => 'per mil',
+			'‱' => 'per mil', '¶' => 'pilcrow', '′' => 'prime', '″' => 'prime',
+			'‴' => 'prime', '§' => 'section', '+' => 'plus', '=' => 'equal',
+			'<' => 'less than', '>' => 'more than', '~' => 'tilde', '_' => 'underscore',
+			'|' => 'pipe', '¦' => 'pipe', '©' => 'copyright', '®' => 'registered trademark',
+			'℠' => 'service mark', '℗' => 'sound recording copyright', '™' => 'trademark',
+			'¤' => 'currency', '⁂' => 'asterism', '⊤' => 'tee', '⊥' => 'up tack', '☞' => 'index',
+			'∴' => 'therefore', '∵' => 'because', '‽' => 'interrobang', '◊' => 'lozenge', '※' => 'reference',
+			'⁀' => 'tie', '¢' => 'cent', '$' => 'dollar', '€' => 'euro',
+		);
+
+		return strtr($string, $signs);
+	}
+	//-
+
+	/**
+	 * Generate Random Code (string)
+	 * --
+	 * @param	integer	$length
+	 * @param	string	$type		a A 1 s => lower case, upper case, numeric, special: ~#$%&()=?*<>-_:.;,+!
+	 * --
+	 * @return	string
+	 */
+	public static function Random($length, $type='aA1s')
 	{
 		$a = 'qwertzuiopasdfghjklyxcvbnm';
 		$A = 'QWERTZUIOPASDFGHJKLYXCVBNM';
 		$n = '0123456789';
 		$s = '~#$%&()=?*<>-_:.;,+!';
 
-		$Type = explode(' ', $type);
-
 		$chars  = '';
-		$chars .= ((in_array('a', $Type)) ? $a : '' );
-		$chars .= ((in_array('A', $Type)) ? $A : '' );
-		$chars .= ((in_array('1', $Type)) ? $n : '' );
-		$chars .= ((in_array('s', $Type)) ? $s : '' );
+		$chars .= ((strpos($type, 'a') !== false) ? $a : '');
+		$chars .= ((strpos($type, 'A') !== false) ? $A : '');
+		$chars .= ((strpos($type, '1') !== false) ? $n : '');
+		$chars .= ((strpos($type, 's') !== false) ? $s : '');
 
 		$i = 1;
 		$result = '';
@@ -65,6 +134,7 @@ class vString
 			$result .= $chars{mt_rand(0,strlen($chars)-1)};
 			$i++;
 		}
+
 		return $result;
 	}
 	//-
@@ -130,20 +200,16 @@ class vString
 	 * --------
 	 * @return string
 	 */
-	public static function Clean($string, $length=0, $type='a A 1 c s', $costum='')
+	public static function Clean($string, $length=0, $type='aA1cs', $costum='')
 	{
 		if (empty($string)) return '';
 
 		# Normalize String
 		$string = self::Normalize($string);
 
-		$length = (!$length) ? 0           : $length;
-		$type   = (!$type)   ? 'a A 1 c s' : $type;
-		$costum = (!$costum) ? ''          : $costum;
-
-		# Create spaces for type
-		$type = str_replace(' ', '', $type);
-		$type = preg_replace('/(.)/ism', '\1 ', $type);
+		$length = (!$length) ? 0       : $length;
+		$type   = (!$type)   ? 'aA1cs' : $type;
+		$costum = (!$costum) ? ''      : $costum;
 
 		$filter = '/([^';
 		$a = 'a-z';
@@ -169,23 +235,12 @@ class vString
 			}
 		}
 
-		if ( !empty($type) ) {
-			$type = explode(' ', $type);
-			if (in_array('a',$type)) {
-				$filter .= $a;
-			}
-			if (in_array('A',$type)) {
-				$filter .= $A;
-			}
-			if (in_array('1',$type)) {
-				$filter .= $n;
-			}
-			if (in_array('s',$type)) {
-				$filter .= $s;
-			}
-			if (in_array('c',$type)) {
-				$filter .= $c;
-			}
+		if (!empty($type)) {
+			if (strpos($type, 'a') !== false) { $filter .= $a; }
+			if (strpos($type, 'A') !== false) { $filter .= $A; }
+			if (strpos($type, '1') !== false) { $filter .= $n; }
+			if (strpos($type, 's') !== false) { $filter .= $s; }
+			if (strpos($type, 'c') !== false) { $filter .= $c; }
 		}
 
 		$filter .= '])/sm';
