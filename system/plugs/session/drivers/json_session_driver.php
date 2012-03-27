@@ -37,7 +37,7 @@
  * @method		mixed		userValid
  * @method		boolean		usersFetch
  * @method		boolean		usersWrite
- * 
+ *
  * @method		boolean		sessionDiscover
  * @method		boolean		sessionSet
  * @method		boolean		sessionDestroy
@@ -102,16 +102,22 @@ class jsonSessionDriver implements interfaceSessionDriver
 	 */
 	public static function _create($Config)
 	{
-		FileSystem::Write('', $Config['json']['users_filename'],    false, 0777);
-		FileSystem::Write('', $Config['json']['sessions_filename'], false, 0777);
+		FileSystem::Write(uJSON::Encode(array()), $Config['json']['users_filename'],    false, 0777);
+		FileSystem::Write(uJSON::Encode(array()), $Config['json']['sessions_filename'], false, 0777);
 
-		# Default user
-		$User['id']       = self::unameToId($Config['uname']);
-		$User['uname']    = $Config['uname'];
-		$User['password'] = vString::Hash($Config['password'], false, true);
-		$User['active']   = true;
+		# Default users
+		$Users = array();
 
-		$Users = array($User['id'] => $User);
+		foreach ($Config['defaults'] as $DefUser)
+		{
+			$User['id']       = self::unameToId($DefUser['uname']);
+			$User['uname']    = $DefUser['uname'];
+			$User['password'] = vString::Hash($DefUser['password'], false, true);
+			$User['active']   = true;
+
+			$Users[$User['id']] = $User;
+		}
+
 		return uJSON::EncodeFile($Config['json']['users_filename'], $Users);
 	}
 	//-
@@ -377,7 +383,7 @@ class jsonSessionDriver implements interfaceSessionDriver
 				}
 
 				# Remove old session in any case
-				$this->sessionRemove($sessionId);
+				$this->sessionDestroy($sessionId);
 
 				# Setup new user!
 				Log::Add('INF', "Session was found for `{$userId}`, user will be set!", __LINE__, __FILE__);
