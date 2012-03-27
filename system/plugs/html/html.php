@@ -15,16 +15,6 @@
  * ---
  * @property	array	$Headers
  * @property	array	$Footers
- * ---
- * @method	boolean	_DoInit
- * @method	void	AddHeader
- * @method	string	GetHeaders
- * @method	void	AddFooter
- * @method	string	GetFooters
- * @method	string	Tabs
- * @method	string	Hightlight
- * @method	string	Pagination
- * @method	string	Link
  */
 class cHTML
 {

@@ -21,29 +21,6 @@
  * @property	array	$CurrentUser	Current User's Data
  * @property	array	$CurrentSession	Current Session's Data
  * @property	boolean	$loggedIn		Do we have user logged in?
- * ---
- * @method		boolean		_canConstruct
- * @method		boolean		_create
- * @method		boolean		_destroy
- * @method		string		unameToId
- * @method		string		cleanAgent
- *
- * @method		boolean		login
- * @method		void		logout
- * @method		boolean		isLoggedin
- * @method		mixed		asArray
- *
- * @method		boolean		userSet
- * @method		mixed		userValid
- * @method		boolean		usersFetch
- * @method		boolean		usersWrite
- *
- * @method		boolean		sessionDiscover
- * @method		boolean		sessionSet
- * @method		boolean		sessionDestroy
- * @method		integer		sessionsClearExpired
- * @method		boolean		sessionsFetch
- * @method		boolean		sessionsWrite
  */
 class jsonSessionDriver implements interfaceSessionDriver
 {

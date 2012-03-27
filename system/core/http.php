@@ -265,7 +265,7 @@ class HTTP
 	 */
 	private static function isAllowed($url, $force=false)
 	{
-		if (!Cfg::Get('System/allow_redirects', true) && !$force) {
+		if (!Cfg::Get('system/allow_redirects', true) && !$force) {
 			Log::Add('WAR', "Redirects to `{$url}` failed. Redirects aren't allowed in your config!", __LINE__, __FILE__);
 			return false;
 		}

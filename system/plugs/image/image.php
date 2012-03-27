@@ -12,26 +12,23 @@
  * @link       http://avrelia.com
  * @since      Version 0.80
  * @since      sre dec 07 16:33:56 2011
+ * --
+ * @property	array	$Allow			Allowed image extensions
+ * @property	array	$Source			Info about source image
+ * @property	array	$Destination	Info about destination
  */
-
 class cImage
 {
-	# Allowed image extensions
 	private $Allow       = array('jpg','jpeg','gif','png');
-
-	# Informations about source image
 	private $Source      = array();
-
-	# Informations about destination
 	private $Destination = array();
-
 
 	/**
 	 * Create new image from filename
-	 * ---
-	 * @param $filename -- full absolute path to the image
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$filename	Full absolute path to the image
+	 * --
+	 * @return	void
 	 */
 	public function __construct($filename)
 	{
@@ -67,19 +64,19 @@ class cImage
 
 	/**
 	 * Will add watermark (set text to false, to turn off watermar)
-	 * ---
-	 * @param string $text
-	 * @param array  $Params -- can contain: array(
-	 *	color     => #ffffff // Text color  - must be full! hexcolor value
-	 *	shadow    => #000000 // Text shadow - must be full! hexcolor value OR false
-	 *  fontPath  => // full path to ttf font, or false for default font
-	 *  fontSize  => // Integer, font site in px
-	 *  angle     => // Integer, font angle
-	 *  offsetX   => // Integer x offset
-	 *  offsetY   => // Integer y offset
-	 * )
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	string	$text
+	 * @param	array	$Params	Can contain: array(
+	 *		color     => #ffffff // Text color  - must be full! hexcolor value
+	 *		shadow    => #000000 // Text shadow - must be full! hexcolor value OR false
+	 *		fontPath  => // full path to ttf font, or false for default font
+	 *		fontSize  => // Integer, font site in px
+	 *		angle     => // Integer, font angle
+	 *		offsetX   => // Integer x offset
+	 *		offsetY   => // Integer y offset
+	 *	)
+	 * --
+	 * @return	$this
 	 */
 	public function setWatermark($text, $Params=array())
 	{
@@ -110,10 +107,10 @@ class cImage
 
 	/**
 	 * Set sharpening to true or false
-	 * ---
-	 * @param bool $enabled -- set to false, to disable sharpening
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	booleam	$enabled	Set to false, to disable sharpening
+	 * --
+	 * @return	$this
 	 */
 	public function setSharpening($enabled=false)
 	{
@@ -126,10 +123,10 @@ class cImage
 
 	/**
 	 * Set Destination Path
-	 * ---
-	 * @param string $path -- only directory, must be valid!
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	string	$path	Only directory, must be valid!
+	 * --
+	 * @return	$this
 	 */
 	public function setDestination($path)
 	{
@@ -149,10 +146,10 @@ class cImage
 
 	/**
 	 * Will Set Image Quality
-	 * ---
-	 * @param int $quality
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	integer	$quality
+	 * --
+	 * @return	$this
 	 */
 	public function setQuality($quality=75)
 	{
@@ -172,11 +169,11 @@ class cImage
 
 	/**
 	 * Will set dimension for output image
-	 * ---
-	 * @param int $width  -- if set to false we'll calculate it dynamicly
-	 * @param int $height -- if set to false we'll calculate it dynamicly
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	integer	$width	If set to false we'll calculate it dynamicly
+	 * @param	integer	$height	If set to false we'll calculate it dynamicly
+	 * --
+	 * @return	$this
 	 */
 	public function setDimension($width, $height)
 	{
@@ -199,10 +196,10 @@ class cImage
 	/**
 	 * Will Save Image (with all previous settings)
 	 * Return saved image full path or false on error!
-	 * ---
-	 * @param string $fileName -- filename without path (if you have set destination before)
-	 * ---
-	 * @return string / false
+	 * --
+	 * @param	string	$fileName	Filename without path (if you have set destination before)
+	 * --
+	 * @return	mixed
 	 */
 	public function save($fileName)
 	{
@@ -218,17 +215,16 @@ class cImage
 	}
 	//-
 
-
 	/*  ****************************************************** *
 	 *          Private Methods
 	 *  **************************************  */
 
 	/**
 	 * Apply all setting on selected image.
-	 * ---
-	 * @param string $destinationPath
-	 * ---
-	 * @return boolean
+	 * --
+	 * @param	string	$destinationPath
+	 * --
+	 * @return	boolean
 	 */
 	private function process($destinationPath)
 	{
@@ -408,11 +404,11 @@ class cImage
 
 	/**
 	 * Add watermark to image
-	 * ---
-	 * @param resource $image
-	 * @param integer  $type
-	 * ---
-	 * @return resource
+	 * --
+	 * @param	resource	$image
+	 * @param	integer		$type
+	 * --
+	 * @return	resource
 	 */
 	private function processWatermark($image, $imageType)
 	{
@@ -477,13 +473,13 @@ class cImage
 	/**
 	 * Unsharp Mask for PHP - version 2.1.1
 	 * Unsharp mask algorithm by Torstein Hønsi 2003-07. thoensi_at_netcom_dot_no.
-	 * ---
-	 * @param resource $image
-	 * @param integer  $amount
-	 * @param integer  $radius
-	 * @param integer  $threshold
-	 * ---
-	 * @return resource
+	 * --
+	 * @param	resource	$image
+	 * @param	integer		$amount
+	 * @param	integer		$radius
+	 * @param	integer		$threshold
+	 * --
+	 * @return	resource
 	 */
 	private function processUnsharpMask($image, $amount=50, $radius=0.5, $threshold=3)
 	{

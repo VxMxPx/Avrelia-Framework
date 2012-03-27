@@ -165,7 +165,7 @@ function avreliaErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
 	if ($SimpleType[$errno] == 'ERR')
 	{
 		# Write log (fatal)
-		if (Cfg::Get('Log/write_all_on_fatal')) {
+		if (Cfg::Get('log/write_all_on_fatal')) {
 			Log::WriteAll(true);
 		}
 
@@ -174,7 +174,7 @@ function avreliaErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
 			fwrite(STDERR, Log::Get(1, array('WAR', 'ERR')));
 			exit(1);
 		}
-		else*/if (Cfg::Get('System/debug', false) && !IN_CLI) {
+		else*/if (Cfg::Get('system/debug', false) && !IN_CLI) {
 			die('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Error</title></head><body> ' . Log::Get(2) . '</body></html>');
 		}
 	}

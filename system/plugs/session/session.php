@@ -13,20 +13,78 @@
  * @since      Version 0.80
  * @since      2012-01-19
  * ---
- * @property	interfaceSessionDriver	$Driver	Session driver instance
- * ---
- * @method	boolean		_doInit
+ * @property	array					$Config			All Plug's Config
+ * @property	interfaceSessionDriver	$Driver			Session driver instance
+ * @property	string					$driverClass	Driver's class name
  */
 class cSession
 {
+	private static $Config;
 	private static $Driver;
+	private static $driverClass;
 
 	/**
 	 * Cload config and apropriate driver
 	 * --
 	 * @return	boolean
 	 */
-	public static function _doInit()
+	public static function _DoInit()
+	{
+		self::LoadDriver();
+		$class = self::$driverClass;
+
+		# Create new driver instance
+		self::$Driver = new $class(self::$Config);
+		return true;
+	}
+	//-
+
+	/**
+	 * Enable plug
+	 * --
+	 * @return	boolean
+	 */
+	public static function _DoEnable()
+	{
+		self::LoadDriver();
+		$class = self::$driverClass;
+
+		if (!$class::_create(self::$Config)) {
+			Log::Add('ERR', "Failed to enable session driver: `{$class}`.", __LINE__, __FILE__);
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	//-
+
+	/**
+	 * Disable plug
+	 * --
+	 * @return	boolean
+	 */
+	public static function _DoDisable()
+	{
+		self::LoadDriver();
+		$class = self::$driverClass;
+
+		if (!$class::_destroy(self::$Config)) {
+			Log::Add('ERR', "Failed to disable session driver: `{$class}`.", __LINE__, __FILE__);
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	//-
+
+	/**
+	 * Will load driver
+	 * --
+	 * @return	boolean
+	 */
+	private static function LoadDriver()
 	{
 		# Get Config
 		$Config = Plug::GetConfig(__FILE__);
@@ -59,15 +117,8 @@ class cSession
 			return false;
 		}
 
-		# Create new driver instance
-		if (!$class::_canConstruct($Config)) {
-			if (!$class::_create($Config)) {
-				Log::Add('ERR', "Failed to enable session driver: `{$class}`.", __LINE__, __FILE__);
-				return false;
-			}
-		}
-
-		self::$Driver = new $class($Config);
+		self::$Config      = $Config;
+		self::$driverClass = $class;
 		return true;
 	}
 	//-

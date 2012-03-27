@@ -1,9 +1,23 @@
 <?php if (!defined('AVRELIA')) { die('Access is denied!'); }
 
-
 /**
- * Validate Assing Class
- * Returned by cValidate!
+ * Avrelia
+ * ----
+ * Validate Assign
+ * ----
+ * @package    Avrelia
+ * @author     Avrelia.com
+ * @copyright  Copyright (c) 2010, Avrelia.com
+ * @license    http://framework.avrelia.com/license
+ * @link       http://framework.avrelia.com
+ * @since      Version 0.80
+ * @since      2012-03-27
+ * ---
+ * @property	boolean	$isValid
+ * @property	boolean	$addMessage
+ * @property	string	$value
+ * @property	boolean	$name
+ * @property	boolean	$needValue
  */
 class avrValidateAssign
 {
@@ -15,6 +29,11 @@ class avrValidateAssign
 
 	/**
 	 * New Validation Assigment!
+	 * --
+	 * @param	string	$value
+	 * @param	string	$name
+	 * --
+	 * @return	void
 	 */
 	public function __construct($value, $name=false)
 	{
@@ -29,8 +48,8 @@ class avrValidateAssign
 
 	/**
 	 * Is valid?
-	 * ---
-	 * @return boolean
+	 * --
+	 * @return	boolean
 	 */
 	public function isValid()
 	{
@@ -43,15 +62,14 @@ class avrValidateAssign
 	}
 	//-
 
-
 	/*  ****************************************************** *
 	 *          Filters
 	 *  **************************************  */
 
 	/**
 	 * Check if has value (not empty)
-	 * ---
-	 * @return this
+	 * --
+	 * @return	$this
 	 */
 	public function hasValue()
 	{
@@ -82,10 +100,10 @@ class avrValidateAssign
 
 	/**
 	 * Check if variable contains valid e-mail
-	 * ---
-	 * @param string $domain -- check if is on particular domain (example: @gmail.com)
-	 * ---
-	 * @return this
+	 * --
+	 * @param	string	$domain	Check if is on particular domain (example: @gmail.com)
+	 * --
+	 * @return	$this
 	 */
 	public function isEmail($domain=null)
 	{
@@ -121,10 +139,10 @@ class avrValidateAssign
 
 	/**
 	 * Check if is valid IP address
-	 * ---
-	 * @param string $mask
-	 * ---
-	 * @return this
+	 * --
+	 * @param	string	$mask
+	 * --
+	 * @return	$this
 	 */
 	public function isIP($mask=null)
 	{
@@ -153,10 +171,10 @@ class avrValidateAssign
 
 	/**
 	 * Test for particular Regex
-	 * ---
-	 * @param string $mask
-	 * ---
-	 * @return this
+	 * --
+	 * @param	string	$mask
+	 * --
+	 * @return	$this
 	 */
 	public function isRegex($mask)
 	{
@@ -175,8 +193,8 @@ class avrValidateAssign
 
 	/**
 	 * Check if is URL
-	 * ---
-	 * @return this
+	 * --
+	 * @return	$this
 	 */
 	public function isURL()
 	{
@@ -193,11 +211,11 @@ class avrValidateAssign
 
 	/**
 	 * Check if is numeric and is it in particular range
-	 * ---
-	 * @param int $min
-	 * @param int $max
-	 * ---
-	 * @return this
+	 * --
+	 * @param	integer	$min
+	 * @param	integer	$max
+	 * --
+	 * @return	$this
 	 */
 	public function isNumeric($min=null, $max=null)
 	{
@@ -236,10 +254,10 @@ class avrValidateAssign
 
 	/**
 	 * Check if is numeric, - whole numbers, not float
-	 * ---
-	 * @param bool $onlyPositive -- must have only positive numbers
-	 * ---
-	 * @return this
+	 * --
+	 * @param	boolean	$onlyPositive	Must have only positive numbers
+	 * --
+	 * @return	$this
 	 */
 	public function isNumericWhole($onlyPositive=false)
 	{
@@ -268,11 +286,11 @@ class avrValidateAssign
 
 	/**
 	 * Check if is boolean
-	 * ---
-	 * @param bool particular -- set to true / false: it will check for particular boolean value (either true or false)
-	 * @param bool $strict    -- if set to "false" we'll approve also: 1,0,"true","false","yes","no","on","off", "1", "0" (string values)
-	 * ---
-	 * @return this
+	 * --
+	 * @param	boolean $particular	Set to true / false: it will check for particular boolean value (either true or false)
+	 * @param	boolean	$strict		If set to "false" we'll approve also: 1,0,"true","false","yes","no","on","off", "1", "0" (string values)
+	 * --
+	 * @return	$this
 	 */
 	public function isBoolean($particular=null, $strict=true)
 	{
@@ -322,11 +340,11 @@ class avrValidateAssign
 
 	/**
 	 * Check if string is particular length
-	 * ---
-	 * @param int $min
-	 * @param int $max
-	 * ---
-	 * @return this
+	 * --
+	 * @param	integer	$min
+	 * @param	integer	$max
+	 * --
+	 * @return	$this
 	 */
 	public function isLength($min=null, $max=null)
 	{
@@ -355,10 +373,10 @@ class avrValidateAssign
 
 	/**
 	 * Check if field contain valid date
-	 * ---
-	 * @param str $format -- 'd.m.Y'
-	 * ---
-	 * @return this
+	 * --
+	 * @param	string	$format	'd.m.Y'
+	 * --
+	 * @return	$this
 	 */
 	public function isDate($format)
 	{
@@ -377,11 +395,11 @@ class avrValidateAssign
 
 	/**
 	 * Check if field contain exact value
-	 * ---
-	 * @param arr  $Allow -- array of allowed values
-	 * @param bool $checkForKey -- will check for key of provided values
-	 * ---
-	 * @return this
+	 * --
+	 * @param	array	$Allow			Array of allowed values
+	 * @param	boolean	$checkForKey	Will check for key of provided values
+	 * --
+	 * @return	$this
 	 */
 	public function isExactly($Allow, $checkForKey=true)
 	{
@@ -408,11 +426,11 @@ class avrValidateAssign
 
 	/**
 	 * Check if field is the same as another filed
-	 * ---
-	 * @param string $field -- another field's value
-	 * @param string $name  -- another field's name
-	 * ---
-	 * @return this
+	 * --
+	 * @param	string	$field	Another field's value
+	 * @param	string	$name	Another field's name
+	 * --
+	 * @return	$this
 	 */
 	public function isSameAs($field, $name)
 	{

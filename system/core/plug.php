@@ -14,7 +14,6 @@
  * @since      Tue Apr 12 14:55:02 2011
  */
 
-
 class Plug
 {
 	# List of included plugs
@@ -23,14 +22,165 @@ class Plug
 	# List of all cached models
 	private static $Models   = array();
 
+	# List of available plugs
+	private static $Available = array();
+
+
+	/**
+	 * This will refresh plugs in particular folder. This method will make sure,
+	 * that all plugs which we need are enabled.
+	 *
+	 * Return list of all plugs, with their statuses (timestamp if was enabled, false if not).
+	 * --
+	 * @param	array	$List
+	 * --
+	 * @return	array
+	 */
+	public static function Init($List)
+	{
+		# Load enabled, if there are any.
+		if (file_exists(self::GetDatabasePath('plugs.json'))) {
+			self::$Available = uJSON::DecodeFile(self::GetDatabasePath('plugs.json'), true);
+			self::$Available = is_array(self::$Available) ? self::$Available : array();
+		}
+		else {
+			self::$Available = array();
+		}
+
+		# Nothing to see or do here if both are empty...
+		if (empty($List) && empty(self::$Available)) {
+			return true;
+		}
+
+		# See if we have all we require on the list
+		foreach ($List as $plug) {
+			if (!isset(self::$Available[$plug])) {
+				# Enable it then...
+				self::Enable($plug);
+			}
+		}
+
+		# Do we have to disable & remove anything?
+		foreach (self::$Available as $plug => $status) {
+			if ($status) {
+				if (!in_array($plug, $List)) {
+					self::Disable($plug);
+				}
+			}
+		}
+
+		return self::$Available;
+	}
+	//-
+
+	/**
+	 * Will enable particular plug. This will check for static method _DoEnable,
+	 * if method can't be found, we'll return true (no need to enable it).
+	 * If method can be found, it will be called and result will be returned.
+	 * --
+	 * @param	string	$plug
+	 * --
+	 * @return	boolean
+	 */
+	public static function Enable($plug)
+	{
+		$plugPath  = self::CalculatePath($plug);
+		$className = self::ClassName($plug);
+
+		if (!$className) {
+			include ds("{$plugPath}/{$plug}.php");
+		}
+
+		$className = self::ClassName($plug);
+
+		if (!$className) {
+			Log::Add('WAR', "Can't enable plug, class not found for: `{$plug}`.", __LINE__, __FILE__);
+			return false;
+		}
+
+		if (method_exists($className, '_DoEnable')) {
+			$return = $className::_DoEnable();
+		}
+		else {
+			Log::Add('INF', "Method `_DoEnable` no found in `{$className}`.", __LINE__, __FILE__);
+			$return = true;
+		}
+
+		# Add it to the list
+		self::$Available[$plug] = time();
+		self::SaveList();
+
+		# We Included Class, So We Need to Init it now.
+		self::Inc($plug);
+		return $return;
+	}
+	//-
+
+	/**
+	 * Will disable particular plug. This will check for static method _DoDisable,
+	 * if method can't be found, we'll return true (no need to do anything disable).
+	 * If method can be found, it will be called and result will be returned.
+	 * --
+	 * @param	string	$plug
+	 * --
+	 * @return	boolean
+	 */
+	public static function Disable($plug)
+	{
+		# Remove it from list
+		if (isset(self::$Available[$plug])) {
+			unset(self::$Available[$plug]);
+			self::SaveList();
+		}
+
+		$plugPath  = self::CalculatePath($plug);
+		$className = self::ClassName($plug);
+
+		if (!$className) {
+			include ds("{$plugPath}/{$plug}.php");
+		}
+
+		$className = self::ClassName($plug);
+
+		if (!$className) {
+			Log::Add('WAR', "Can't disable plug, class not found for: `{$plug}`.", __LINE__, __FILE__);
+			return false;
+		}
+
+		if (method_exists($className, '_DoDisable')) {
+			return $className::_DoDisable();
+		}
+		else {
+			Log::Add('INF', "Method `_DoDisable` no found in `{$className}`.", __LINE__, __FILE__);
+			return true;
+		}
+	}
+	//-
+
+	/**
+	 * Save list of available plugs
+	 * --
+	 * @return	void
+	 */
+	private static function SaveList()
+	{
+		return FileSystem::Write(
+					uJSON::Encode(self::$Available),
+					self::GetDatabasePath('plugs.json'),
+					false,
+					0777
+				);
+	}
+	//-
+
 	/**
 	 * Will copy (if not found) all files from plug's "public" folder to
 	 * actul public folder.
 	 * The public folder name will be set based on plug's _id_ (name).
-	 * ---
-	 * @param string $fullPath -- you can just pass __FILE__
-	 * ---
-	 * @return bool
+	 * --
+	 * @param	string	$fullPath	You can just pass __FILE__
+	 * --
+	 * @return	boolean
 	 */
 	public static function SetPublic($fullPath)
 	{
@@ -47,13 +197,13 @@ class Plug
 		}
 
 		# Define public path
-		$publicPath = ds(PUBPATH . '/' . Cfg::Get('Plug/public_dir', 'plugs'));
+		$publicPath = ds(PUBPATH . '/' . Cfg::Get('plug/public_dir', 'plugs'));
 
 		# Full public path
 		$fullPublicPath = ds($publicPath.'/'.$comName);
 
 		# Debug mode?
-		if (Cfg::Get('Plug/debug') && is_dir($fullPublicPath)) {
+		if (Cfg::Get('plug/debug') && is_dir($fullPublicPath)) {
 			Log::Add('INF', "The debug mode is enabled, will remove folder: `{$fullPublicPath}`.", __LINE__, __FILE__);
 			FileSystem::Remove($fullPublicPath);
 		}
@@ -70,10 +220,10 @@ class Plug
 
 	/**
 	 * Will get config for particular plug
-	 * ---
-	 * @param string $fullPath -- you can just pass __FILE__
-	 * ---
-	 * @return array
+	 * --
+	 * @param	string	$fullPath	You can just pass __FILE__
+	 * --
+	 * @return	array
 	 */
 	public static function GetConfig($fullPath)
 	{
@@ -107,12 +257,12 @@ class Plug
 
 	/**
 	 * Will get language for particular plug
-	 * ---
-	 * @param string $fullPath   -- full path to plug (including filename for main static class __FILE__)
-	 * @param string $language   -- do we need particular language?
-	 * @param bool   $getDefault -- get fisr default language, if requested can't be found
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$fullPath	Full path to plug (including filename for main static class __FILE__)
+	 * @param	string	$language	Do we need particular language?
+	 * @param	boolean	$getDefault	Get fisr default language, if requested can't be found
+	 * --
+	 * @return	void
 	 */
 	public static function GetLanguage($fullPath, $language=false, $getDefault=false)
 	{
@@ -130,15 +280,15 @@ class Plug
 
 	/**
 	 * Include plug(s).
-	 * ---
-	 * @param array $Components   -- list of plugs to initialize
-	 * @param bool  $autoInit     -- by default all plugs will be autoinitialize,
-	 * 							     set this to false, to avoid this behaviour.
-	 * 							     Component need to have static public method "_DoInit".
-	 * @param bool  $stopOnFailed -- If one of the plugs, doesn't initialize,
-	 *                               should we stop loading?
-	 * ---
-	 * @return true if successfull and array (list of failed plugs) if not.
+	 * Return true if successfull and array (list of failed plugs) if not.
+	 * --
+	 * @param	array	$Components		List of plugs to initialize
+	 * @param	boolean	$autoInit		By default all plugs will be autoinitialize,
+	 * 									set this to false, to avoid this behaviour.
+	 * 									Plug need to have static public method "_DoInit".
+	 * @param	boolean	$stopOnFailed	If one of the plugs, doesn't initialize, should we stop loading?
+	 * --
+	 * @return	mixed
 	 */
 	public static function Inc($Components, $autoInit=true, $stopOnFailed=false)
 	{
@@ -148,8 +298,8 @@ class Plug
 
 		$Failed = array();
 
-		foreach ($Components as $component) {
-
+		foreach ($Components as $component)
+		{
 			if (isset(self::$Included[$component])) {
 				continue;
 			}
@@ -157,25 +307,25 @@ class Plug
 				self::$Included[$component] = true;
 			}
 
+			# Is it enabled?
+			if (!isset(self::$Available[$component]) || self::$Available[$component] == false) {
+				trigger_error("Plug `{$component}` isn't enabled, can't continue.", E_USER_ERROR);
+				return false;
+			}
+
 			# Do we have class already?
-			# Try to guess(?) class name!
-			$classNameOne = 'c' . toCamelCase($component, true);
-			$classNameTwo = 'c' . strtoupper($classNameOne);
+			$className = self::ClassName($component);
 
-			if (!class_exists($classNameOne, false) && !class_exists($classNameTwo, false)) {
+			if (!$className) {
 				# Try to include main class!
-				$baseClassFilename = "/plugs/{$component}/{$component}.php";
-				$appClassFileName = ds(APPPATH.$baseClassFilename);
-				$sysClassFielName = ds(SYSPATH.$baseClassFilename);
+				$baseClassFilename = self::CalculatePath($component);
+				$fullClassFileName = ds($baseClassFilename."/{$component}.php");
 
-				if (file_exists($appClassFileName)) {
-					include $appClassFileName;
-				}
-				elseif (file_exists($sysClassFielName)) {
-					include $sysClassFielName;
+				if (file_exists($fullClassFileName)) {
+					include $fullClassFileName;
 				}
 				else {
-					Log::Add('WAR', "Can't find plug: `{$baseClassFilename}`.", __LINE__, __FILE__);
+					Log::Add('WAR', "Can't find plug: `{$fullClassFileName}`.", __LINE__, __FILE__);
 					$Failed[] = $component;
 					if ($stopOnFailed) {
 						break;
@@ -183,23 +333,20 @@ class Plug
 				}
 			}
 
-			if ($autoInit) {
+			if ($autoInit)
+			{
+				$className = self::ClassName($component);
 
-				if (class_exists($classNameOne, false)) {
-					$className = $classNameOne;
-				}
-				elseif (class_exists($classNameTwo, false)) {
-					$className = $classNameTwo;
-				}
-				else {
-					Log::Add('WAR', "Can't find plug's class: `{$baseClassFilename}`, attempts: `{$classNameOne}` and `{$classNameTwo}`.", __LINE__, __FILE__);
+				if (!$className) {
+					Log::Add('WAR', "Can't find plug's class for: `{$component}`.", __LINE__, __FILE__);
 					$Failed[] = $component;
 					if ($stopOnFailed) {
 						break;
 					}
 				}
 
-				if (method_exists($className, '_DoInit')) {
+				if (method_exists($className, '_DoInit'))
+				{
 					if (!$className::_DoInit()) {
 						Log::Add('WAR', "Method: `_DoInit` in `{$className}` failed!", __LINE__, __FILE__);
 					}
@@ -213,27 +360,72 @@ class Plug
 
 	/**
 	 * Get full absolute public path + additional
-	 * ---
-	 * @param string $path
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$path
+	 * --
+	 * @return	string
 	 */
 	public static function GetPublicPath($path=null)
 	{
-		return ds(PUBPATH . '/' . Cfg::Get('Plug/public_dir', 'plugs') . '/' . $path);
+		return ds(PUBPATH . '/' . Cfg::Get('plug/public_dir', 'plugs') . '/' . $path);
 	}
 	//-
 
 	/**
 	 * Get full absolute database path + additional
-	 * ---
-	 * @param string $path
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$path
+	 * --
+	 * @return	string
 	 */
 	public static function GetDatabasePath($path=null)
 	{
-		return ds(APPPATH . '/database/' . Cfg::Get('Plug/public_dir', 'plugs') . '/' . $path);
+		return ds(APPPATH . '/database/' . Cfg::Get('plug/public_dir', 'plugs') . '/' . $path);
+	}
+	//-
+
+	/*  ****************************************************** *
+	 *          Helper Methods
+	 *  **************************************  */
+
+	/**
+	 * Will calculate (look into application and system folder) plug's path.
+	 * --
+	 * @param	string	$plug
+	 * --
+	 * @return	string
+	 */
+	public static function CalculatePath($plug)
+	{
+		$appPath = ds(APPPATH."/plugs/{$plug}");
+		$sysPath = ds(SYSPATH."/plugs/{$plug}");
+
+		return is_dir($appPath) ? $appPath : is_dir($sysPath) ? $sysPath : false;
+	}
+	//-
+
+	/**
+	 * Get Class Name from plug's name
+	 * --
+	 * @param	string	$plug
+	 * --
+	 * @return	string
+	 */
+	public static function ClassName($plug)
+	{
+		# Guess class name :)
+		$classNameOne = 'c' . toCamelCase($plug, true);
+		$classNameTwo = 'c' . strtoupper($plug);
+
+		if (class_exists($classNameOne, false)) {
+			return $classNameOne;
+		}
+		elseif (class_exists($classNameTwo, false)) {
+			return $classNameTwo;
+		}
+		else {
+			return false;
+		}
 	}
 	//-
 }

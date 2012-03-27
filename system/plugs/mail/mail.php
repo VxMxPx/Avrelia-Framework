@@ -14,8 +14,32 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2011-07-05
+ * ---
+ * @property	array	$Config
+ * @property	boolean	$safeMode
+ * @property	string	$subject
+ * @property	string	$bodyHtml
+ * @property	string	$bodyPlain
+ * @property	string	$bodyFinal
+ * @property	string	$altBoundary
+ * @property	string	$atcBoundary
+ * @property	string	$headerStr
+ * @property	string	$encoding
+ * @property	string	$IP
+ * @property	string	$smtpAuth
+ * @property	boolean	$replyToFlag
+ * @property	array	$recipients
+ * @property	array	$ccArray
+ * @property	array	$bccArray
+ * @property	array	$headers
+ * @property	array	$attachName
+ * @property	array	$attachType
+ * @property	array	$attachDisp
+ * @property	array	$protocols
+ * @property	array	$baseCharsets
+ * @property	array	$bitDepths
+ * @property	array	$priorities
  */
-
 class cMail
 {
 	private $Config       = array();
@@ -44,9 +68,10 @@ class cMail
 	private $bitDepths    = array('7bit', '8bit');
 	private $priorities   = array('1 (Highest)', '2 (High)', '3 (Normal)', '4 (Low)', '5 (Lowest)');
 
-
 	/**
 	 * Set some default configs
+	 * --
+	 * @return	void
 	 */
 	public function __construct()
 	{
@@ -63,11 +88,11 @@ class cMail
 
 	/**
 	 * Who is sending this mail
-	 * ---
-	 * @param string $from
-	 * @param string $name
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	string	$from
+	 * @param	string	$name
+	 * --
+	 * @return	$this
 	 */
 	public function from($from, $name=null)
 	{
@@ -100,11 +125,11 @@ class cMail
 
 	/**
 	 * ReplyTo, if not set, from will be used.
-	 * ---
-	 * @param string $replyto
-	 * @param string $name
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	string	$replyto
+	 * @param	string	$name
+	 * --
+	 * @return	$this
 	 */
 	public function replyTo($replyto, $name=null)
 	{
@@ -132,10 +157,10 @@ class cMail
 
 	/**
 	 * Set Recipients
-	 * ---
-	 * @param string $to
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	string	$to
+	 * --
+	 * @return	$this
 	 */
 	public function to($to)
 	{
@@ -167,10 +192,10 @@ class cMail
 
 	/**
 	 * Set CC
-	 * ---
-	 * @param string $cc
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	string	$cc
+	 * --
+	 * @return	$this
 	 */
 	public function cc($cc)
 	{
@@ -191,11 +216,11 @@ class cMail
 
 	/**
 	 * Set BCC
-	 * ---
-	 * @param string $bcc
-	 * @param int $limit
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	string	$bcc
+	 * @param	integer	$limit
+	 * --
+	 * @return	$this
 	 */
 	public function bcc($bcc, $limit=false)
 	{
@@ -224,10 +249,10 @@ class cMail
 
 	/**
 	 * Set Email Subject
-	 * ---
-	 * @param string $subject
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	string	$subject
+	 * --
+	 * @return	$this
 	 */
 	public function subject($subject)
 	{
@@ -241,10 +266,10 @@ class cMail
 	/**
 	 * Set Body
 	 * ---
-	 * @param string $html
-	 * @param string $plain
-	 * ---
-	 * @return $this
+	 * @param	string	$html
+	 * @param	string	$plain
+	 * --
+	 * @return	$this
 	 */
 	public function message($html=false, $plain=false)
 	{
@@ -262,11 +287,11 @@ class cMail
 
 	/**
 	 * Assign file attachments
-	 * ---
-	 * @param mixed $filename -- list of files
-	 * @param string $disposition -- attachments || inline
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	mixed	$filename		List of files
+	 * @param	string	$disposition	Attachments || inline
+	 * --
+	 * @return	$this
 	 */
 	public function attach($filename, $disposition='attachment')
 	{
@@ -294,10 +319,10 @@ class cMail
 
 	/**
 	 * Set Priority
-	 * ---
-	 * @param int $priority
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	integer	$priority
+	 * --
+	 * @return	$this
 	 */
 	public function priority($priority=3)
 	{
@@ -314,8 +339,8 @@ class cMail
 
 	/**
 	 * Send Email
-	 * ---
-	 * @return boolean
+	 * --
+	 * @return	boolean
 	 */
 	public function send()
 	{
@@ -347,18 +372,17 @@ class cMail
 	}
 	//-
 
-
 	/*  ****************************************************** *
 	 *          Private Methods
 	 *  **************************************  */
 
 	/**
 	 * Add a Header Item
-	 * ---
-	 * @param string $header
-	 * @param mixed $value
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$header
+	 * @param	mixed	$value
+	 * --
+	 * @return	void
 	 */
 	private function setHeader($header, $value)
 	{
@@ -368,10 +392,10 @@ class cMail
 
 	/**
 	 * Convert a String to an Array
-	 * ---
-	 * @param string $email
-	 * ---
-	 * @return array
+	 * --
+	 * @param	string	$email
+	 * --
+	 * @return	array
 	 */
 	private function strToArray($email)
 	{
@@ -391,8 +415,8 @@ class cMail
 
 	/**
 	 * Set Message Boundary
-	 * ---
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	private function setBoundaries()
 	{
@@ -403,8 +427,8 @@ class cMail
 
 	/**
 	 * Get the Message ID
-	 * ---
-	 * @return string
+	 * --
+	 * @return	string
 	 */
 	private function getMessageId()
 	{
@@ -418,10 +442,10 @@ class cMail
 
 	/**
 	 * Get Mail Protocol
-	 * ---
-	 * @param bool $return
-	 * ---
-	 * @return mixed (string)
+	 * --
+	 * @param	boolean	$return
+	 * --
+	 * @return	mixed
 	 */
 	private function getProtocol($return=true)
 	{
@@ -436,10 +460,10 @@ class cMail
 
 	/**
 	 * Get Mail Encoding
-	 * ---
-	 * @param bool $return
-	 * ---
-	 * @return mixed (string)
+	 * --
+	 * @param	boolean	$return
+	 * --
+	 * @return	mixed
 	 */
 	private function getEncoding($return=true)
 	{
@@ -460,8 +484,8 @@ class cMail
 
 	/**
 	 * Get content type (text/html/attachment)
-	 * ---
-	 * @return string
+	 * --
+	 * @return	string
 	 */
 	private function getContentType()
 	{
@@ -482,8 +506,8 @@ class cMail
 
 	/**
 	 * Set RFC 822 Date
-	 * ---
-	 * @return string
+	 * --
+	 * @return	string
 	 */
 	private function setDate()
 	{
@@ -498,8 +522,8 @@ class cMail
 
 	/**
 	 * Mime message
-	 * ---
-	 * @return string
+	 * --
+	 * @return	string
 	 */
 	private function getMimeMessage()
 	{
@@ -511,10 +535,10 @@ class cMail
 
 	/**
 	 * Validate Email Address
-	 * ---
-	 * @param string $email
-	 * ---
-	 * @return boolean
+	 * --
+	 * @param	string	$email
+	 * --
+	 * @return	boolean
 	 */
 	private function validateEmail($email)
 	{
@@ -537,10 +561,10 @@ class cMail
 
 	/**
 	 * Clean Extended Email Address: Joe Smith <joe@smith.com>
-	 * ---
-	 * @param mixed $email
-	 * ---
-	 * @return mixed
+	 * --
+	 * @param	mixed	$email
+	 * --
+	 * @return	mixed
 	 */
 	private function cleanEmail($email)
 	{
@@ -571,8 +595,8 @@ class cMail
 	 * in plain-text headers of HTML-formatted emails.
 	 * If the user hasn't specified his own alternative message
 	 * it creates one by stripping the HTML
-	 * ---
-	 * @return string
+	 * --
+	 * @return	string
 	 */
 	private function getAltMessage()
 	{
@@ -609,11 +633,11 @@ class cMail
 
 	/**
 	 * Word Wrap
-	 * ---
-	 * @param string $str
-	 * @param int $charlim
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$str
+	 * @param	integer	$charlim
+	 * --
+	 * @return	string
 	 */
 	private function wordWrap($str, $charlim=false)
 	{
@@ -699,8 +723,8 @@ class cMail
 
 	/**
 	 * Build final headers
-	 * ---
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	private function buildHeaders()
 	{
@@ -714,8 +738,8 @@ class cMail
 
 	/**
 	 * Write Headers as a string
-	 * ---
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	private function writeHeaders()
 	{
@@ -744,7 +768,7 @@ class cMail
 
 	/**
 	 * Build Final Body and attachments
-	 * ---
+	 * --
 	 * @return	void
 	 */
 	private function buildMessage()
@@ -905,11 +929,11 @@ class cMail
 	 *
 	 * Prepares string for Quoted-Printable Content-Transfer-Encoding
 	 * Refer to RFC 2045 http://www.ietf.org/rfc/rfc2045.txt
-	 * ---
-	 * @param string $str
-	 * @param int $charlim
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$str
+	 * @param	integer	$charlim
+	 * --
+	 * @return	string
 	 */
 	private function prepQuotedPrintable($str, $charlim=false)
 	{
@@ -992,11 +1016,11 @@ class cMail
 	 *
 	 * Performs "Q Encoding" on a string for use in email headers.  It's related
 	 * but not identical to quoted-printable, so it has its own method
-	 * ---
-	 * @param string $str
-	 * @param bool	$from -- set to true for processing From: headers
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$str
+	 * @param	boolean	$from	Set to true for processing From: headers
+	 * --
+	 * @return	string
 	 */
 	private function prepQEncoding($str, $from=false)
 	{
@@ -1056,8 +1080,8 @@ class cMail
 
 	/**
 	 * Batch Bcc Send. Sends groups of BCCs in batches.
-	 * ---
-	 * @return boolean
+	 * --
+	 * @return	boolean
 	 */
 	private function batchBccSend()
 	{
@@ -1107,8 +1131,8 @@ class cMail
 
 	/**
 	 * Unwrap special elements
-	 * ---
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	private function unwrapSpecials()
 	{
@@ -1118,10 +1142,10 @@ class cMail
 
 	/**
 	 * Strip line-breaks via callback
-	 * ---
-	 * @param array $matches
-	 * ---
-	 * @return string
+	 * --
+	 * @param	array	$matches
+	 * --
+	 * @return	string
 	 */
 	private function removeNlCallback($matches)
 	{
@@ -1135,8 +1159,8 @@ class cMail
 
 	/**
 	 * Spool mail to the mail server
-	 * ---
-	 * @return bool
+	 * --
+	 * @return	boolean
 	 */
 	private function spoolEmail()
 	{
@@ -1177,8 +1201,8 @@ class cMail
 
 	/**
 	 * Send using mail()
-	 * ---
-	 * @return boolean
+	 * --
+	 * @return	boolean
 	 */
 	private function sendWithMail()
 	{
@@ -1196,8 +1220,8 @@ class cMail
 
 	/**
 	 * Send using Sendmail
-	 * ---
-	 * @return boolean
+	 * --
+	 * @return	boolean
 	 */
 	private function sendWithSendmail()
 	{
@@ -1229,8 +1253,8 @@ class cMail
 
 	/**
 	 * Send using SMTP
-	 * ---
-	 * @return boolean
+	 * --
+	 * @return	boolean
 	 */
 	private function sendWithSmtp()
 	{
@@ -1290,8 +1314,8 @@ class cMail
 
 	/**
 	 * SMTP Connect
-	 * ---
-	 * @return string
+	 * --
+	 * @return	string
 	 */
 	private function smtpConnect()
 	{
@@ -1314,11 +1338,11 @@ class cMail
 
 	/**
 	 * Send SMTP command
-	 * ---
-	 * @param string $cmd
-	 * @param string $data
-	 * ---
-	 * @return boolean
+	 * --
+	 * @param	string	$cmd
+	 * @param	string	$data
+	 * --
+	 * @return	boolean
 	 */
 	private function sendCommand($cmd, $data='')
 	{
@@ -1375,8 +1399,8 @@ class cMail
 
 	/**
 	 * SMTP Authenticate
-	 * ---
-	 * @return boolean
+	 * --
+	 * @return	boolean
 	 */
 	private function smtpAuthenticate()
 	{
@@ -1422,8 +1446,8 @@ class cMail
 
 	/**
 	 * Send SMTP data
-	 * ---
-	 * @return boolean
+	 * --
+	 * @return	boolean
 	 */
 	private function sendData($data)
 	{
@@ -1440,8 +1464,8 @@ class cMail
 
 	/**
 	 * Get SMTP data
-	 * ---
-	 * @return string
+	 * --
+	 * @return	string
 	 */
 	private function getSmtpData()
 	{
@@ -1462,8 +1486,8 @@ class cMail
 
 	/**
 	 * Get Hostname
-	 * ---
-	 * @return string
+	 * --
+	 * @return	string
 	 */
 	private function getHostname()
 	{
@@ -1473,8 +1497,7 @@ class cMail
 
 	/**
 	 * Get IP
-	 *
-	 * @access	private
+	 * --
 	 * @return	string
 	 */
 	private function getIp()
@@ -1511,10 +1534,10 @@ class cMail
 
 	/**
 	 * Mime Types
-	 * ---
-	 * @param string $ext
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$ext
+	 * --
+	 * @return	string
 	 */
 	private function mimeTypes($ext='')
 	{

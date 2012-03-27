@@ -249,7 +249,7 @@ class FileSystem
 	{
 		# Should we ignore it?
 		$nameOnly = basename($source);
-		if (in_array($nameOnly, Cfg::Get('System/ignore_on_copy', array()))) {
+		if (in_array($nameOnly, Cfg::Get('system/ignore_on_copy', array()))) {
 			Log::Add('INF', "This file/folder was set to be ignored on copy: `{$nameOnly}`!", __LINE__, __FILE__);
 			return true;
 		}

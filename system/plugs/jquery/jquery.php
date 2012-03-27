@@ -12,8 +12,11 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-02-19
+ * ---
+ * @property	array	$Config
+ * @property	string	$link
+ * @property	string	$tag
  */
-
 class cJquery
 {
 	private static $Config;
@@ -22,8 +25,8 @@ class cJquery
 
 	/**
 	 * Will add jQuery to cHTML footer.
-	 * ---
-	 * @return void
+	 * --
+	 * @return	boolean
 	 */
 	public static function _DoInit()
 	{
@@ -52,8 +55,8 @@ class cJquery
 
 	/**
 	 * Add jQuery to cHTML footer.
-	 * ---
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	public static function Add()
 	{
@@ -63,8 +66,8 @@ class cJquery
 
 	/**
 	 * Remove jQuery from cHTML footer.
-	 * ---
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	public static function Remove()
 	{
@@ -74,8 +77,8 @@ class cJquery
 
 	/**
 	 * Get only url
-	 * ---
-	 * @return string
+	 * --
+	 * @return	string
 	 */
 	public static function Url()
 	{

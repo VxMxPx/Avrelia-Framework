@@ -80,7 +80,7 @@ class Cache
 	private static function FileFromKey($key)
 	{
 		$key = vString::Clean($key, 200, 'a A 1 c', '_-');
-		return ds(Cfg::Get('System/cache_dir', APPPATH.'/database/cache').'/'.$key.'.cache');
+		return ds(Cfg::Get('system/cache_dir', APPPATH.'/database/cache').'/'.$key.'.cache');
 	}
 	//-
 }

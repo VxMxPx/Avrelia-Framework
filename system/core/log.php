@@ -14,7 +14,6 @@
  * @since      Date 2009-08-18
  */
 
-
 class Log
 {
 	# Array of all log items
@@ -50,12 +49,12 @@ class Log
 	public static function Init()
 	{
 		# If this fail, then we'll save log to file
-		self::$filename        = Cfg::Get('Log/path');
-		self::$filenameOnFatal = Cfg::Get('Log/fatal_path');
+		self::$filename        = Cfg::Get('log/path');
+		self::$filenameOnFatal = Cfg::Get('log/fatal_path');
 
-		self::$Types           = Cfg::Get('Log/Types');
-		self::$writeIndividual = Cfg::Get('Log/write_individual');
-		self::$enabled         = Cfg::Get('Log/enabled');
+		self::$Types           = Cfg::Get('log/types');
+		self::$writeIndividual = Cfg::Get('log/write_individual');
+		self::$enabled         = Cfg::Get('log/enabled');
 	}
 	//-
 

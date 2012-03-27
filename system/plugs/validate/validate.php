@@ -12,16 +12,17 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2011-11-19
+ * ---
+ * @property	array	$ValidationsList
  */
-
 class cValidate
 {
 	private static $ValidationsList = array();
 
 	/**
 	 * Get files, ...
-	 * ---
-	 * @return true
+	 * --
+	 * @return	boolean
 	 */
 	public static function _DoInit()
 	{
@@ -37,11 +38,11 @@ class cValidate
 
 	/**
 	 * Will add new filed to validate it.
-	 * ---
-	 * @param mixed  $value
-	 * @param string $name  -- if there's no name, no message will be set!
-	 * ---
-	 * @return avrValidateAssign
+	 * --
+	 * @param	mixed	$value
+	 * @param	string	$name	If there's no name, no message will be set!
+	 * --
+	 * @return	avrValidateAssign
 	 */
 	public static function Add($value, $name=false)
 	{
@@ -53,8 +54,8 @@ class cValidate
 
 	/**
 	 * Check if every field is valid...
-	 * ---
-	 * @return boolean
+	 * --
+	 * @return	boolean
 	 */
 	public static function IsValid()
 	{
@@ -76,10 +77,10 @@ class cValidate
 
 	/**
 	 * Will add new simple filed to validate it.
-	 * ---
-	 * @param mixed  $value
-	 * ---
-	 * @return avrValidateAssign
+	 * --
+	 * @param	mixed	$value
+	 * --
+	 * @return	avrValidateAssign
 	 */
 	private static function AddSimple($value)
 	{
@@ -90,10 +91,10 @@ class cValidate
 	/**
 	 * Check if value is valid e-mail address
 	 * ---
-	 * @param string $value
-	 * @param string $domain -- check if is on particular domain (example: @gmail.com)
-	 * ---
-	 * @return boolean
+	 * @param	string	$value
+	 * @param	string	$domain	Check if is on particular domain (example: @gmail.com)
+	 * --
+	 * @return	boolean
 	 */
 	public static function isEmail($value, $domain=null)
 	{

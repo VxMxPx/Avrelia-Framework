@@ -13,8 +13,6 @@
  * @since      Version 0.80
  * @since      2011-04-01
  */
-
-
 class Avrelia
 {
 	const VERSION   = '0.80';
@@ -35,8 +33,9 @@ class Avrelia
 	private $is404Progress = false;
 
 	/**
-	 * Will init the framework...
-	 * @return void
+	 * Will init the framework
+	 * --
+	 * @return	void
 	 */
 	public function init()
 	{
@@ -76,10 +75,10 @@ class Avrelia
 		Cfg::Load(ds(APPPATH . '/config/main.php'));
 
 		# Reset Error Reporting...
-		ini_set('display_errors', Cfg::Get('System/debug'));
+		ini_set('display_errors', Cfg::Get('system/debug'));
 
 		# Default timezone
-		date_default_timezone_set(Cfg::Get('System/timezone', 'GMT'));
+		date_default_timezone_set(Cfg::Get('system/timezone', 'GMT'));
 
 		# Set Timer...
 		Benchmark::SetTimer('System');
@@ -101,8 +100,9 @@ class Avrelia
 	//-
 
 	/**
-	 * Will boot the system...
-	 * @return void
+	 * Will boot the system
+	 * --
+	 * @return	void
 	 */
 	public function boot()
 	{
@@ -113,20 +113,23 @@ class Avrelia
 		Input::Init();
 
 		# Set default language
-		Language::SetDefaults(Cfg::Get('System/Languages'));
+		Language::SetDefaults(Cfg::Get('system/languages'));
 
 		# Is application offline?
-		if (Cfg::Get('System/offline') === true) {
-			$message = Cfg::Get('System/offline_message');
+		if (Cfg::Get('system/offline') === true) {
+			$message = Cfg::Get('system/offline_message');
 			if (substr($message,0,5) == 'view:') {
 				$message = View::Get(substr($message,5))->doReturn();
 			}
 			HTTP::Status503_ServiceUnavailable($message);
 		}
 
-		# Now autoload plugs
-		if (Cfg::Get('Plug/Enabled')) {
-			Plug::Inc(Cfg::Get('Plug/Enabled'));
+		# MUST be called before we can use Plugs.
+		Plug::Init(Cfg::Get('plug/enabled'));
+
+		# Now scan and autoload plugs
+		if (Cfg::Get('plug/enabled')) {
+			Plug::Inc(Cfg::Get('plug/auto_load'));
 		}
 
 		$requestUri = trim(Input::GetRequestUri(false), '/');
@@ -134,19 +137,19 @@ class Avrelia
 
 		# In case we have no uri
 		if (empty($requestUri)) {
-			if (Cfg::Get('System/Routes/0')) {
+			if (Cfg::Get('system/routes/0')) {
 				$routeCall = str_replace(
 								array('/', '->', '(', ',', ')'),
 								array(' {#!<<PATH!#} ', ' {#!<<CONTROLLER!#} ', ' {#!<<METHOD!#} ', ' {#!<<PARAM!#} ', ''),
-								Cfg::Get('System/Routes/0'));
+								Cfg::Get('system/routes/0'));
 				$this->routeCall($routeCall);
 				return true;
 			}
 		}
-		else {
-
+		else
+		{
 			# Loop to check for uri
-			$Routes = Cfg::Get('System/Routes');
+			$Routes = Cfg::Get('system/routes');
 			unset($Routes[0], $Routes[404]);
 
 			foreach($Routes as $routeRegEx => $routeCall) {
@@ -177,16 +180,20 @@ class Avrelia
 	//-
 
 	/**
-	 * Call 404 if route not found...
+	 * Call 404 if route not found
+	 * --
+	 * @param	string	$route
+	 * --
+	 * @return	void
 	 */
 	private function call404($route=null)
 	{
-		if (Cfg::Get('System/Routes/404') && !$this->is404Progress) {
+		if (Cfg::Get('system/routes/404') && !$this->is404Progress) {
 			$this->is404Progress = true;
 			$this->routeCall(str_replace(
 								array('/', '->', '(', ',', ')'),
 								array(' {#!<<PATH!#} ', ' {#!<<CONTROLLER!#} ', ' {#!<<METHOD!#} ', ' {#!<<PARAM!#} ', ''),
-								Cfg::Get('System/Routes/404')));
+								Cfg::Get('system/routes/404')));
 			Event::Trigger('Avrelia.After.BootAPP');
 		}
 		else {
@@ -200,9 +207,10 @@ class Avrelia
 
 	/**
 	 * This will resolve route call (example: /controller->method(params))
-	 *
-	 * @param string $callName
-	 * @return void
+	 * --
+	 * @param	string	$callName
+	 * --
+	 * @return	void
 	 */
 	private function routeCall($callName)
 	{

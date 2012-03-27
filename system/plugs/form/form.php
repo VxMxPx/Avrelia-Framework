@@ -13,19 +13,19 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2011-07-21
+ * --
+ * @property	array	$FormData	Specific settings for form
+ * @property	array	$Defaults	Default values for form
  */
-
 class cForm
 {
-	//-
-
-	private $FormData = array('wrap' => false);  # Forms data!
+	private $FormData = array('wrap' => false);
 	private $Defaults = array();
 
 	/**
 	 * Load Assign Class
-	 * ---
-	 * @return bool
+	 * --
+	 * @return	boolean
 	 */
 	public static function _DoInit()
 	{
@@ -37,21 +37,22 @@ class cForm
 	}
 	//-
 
-
-	/* -------------------- FORM ELEMENTS ----------------------------------- */
+	/*  ****************************************************** *
+	 *          Elements
+	 *  **************************************  */
 
 	/**
 	 * Form start
 	 * Will create <form> start tag
-	 *
-	 * @param string $action  -- to which url to post
-	 * (if not provided full url with http start, it will be created automatically
-	 * using function url())
-	 * @param   bool $recover -- should form's field will be automatically recovered
-	 *
-	 * Note: If you want to provide attribute "method", use method attributes()
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$action		To which url to post, if not provided full url
+	 * 								with http start, it will be created automatically
+	 * 								using function url())
+	 * @param	boolean	$recover	Should form's field will be automatically recovered?
+	 * 								Note: If you want to provide attribute "method",
+	 * 								use method attributes()
+	 * --
+	 * @return	string
 	 */
 	public function start($action=null, $recover=true)
 	{
@@ -75,11 +76,11 @@ class cForm
 	/**
 	 * Form textbox
 	 * Will create <input type="text />
-	 *
-	 * @param string $name
-	 * @param string $label
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$name
+	 * @param	string	$label
+	 * --
+	 * @return	string
 	 */
 	public function textbox($name, $label=null)
 	{
@@ -117,11 +118,11 @@ class cForm
 	/**
 	 * Form masked
 	 * Will create <input type="password" />
-	 *
-	 * @param string $name
-	 * @param string $label
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$name
+	 * @param	string	$label
+	 * --
+	 * @return	string
 	 */
 	public function masked($name, $label=null)
 	{
@@ -133,11 +134,11 @@ class cForm
 	/**
 	 * Form upload
 	 * Will create <input type"file" />
-	 *
-	 * @param string $name
-	 * @param string $label
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$name
+	 * @param	string	$label
+	 * --
+	 * @return	string
 	 */
 	public function upload($name, $label=null)
 	{
@@ -149,14 +150,14 @@ class cForm
 	/**
 	 * Form radio
 	 * Will create <input type="radio" />
-	 *
-	 * @param string $name
-	 * @param array  $Options  -- in format array('value' => 'label') OR
-	 * 					array('value' => 'label="My label" id="myId" class="myClass"')
-	 * 					If you want label with link (not to be parser), put \ in front of it!
-	 * @param string $selected
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$name
+	 * @param	array 	$Options	In format array('value' => 'label')
+	 * 								OR array('value' => 'label="My label" id="myId" class="myClass"')
+	 * 								If you want label with link (not to be parser), put \ in front of it!
+	 * @param	string	$selected
+	 * --
+	 * @return	string
 	 */
 	public function radio($name, $Options, $selected=null)
 	{
@@ -239,14 +240,14 @@ class cForm
 	/**
 	 * Form checkbox
 	 * Will create <input type="checkbox" />
-	 *
-	 * @param string $name
-	 * @param array  $Options  -- in format array('value' => 'label') OR
-	 * 					array('value' => 'label="My label" id="myId" class="myClass"')
-	 * 					If you want label with link (not to be parser), put \ in front of it!
-	 * @param string $selected -- use comma to list more elements, eg: dogs,cat
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$name
+	 * @param	array	$Options	In format array('value' => 'label')
+	 * 								OR array('value' => 'label="My label" id="myId" class="myClass"')
+	 * 								If you want label with link (not to be parser), put \ in front of it!
+	 * @param	string	$selected	Use comma to list more elements, eg: dogs,cats
+	 * --
+	 * @return	string
 	 */
 	public function checkbox($name, $Options, $selected=null)
 	{
@@ -330,13 +331,14 @@ class cForm
 	/**
 	 * Form select
 	 * Will create <select><option>...
-	 *
-	 * @param string $name
-	 * @param  array $Options  -- array('val' => 'label')
-	 * @param string $selected -- (in case of multi select use comma to list more elements, eg: dogs,cat)
-	 * @param   bool $multi    -- multi or single select?
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$name
+	 * @param	array	$Options	array('val' => 'label')
+	 * @param	string	$selected	In case of multi select use comma
+	 * 								to list more elements, eg: dogs,cats
+	 * @param	boolean	$multi		Multi or single select?
+	 * --
+	 * @return	string
 	 */
 	public function select($name, $Options, $label=null, $selected=null, $multi=false)
 	{
@@ -402,12 +404,12 @@ class cForm
 	/**
 	 * Form date (old)
 	 * Will create <select name="{$name}_day">...<select name="{$name}_month">...
-	 *
-	 * @param string $name
-	 * @param string $label
-	 * @param string $selected -- date in format: d.m.Y (16.04.1984)
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$name
+	 * @param	string	$label
+	 * @param	string	$selected	Date in format: d.m.Y (16.04.1984)
+	 * --
+	 * @return	string
 	 */
 	public function date($name, $label=null, $selected=null)
 	{
@@ -477,11 +479,11 @@ class cForm
 	/**
 	 * Form hidden
 	 * Will create <input type="hidden"...
-	 *
-	 * @param string $name
-	 * @param string $value
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$name
+	 * @param	string	$value
+	 * --
+	 * @return	string
 	 */
 	public function hidden($name, $value)
 	{
@@ -492,12 +494,12 @@ class cForm
 	/**
 	 * Form textarea
 	 * Will create <textarea>
-	 *
-	 * @param string $name
-	 * @param string $content
-	 * @param string $label
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$name
+	 * @param	string	$content
+	 * @param	string	$label
+	 * --
+	 * @return	string
 	 */
 	public function textarea($name, $label=null, $content=null)
 	{
@@ -536,12 +538,12 @@ class cForm
 
 	/**
 	 * Will add button
-	 *
-	 * @param string $label
-	 * @param string $name
-	 * @param string $type -- submit | button | reset
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$label
+	 * @param	string	$name
+	 * @param	string	$type	submit | button | reset
+	 * --
+	 * @return	string
 	 */
 	public function button($label=null, $name='submit', $type='submit')
 	{
@@ -554,8 +556,8 @@ class cForm
 
 	/**
 	 * Will create empty wrapper field
-	 *
-	 * @return string
+	 * --
+	 * @return	string
 	 */
 	public function spacer()
 	{
@@ -566,8 +568,8 @@ class cForm
 	/**
 	 * Form end
 	 * Will create </form> end tag
-	 *
-	 * @return string
+	 * --
+	 * @return	string
 	 */
 	public function end()
 	{
@@ -576,20 +578,22 @@ class cForm
 	}
 	//-
 
-	/* ------------ PRIVATE METHODS / HELPING METHODS ----------------------- */
+	/*  ****************************************************** *
+	 *          Private / Helpers
+	 *  **************************************  */
 
 	/**
-	 * Will wrap fields into provided mask
-	 *
-	 * @param string $mask - options:
+	 * Will set wrapper for all fields
+	 * --
+	 * @param	string	$mask	Options:
 	 * 		{field}    -- the field itself
 	 * 		{id}       -- field's ID -- note, if not ID was set, the aff_name will be used
 	 * 		{name}     -- field's name
 	 * 		{type}     -- field's type
 	 * 		{oddEven}  -- will return odd or even
 	 * 		{hasError} -- if validation enabled has error (return hasError)
-	 *
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	public function wrapFields($mask)
 	{
@@ -599,28 +603,30 @@ class cForm
 	//-
 
 	/**
-	 * Set defaults in form
-	 *
-	 * @param array $Defaults
-	 *
-	 * @return this
+	 * For current field set wrapper on / off
+	 * --
+	 * @param	boolean	$do
+	 * --
+	 * @return	$this
 	 */
-	public function defaults($Defaults)
+	public function wrap($do)
 	{
-		$this->Defaults = array_merge($Defaults);
+		$this->FormData['wrap_default'] = $this->FormData['wrap'];
+		$this->FormData['wrap'] = $do;
+
 		return $this;
 	}
 	//-
 
 	/**
 	 * Will start wrapper, to wrap multiple fields...
-	 *
-	 * @param string $name
-	 * @param string $type
-	 * @param string $id
-	 * @param mixed  $processOddEven -- should we automatically process oddEven
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$name
+	 * @param	string	$type
+	 * @param	string	$id
+	 * @param	mixed	$processOddEven	Should we automatically process oddEven
+	 * --
+	 * @return	string
 	 */
 	public function wrapStart($name, $type='manual', $id=null, $processOddEven=true)
 	{
@@ -657,8 +663,8 @@ class cForm
 
 	/**
 	 * Will end wrapper, (wrap multiple fields...)
-	 *
-	 * @return string
+	 * --
+	 * @return	string
 	 */
 	public function wrapEnd()
 	{
@@ -673,11 +679,25 @@ class cForm
 	//-
 
 	/**
-	 *	Will set attributes for current field
-	 *
-	 *	@param string $att in format: 'class="myClass" id="myID" method="post"'
-	 *
-	 *	@return this
+	 * Set defaults in form
+	 * --
+	 * @param	array	$Defaults
+	 * --
+	 * @return	$this
+	 */
+	public function defaults($Defaults)
+	{
+		$this->Defaults = array_merge($Defaults);
+		return $this;
+	}
+	//-
+
+	/**
+	 * Will set attributes for current field
+	 * --
+	 * @param	string	$att	In format: 'class="myClass" id="myID" method="post"'
+	 * --
+	 * @return	$this
 	 */
 	public function att($att)
 	{
@@ -700,10 +720,10 @@ class cForm
 
 	/**
 	 * For current field set recovery option
-	 *
-	 * @param bool $do
-	 *
-	 * @return this
+	 * --
+	 * @param	boolean	$do
+	 * --
+	 * @return	$this
 	 */
 	public function rec($do)
 	{
@@ -715,31 +735,15 @@ class cForm
 	//-
 
 	/**
-	 * For current field set wrapper on / off
-	 *
-	 * @param bool $do
-	 *
-	 * @return this
-	 */
-	public function wrap($do)
-	{
-		$this->FormData['wrap_default'] = $this->FormData['wrap'];
-		$this->FormData['wrap'] = $do;
-
-		return $this;
-	}
-	//-
-
-	/**
 	 * Insert element in front of field or behind it...
 	 * For example, if we say prefix for textbox is Enter your name:,
 	 * and set inFront to true we'll get following result:
 	 * Enter your name: <input ...
-	 *
-	 * @param string $content
-	 * @param $inFront - insert content in front of field or after field
-	 *
-	 * @return object (this)
+	 * --
+	 * @param	string	$content
+	 * @param	boolean	$inFront	Insert content in front of field or after field
+	 * --
+	 * @return	$this
 	 */
 	public function ins($content, $inFront=true)
 	{
@@ -751,13 +755,13 @@ class cForm
 	//-
 
 	/**
-	 * Private mothod to return correctly formated field
-	 *
-	 * @param string $field
-	 * @param string $type
-	 * @param string $name
-	 *
-	 * @return string
+	 * Return correctly formated field
+	 * --
+	 * @param	string	$field
+	 * @param	string	$type
+	 * @param	string	$name
+	 * --
+	 * @return	string
 	 */
 	private function returner($field, $type, $name)
 	{
@@ -822,10 +826,10 @@ class cForm
 
 	/**
 	 * Will process attributes
-	 *
-	 * @param array $Attributes
-	 *
-	 * @return string
+	 * --
+	 * @param	array	$Attributes
+	 * --
+	 * @return	string
 	 */
 	private function processAttributes($Attributes=null)
 	{
@@ -844,6 +848,5 @@ class cForm
 		return $result;
 	}
 	//-
-
 }
 //--

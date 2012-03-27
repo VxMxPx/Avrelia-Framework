@@ -14,18 +14,6 @@
  * @since      2012-03-21
  * ---
  * @property	interfaceDatabase	$Driver	PDO Database Driver Instance
- * ---
- * @method	boolean				_doInit
- * @method	boolean				_doDisable
- * @method	interfaceDatabase	_getDriver
- *
- * @method	cDatabaseResult		Query
- * @method	cDatabaseResult		Create
- * @method	cDatabaseResult		Read
- * @method	cDatabaseResult		Update
- * @method	cDatabaseResult		Delete
- *
- * @method	string				ParseCondition
  */
 class cDatabase
 {
@@ -33,10 +21,48 @@ class cDatabase
 
 	/**
 	 * Init the Database object
-	 * ---
-	 * @return boolean
+	 * --
+	 * @return	boolean
 	 */
-	public static function _doInit()
+	public static function _DoInit()
+	{
+		if (!self::$Driver->connect()) {
+			Log::Add('ERR', "Can't connect to or create database.", __LINE__, __FILE__);
+			return false;
+		}
+
+		return true;
+	}
+	//-
+
+	/**
+	 * Enable database plug
+	 * --
+	 * @return	boolean
+	 */
+	public static function _DoEnable()
+	{
+		self::$Driver->_create();
+	}
+	//-
+
+	/**
+	 * Remove the database
+	 * --
+	 * @return	boolean
+	 */
+	public static function _DoDisable()
+	{
+		return self::$Driver->_destroy();
+	}
+	//-
+
+	/**
+	 * Load database driver
+	 * --
+	 * @return	boolean
+	 */
+	private static function LoadDriver()
 	{
 		$Config = Plug::GetConfig(__FILE__);
 
@@ -93,18 +119,6 @@ class cDatabase
 		Log::Add('INF', "Database driver was loaded: `{$driverClass}`", __LINE__, __FILE__);
 		self::$Driver = new $driverClass($Config);
 
-		# Auto-create it...
-		if (!self::$Driver->connect()) {
-
-			# Try to create it!
-			self::$Driver->_create();
-
-			if (!self::$Driver->connect()) {
-				Log::Add('ERR', "Can't connect to or create database.", __LINE__, __FILE__);
-				return false;
-			}
-		}
-
 		# Finally load all other required libraries
 		if (!class_exists('cDatabaseRecord',    false)) { include(ds($path.'/database_record.php'));    }
 		if (!class_exists('cDatabaseResult',    false)) { include(ds($path.'/database_result.php'));    }
@@ -115,20 +129,9 @@ class cDatabase
 	//-
 
 	/**
-	 * Remove the database
-	 * ---
-	 * @return boolean
-	 */
-	public static function _doDisable()
-	{
-		return self::$Driver->_destroy();
-	}
-	//-
-
-	/**
 	 * Return PDO Driver object.
 	 * ---
-	 * @return interfaceDatabase
+	 * @return	interfaceDatabase
 	 */
 	public static function _getDriver()
 	{
@@ -138,11 +141,11 @@ class cDatabase
 
 	/**
 	 * SQL query
-	 * ---
-	 * @param string $statement
-	 * @param array $bind
-	 * ---
-	 * @return cDatabaseResult
+	 * --
+	 * @param	string	$statement
+	 * @param	array	$bind
+	 * --
+	 * @return	cDatabaseResult
 	 */
 	public static function Query($statement, $bind=false)
 	{
@@ -158,11 +161,11 @@ class cDatabase
 
 	/**
 	 * Create new record.
-	 * ---
-	 * @param array $Values
-	 * @param string $table
-	 * ---
-	 * @return cDatabaseResult
+	 * --
+	 * @param	array	$Values
+	 * @param	string	$table
+	 * --
+	 * @return	cDatabaseResult
 	 */
 	public static function Create($Values, $table)
 	{
@@ -186,14 +189,14 @@ class cDatabase
 
 	/**
 	 * Will read items from database.
-	 * ---
-	 * @param string $table
-	 * @param mixed $condition -- ['id' => 12] || 'id=:id AND name=:name' and bind it later.
-	 * @param array $bind
-	 * @param mixed $limit -- Select 12 records || range: [10, 25]
-	 * @param array $order -- ['name' => 'DESC'] || ['name' => 'DESC', 'date' => 'ASC'] || ['name', 'id' => 'DESC']
-	 * ---
-	 * @return cDatabaseResult
+	 * --
+	 * @param	string	$table
+	 * @param	mixed	$condition	['id' => 12] || 'id=:id AND name=:name' and bind it later.
+	 * @param	array	$bind
+	 * @param	mixed	$limit		Select 12 records || range: [10, 25]
+	 * @param	array	$order		['name' => 'DESC'] || ['name' => 'DESC', 'date' => 'ASC'] || ['name', 'id' => 'DESC']
+	 * --
+	 * @return	cDatabaseResult
 	 */
 	public static function Read($table, $condition=false, $bind=false, $limit=false, $order=false)
 	{
@@ -255,13 +258,13 @@ class cDatabase
 
 	/**
 	 * Update particular record.
-	 * ---
-	 * @param array $Values
-	 * @param string $table
-	 * @param mixed $condition -- ['id' => 12] || 'id=:id AND name=:name' and bind it.
-	 * @param array $bind
-	 * ---
-	 * @return cDatabaseResult
+	 * --
+	 * @param	array	$Values
+	 * @param	string	$table
+	 * @param	mixed	$condition	['id' => 12] || 'id=:id AND name=:name' and bind it.
+	 * @param	array	$bind
+	 * --
+	 * @return	cDatabaseResult
 	 */
 	public static function Update($Values, $table, $condition, $bind=false)
 	{
@@ -292,12 +295,12 @@ class cDatabase
 
 	/**
 	 * Will delete particular item.
-	 * ---
-	 * @param string $table
-	 * @param mixed $condition -- ['id' => 12] || 'id=:id AND name=:name' and bind it later.
-	 * @param array $bind
-	 * ---
-	 * @return cDatabaseResult
+	 * --
+	 * @param	string	$table
+	 * @param	mixed	$condition	['id' => 12] || 'id=:id AND name=:name' and bind it later.
+	 * @param	array	$bind
+	 * --
+	 * @return	cDatabaseResult
 	 */
 	public static function Delete($table, $condition, $bind=false)
 	{
@@ -322,10 +325,10 @@ class cDatabase
 
 	/**
 	 * Parse an array condition (like) ['id' => 12] into WHERE id=:id
-	 * ---
-	 * @param array $condition
-	 * ---
-	 * @return string
+	 * --
+	 * @param	array	$condition
+	 * --
+	 * @return	string
 	 */
 	private static function ParseCondition($condition)
 	{

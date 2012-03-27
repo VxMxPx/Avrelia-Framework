@@ -3,13 +3,13 @@
 $AvreliaConfig = array
 (
 	# System Configuration
-	'System' => array
+	'system' => array
 	(
 		#
-		'Routes'           => array
+		'routes' => array
 		(
 			# If there's no parameteres set in our URL, this will be called.
-			0   => 'home->index()',
+			0 => 'home->index()',
 
 			# The 404 route.
 			# If not provided / not found, the system will look for 404.php view;
@@ -32,7 +32,7 @@ $AvreliaConfig = array
 		# For example: my_language.%.lng, and for loading plug's default language.
 		# The languages will be loaded in order provided bellow, meaning,
 		# first 0, then if 0 can't be found, load 1, etc...
-		'Languages'        => array('en'),
+		'languages'        => array('en'),
 
 		# Full URL (domain name) (http://example.com)
 		'full_url'         => '',
@@ -65,12 +65,14 @@ $AvreliaConfig = array
 	),
 
 	# Plugs settings.
-	'Plug' => array
+	'plug' => array
 	(
 		# Which plugs do we want to use in our application.
-		# You can also include any plug later, by calling Plug::Inc(array('plug_name', 'plug_name_2')),
-		# or by calling plug itself: cPlugName::DoSomething();
-		'Enabled'    => array(),
+		'enabled'    => array('jquery', 'html'),
+
+		# Which plugs do we want to autoload at the begining.
+		# Plug must be on enabled list, in order to be auto loaded.
+		'auto_load'  => array(),
 
 		# Plugs default public directory
 		'public_dir' => 'plugs',
@@ -82,7 +84,7 @@ $AvreliaConfig = array
 	),
 
 	# Cookies settings.
-	'Cookie' => array
+	'cookie' => array
 	(
 		# Enter domain name (example.com).
 		'domain' => '',
@@ -95,7 +97,7 @@ $AvreliaConfig = array
 	),
 
 	# Log settings.
-	'Log' => array
+	'log' => array
 	(
 		# Is log enabled (writing to file)?
 		# Please before you enabled log, make sure your log folder is writeable.
@@ -105,7 +107,7 @@ $AvreliaConfig = array
 		'path'    => APPPATH . '/log/' . date('Y') . '/' . date('m') . '/' . date('d') . '.log',
 
 		# Log types. Select which type of messages should be saved. INF and OK isn't recomended to be saved.
-		'Types'   => array
+		'types'   => array
 		(
 			'ERR' => true,
 			'WAR' => true,
@@ -124,5 +126,4 @@ $AvreliaConfig = array
 		# Filename for fatal error (only if you set 'write_all_on_fatal' to true).
 		'fatal_path'         => APPPATH . '/log/' . date('Y') . '/' . date('m') . '/fatal/' . date('Y-m-d__H-i-s') . '.log',
 	),
-
 );

@@ -69,7 +69,7 @@ class Input
 	{
 		# Set Get Actions And Segments
 		$uri = self::Server('REQUEST_URI');
-		$uri = vString::RegExClean($uri, Cfg::Get('System/input_get_filter', '/[^a-z0-9_]/'));
+		$uri = vString::RegExClean($uri, Cfg::Get('system/input_get_filter', '/[^a-z0-9_]/'));
 
 		# Shouldn't Be Empty
 		if ($uri == '') { return false; }
@@ -275,7 +275,7 @@ class Input
 	 */
 	public static function GetUrl($withQuery=false)
 	{
-		$url = trim(Cfg::Get('System/full_url', false));
+		$url = trim(Cfg::Get('system/full_url', false));
 
 		if (empty($url) || !$url) {
 			$url = 'http://'.$_SERVER['SERVER_NAME'];
