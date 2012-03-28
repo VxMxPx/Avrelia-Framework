@@ -13,7 +13,7 @@ class homeController
 		cJquery::Add();
 
 		# Set variable
-		View::AddVar('greeting', Model::Get('home')->sayHello());
+		View::AddVar('greeting', '<span class="fade">Hello from</span> Avrelia Framework');
 
 		# Get Master template (always first!)
 		View::Get('master')->asMaster();
@@ -26,10 +26,10 @@ class homeController
 	/**
 	 * For Ajax Request...
 	 */
-	public function greeting()
+	public function greeting($last)
 	{
 		View::Get('simple', array(
-			'data' => Model::Get('home')->sayHello(),
+			'data' => Model::Get('home')->sayHello($last),
 		));
 	}
 	//-

@@ -116,7 +116,7 @@ class Log
 	{
 		# Add Memory usage..
 		$memory = Benchmark::GetMemoryUsage(true, false);
-		self::Add('INF', "Memory usage: {$memory} -- " . FileSystem::FormatSize($memory) . " the memory limist is: " . ini_get('memory_limit'), __LINE__, __FILE__);
+		self::Add('INF', "Memory usage: {$memory} bytes / " . FileSystem::FormatSize($memory) . " the memory limist is: " . ini_get('memory_limit'), __LINE__, __FILE__);
 
 		# Add Total Loading Time Of System
 		$sysTimer = Benchmark::GetTimer('System');

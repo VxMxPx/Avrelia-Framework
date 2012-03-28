@@ -24,15 +24,20 @@ class homeModel
 	'How\'s it going?', 'Howdy!', 'Salutations!', 'What\'s up?', 'Yo!',
 	);
 
-
 	/**
 	 * Say Hello - Sample Function...
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$last
+	 * --
+	 * @return	string
 	 */
-	public function sayHello()
+	public function sayHello($last)
 	{
-		return $this->GreetingsList[rand(0,count($this->GreetingsList)-1)];
+		do {
+			$greeting = $this->GreetingsList[rand(0,count($this->GreetingsList)-1)];
+		} while($greeting == $last);
+
+		return $greeting;
 	}
 	//-
 

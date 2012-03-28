@@ -52,20 +52,20 @@ class Plug
 			return true;
 		}
 
-		# See if we have all we require on the list
-		foreach ($List as $plug) {
-			if (!isset(self::$Available[$plug])) {
-				# Enable it then...
-				self::Enable($plug);
-			}
-		}
-
 		# Do we have to disable & remove anything?
 		foreach (self::$Available as $plug => $status) {
 			if ($status) {
 				if (!in_array($plug, $List)) {
 					self::Disable($plug);
 				}
+			}
+		}
+
+		# See if we have all we require on the list
+		foreach ($List as $plug) {
+			if (!isset(self::$Available[$plug])) {
+				# Enable it then...
+				self::Enable($plug);
 			}
 		}
 
