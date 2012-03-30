@@ -19,7 +19,7 @@ $SessionConfig = array
 	# Driver:
 	#   json: for flat file storage
 	#   db  : use database
-	'driver'		=> 'db',
+	'driver'		=> 'json',
 
 	# JSON driver configuration
 	'json'			=> array

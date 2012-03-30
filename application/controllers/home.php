@@ -23,18 +23,6 @@ class homeController
 	}
 	//-
 
-	public function login()
-	{
-		cSession::Login('root@domain.tld', 'root');
-		$this->index();
-	}
-
-	public function logout()
-	{
-		cSession::Logout();
-		$this->index();
-	}
-
 	/**
 	 * For Ajax Request...
 	 */

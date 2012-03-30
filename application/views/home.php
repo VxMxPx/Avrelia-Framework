@@ -1,7 +1,5 @@
 <h1><?php echo $greeting; ?></h1><small>(<a href="#" id="newGreeting">Ajax Greeting!</a>)</small>
 
-<p>Current status: <?php echo cSession::IsLoggedin() ? 'logged in as "'.cSession::AsArray('uname').'"' : 'not logged in' ?>.</p>
-
 <h2>So, what to do next?</h2>
 <p>
 	Start editing files in <code>application</code> folder. If you want to change
