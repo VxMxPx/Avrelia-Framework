@@ -19,7 +19,7 @@ $SessionConfig = array
 	# Driver:
 	#   json: for flat file storage
 	#   db  : use database
-	'driver'		=> 'json',
+	'driver'		=> 'db',
 
 	# JSON driver configuration
 	'json'			=> array
@@ -40,19 +40,19 @@ $SessionConfig = array
 		# Tables to be auto-created if not expists
 		'Tables'			=> array(
 			'users_table'	=>
-				'CREATE TABLE IF NOT EXISTS :users_table (
-					id			INT	PRIMARY KEY	AUTOINCREMENT	NOT NULL,
-					uname		VARCHAR(200)					NOT NULL,
-					password	TEXT							NOT NULL,
-					active		INT(1)							NOT NULL
+				'CREATE TABLE IF NOT EXISTS users (
+					id			INTEGER	PRIMARY KEY	AUTOINCREMENT	NOT NULL,
+					uname		VARCHAR(200)						NOT NULL,
+					password	TEXT								NOT NULL,
+					active		INTEGER(1)							NOT NULL
 				)',
 			'sessions_table' =>
-				'CREATE TABLE IF NOT EXISTS :sessions_table (
+				'CREATE TABLE IF NOT EXISTS users_sessions (
 					id			VARCHAR(255)	NOT NULL,
 					user_id		VARCHAR(255)	NOT NULL,
 					ip			VARCHAR(16)		NOT NULL,
 					agent		VARCHAR(255)	NOT NULL,
-					expires		INT(12)			NOT NULL
+					expires		INTEGER(12)		NOT NULL
 				)',
 		),
 	),

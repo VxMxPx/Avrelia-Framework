@@ -68,7 +68,7 @@ $AvreliaConfig = array
 	'plug' => array
 	(
 		# Which plugs do we want to use in our application.
-		'enabled'    => array('html', 'jquery'),
+		'enabled'    => array('html', 'jquery', 'database', 'session'),
 
 		# Which plugs do we want to autoload at the begining.
 		# Plug must be on enabled list, in order to be auto loaded.
