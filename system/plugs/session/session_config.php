@@ -40,14 +40,14 @@ $SessionConfig = array
 		# Tables to be auto-created if not expists
 		'Tables'			=> array(
 			'users_table'	=>
-				'CREATE TABLE IF NOT EXISTS users (
+				'CREATE TABLE IF NOT EXISTS :users_table (
 					id			INT	PRIMARY KEY	AUTOINCREMENT	NOT NULL,
 					uname		VARCHAR(200)					NOT NULL,
 					password	TEXT							NOT NULL,
 					active		INT(1)							NOT NULL
 				)',
 			'sessions_table' =>
-				'CREATE TABLE IF NOT EXISTS users_sessions (
+				'CREATE TABLE IF NOT EXISTS :sessions_table (
 					id			VARCHAR(255)	NOT NULL,
 					user_id		VARCHAR(255)	NOT NULL,
 					ip			VARCHAR(16)		NOT NULL,
