@@ -74,6 +74,19 @@ class Plug
 	//-
 
 	/**
+	 * Check if particular plug is enabled.
+	 * --
+	 * @param	string	$name
+	 * --
+	 * @return	boolean
+	 */
+	public static function Has($name)
+	{
+		return isset(self::$Available[$name]) && self::$Available[$name] ? true : false;
+	}
+	//-
+
+	/**
 	 * Will enable particular plug. This will check for static method _DoEnable,
 	 * if method can't be found, we'll return true (no need to enable it).
 	 * If method can be found, it will be called and result will be returned.

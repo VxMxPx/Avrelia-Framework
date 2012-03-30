@@ -58,19 +58,6 @@ class jsonSessionDriver implements interfaceSessionDriver
 	//-
 
 	/**
-	 * Do we have all files we need?
-	 * --
-	 * @param	array	$Config
-	 * --
-	 * @return	boolean
-	 */
-	public static function _canConstruct($Config)
-	{
-		return file_exists($Config['json']['users_filename']) && file_exists($Config['json']['sessions_filename']);
-	}
-	//-
-
-	/**
 	 * Create all files / tables required by this plug to work
 	 * --
 	 * @param	array	$Config
