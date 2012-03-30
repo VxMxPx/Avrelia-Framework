@@ -26,6 +26,8 @@ class cDatabase
 	 */
 	public static function _DoInit()
 	{
+		self::LoadDriver();
+	
 		if (!self::$Driver->connect()) {
 			Log::Add('ERR', "Can't connect to or create database.", __LINE__, __FILE__);
 			return false;
@@ -42,6 +44,7 @@ class cDatabase
 	 */
 	public static function _DoEnable()
 	{
+		self::LoadDriver();
 		self::$Driver->_create();
 	}
 	//-
@@ -53,6 +56,7 @@ class cDatabase
 	 */
 	public static function _DoDisable()
 	{
+		self::LoadDriver();
 		return self::$Driver->_destroy();
 	}
 	//-
@@ -64,6 +68,10 @@ class cDatabase
 	 */
 	private static function LoadDriver()
 	{
+		if (self::$Driver) {
+			return true;
+		}
+	
 		$Config = Plug::GetConfig(__FILE__);
 
 		# Get basepath

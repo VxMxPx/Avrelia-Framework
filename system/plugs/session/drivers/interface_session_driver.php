@@ -24,15 +24,6 @@
 interface interfaceSessionDriver
 {
 	/**
-	 * Do we have all we need to construct this plug's class?
-	 * --
-	 * @param	array	$Config
-	 * --
-	 * @return	boolean
-	 */
-	static function _canConstruct($Config);
-
-	/**
 	 * Create all files / tables required by this plug to work
 	 * --
 	 * @param	array	$Config

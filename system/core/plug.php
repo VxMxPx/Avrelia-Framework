@@ -102,7 +102,7 @@ class Plug
 			$return = $className::_DoEnable();
 		}
 		else {
-			Log::Add('INF', "Method `_DoEnable` no found in `{$className}`.", __LINE__, __FILE__);
+			Log::Add('INF', "Method `_DoEnable` not found in `{$className}`.", __LINE__, __FILE__);
 			$return = true;
 		}
 

@@ -86,6 +86,10 @@ class cSession
 	 */
 	private static function LoadDriver()
 	{
+		if (self::$Driver) {
+			return true;
+		}
+		
 		# Get Config
 		$Config = Plug::GetConfig(__FILE__);
 
@@ -95,7 +99,7 @@ class cSession
 		$class  = $driver.'SessionDriver';
 
 		# Load interface first
-		if (!class_exists('interfaceSessionDriver', false)) {
+		if (!interface_exists('interfaceSessionDriver', false)) {
 			if (file_exists(ds($path."/drivers/interface_session_driver.php"))) {
 				include(ds($path."/drivers/interface_session_driver.php"));
 			}
