@@ -12,20 +12,22 @@
  * @link       http://avrelia.com
  * @since      Version 0.80
  * @since      Tue Nov 08 11:13:20 2011
+ * ---
+ * @property	array	$List	Messages List
  */
-
 class uMessage
 {
-	private static $List = array(); # Messages List
+	private static $List = array();
 
 	/**
-	 * Add Message To The List
-	 *  ------
-	 * @param string $type  -- INF|WAR|ERR|OK == information, warning, error, successfully done
-	 * @param string $message
-	 * @param string $group -- Any particular group?
-	 *  ------
-	 * @return void
+	 * Add a Message To The List.
+	 * If you added OK or INF true will be returned else false.
+	 * --
+	 * @param	string	$type		INF|WAR|ERR|OK == information, warning, error, successfully done
+	 * @param	string	$message
+	 * @param	string	$group		Any particular group?
+	 * --
+	 * @return	boolean
 	 */
 	public static function Add($type, $message, $group=null)
 	{
@@ -47,14 +49,32 @@ class uMessage
 	}
 	//-
 
+	/**
+	 * Add a message to the list AND to log.
+	 * $file will be used as a group.
+	 * If you added OK or INF true will be returned else false.
+	 * --
+	 * @param	string	$type		INF|WAR|ERR|OK == information, warning, error, successfully done
+	 * @param	string	$message
+	 * @param	integer	$line
+	 * @param	string	$file
+	 * --
+	 * @return	boolean
+	 */
+	public static function Log($type, $message, $line, $file)
+	{
+		self::Add($type, $message, $file);
+		return Log::Add($type, $message, $line, $file);
+	}
+	//-
 
 	/**
 	 * Return or echo all messages
-	 *  ------
-	 * @param bool   $echo
-	 * @param string $group -- Any particular group?
-	 *  ------
-	 * @return string
+	 * --
+	 * @param	boolean	$echo
+	 * @param	string	$group	Any particular group?
+	 * --
+	 * @return	string
 	 */
 	public static function Get($echo=true, $group=null)
 	{
@@ -119,13 +139,12 @@ class uMessage
 	}
 	//-
 
-
 	/**
 	 * Return plain (array) list of messages
-	 * ---
-	 * @param bool $plain -- if true, you'll get regular array (insted of associative array)
-	 * ------
-	 * @return array
+	 * --
+	 * @param	boolean	$plain	If true, you'll get regular array (insted of associative array)
+	 * --
+	 * @return	array
 	 */
 	public static function GetRaw($plain=false)
 	{
@@ -148,14 +167,13 @@ class uMessage
 	}
 	//-
 
-
 	/**
 	 * Set Messages List (from array)
-	 * ---
-	 * @param array $Messages - list of messages
-	 * @param bool  $merge    - merge list with existing?
-	 * ---
-	 * @return void
+	 * --
+	 * @param	array	$Messages	List of messages
+	 * @param	boolean	$merge		Merge list with existing?
+	 * --
+	 * @return	void
 	 */
 	public static function SetRaw($Messages, $merge=false)
 	{
@@ -170,14 +188,13 @@ class uMessage
 	}
 	//-
 
-
 	/**
 	 * Check if there is any message (of particular type)
-	 * ---
-	 * @param string $type
-	 * @param string $group -- For any particular group?
-	 * ---
-	 * @return bool
+	 * --
+	 * @param	string	$type
+	 * @param	string	$group	For any particular group?
+	 * --
+	 * @return	boolean
 	 */
 	public static function Exists($type=false, $group=null)
 	{

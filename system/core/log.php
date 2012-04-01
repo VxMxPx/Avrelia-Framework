@@ -12,8 +12,14 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.60
  * @since      Date 2009-08-18
+ * ---
+ * @property	array	$Logs
+ * @property	boolean	$enabled
+ * @property	string	$filename
+ * @property	array	$Types
+ * @property	boolean	$writeIndividual
+ * @property	string	$filenameOnFatal
  */
-
 class Log
 {
 	# Array of all log items
@@ -38,13 +44,12 @@ class Log
 	# This won't append, but create always fresh file, so it should be unique filename
 	private static $filenameOnFatal = null;
 
-
 	/**
 	 * Init the Log
-	 * ---
-	 * @param array $Config -- Log configurations array!
-	 * ---
-	 * @return void
+	 * --
+	 * @param	array	$Config	Log configurations array!
+	 * --
+	 * @return	void
 	 */
 	public static function Init()
 	{
@@ -58,20 +63,20 @@ class Log
 	}
 	//-
 
-
 	/*  ****************************************************** *
 	 *          Add / Get
 	 *  **************************************  */
 
 	/**
 	 * Add System Log Message
-	 * ---
-	 * @param string $type     -- ERR|INF|WAR : error, informationm, warning
-	 * @param string $message  -- plain englisg message
-	 * @param string $line     -- __LINE__
-	 * @param string $file     -- __FILE__
-	 * ---
-	 * @return bool (depends on type provided INF - true; anything else - false)
+	 * If you added OK or INF true will be returned else false.
+	 * --
+	 * @param	string	$type		INF|WAR|ERR|OK == information, warning, error, successfully done
+	 * @param	string	$message	Plain englisg message
+	 * @param	integer $line		__LINE__
+	 * @param	string	$file		__FILE__
+	 * --
+	 * @return	boolean
 	 */
 	public static function Add($type, $message, $line, $file)
 	{
@@ -103,14 +108,15 @@ class Log
 
 	/**
 	 * Print out all LOG messages
-	 * ---
-	 * @param bool  $asString -- return an array, or string?
-	 *   1 raw (for consoles),
-	 *   2 as HTML,
-	 *   3 raw for browser (with <br />)
-	 * @param array $filterTo -- will filder log result to specific type(s) -- example $filterTo = array('WAR', 'ERR');
-	 * ---
-	 * @return mixed
+	 * --
+	 * @param	boolean	$asString	Return an array, or string?
+	 * 									1 raw (for consoles),
+	 * 									2 as HTML,
+	 * 									3 raw for browser (with <br />)
+	 * @param	array	$filterTo	Will filder log result to specific type(s) --
+	 * 								Example $filterTo = array('WAR', 'ERR');
+	 * --
+	 * @return	mixed
 	 */
 	public static function Get($asString=false, $filterTo=false)
 	{
@@ -213,15 +219,14 @@ class Log
 	}
 	//-
 
-
 	/*  ****************************************************** *
 	 *          Write into file
 	 *  **************************************  */
 
 	/**
 	 * Write Whole Log Array into file
-	 * ---
-	 * @return bool
+	 * --
+	 * @return	boolean
 	 */
 	public static function WriteAll($wasFatal=false)
 	{
@@ -263,13 +268,13 @@ class Log
 
 	/**
 	 * Write Log Message To File
-	 * ---
-	 * @param string $type     -- ERR|INF|WAR : error, information, warning
-	 * @param string $message  -- plain englisg message
-	 * @param string $line     -- __LINE__
-	 * @param string $file     -- __FILE__
-	 * ---
-	 * @return bool
+	 * --
+	 * @param	string	$type		ERR|INF|WAR : error, information, warning
+	 * @param	string	$message	Plain englisg message
+	 * @param	string	$line		__LINE__
+	 * @param	string	$file		__FILE__
+	 * --
+	 * @return	boolean
 	 */
 	private static function Write($type, $message, $line, $file)
 	{
@@ -298,11 +303,11 @@ class Log
 
 	/**
 	 * Will Check If Log Can Be Writen
-	 * ---
-	 * @param string $type -- which type? eg: INF, WAR, ERR (false to ignore types)
-	 * @param bool $isIdividual
-	 *
-	 * @return bool
+	 * --
+	 * @param	string	$type			Which type? eg: INF, WAR, ERR (false to ignore types)
+	 * @param	boolean	$isIdividual
+	 * --
+	 * @return	boolean
 	 */
 	private static function CanWrite($type=false, $isIdividual=false)
 	{
@@ -342,6 +347,5 @@ class Log
 		return true;
 	}
 	//-
-
 }
 //--
