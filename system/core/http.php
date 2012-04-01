@@ -14,21 +14,19 @@
  * @since      Date sre maj 19 23:22:42 2010
  */
 
-
 class HTTP
 {
-
 	/*  ****************************************************** *
 	 *          Redirect
 	 *  **************************************  */
 
 	/**
 	 * Will redirect (if possible/allowed) withour any special status code.
-	 * ----
-	 * @param string $url -- full url address
-	 * @param bool $force -- force redirection, even if is set to _off_ in configurations
-	 * ----
-	 * @return void
+	 * ---
+	 * @param	string	$url	Full url address
+	 * @param	boolean	$force	Force redirection, even if is set to _off_ in configurations
+	 * --
+	 * @return	void
 	 */
 	public static function Redirect($url, $force=false)
 	{
@@ -52,17 +50,16 @@ class HTTP
 	}
 	//-
 
-
 	/*  ****************************************************** *
 	 *          Status Codes
 	 *  **************************************  */
 
 	/**
 	 * Set costum header code.
-	 * ---
-	 * @param string $code
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$code
+	 * --
+	 * @return	void
 	 */
 	public static function StatusCostum($code)
 	{
@@ -72,8 +69,8 @@ class HTTP
 
 	/**
 	 * Standard response for successful HTTP requests.
-	 * ---
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	public static function Status200_OK()
 	{
@@ -83,8 +80,8 @@ class HTTP
 
 	/**
 	 * The server successfully processed the request, but is not returning any content.
-	 * ---
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	public static function Status204_NoContent()
 	{
@@ -95,10 +92,10 @@ class HTTP
 	/**
 	 * This and all future requests should be directed to the given URI.
 	 * This method will ignore directive in configurations you must provide *full* URL.
-	 * ---
-	 * @param string $url
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$url
+	 * --
+	 * @return	void
 	 */
 	public static function Status301_MovedPermanently($url)
 	{
@@ -116,10 +113,10 @@ class HTTP
 	 * In contrast to 303, the request method should not be changed when reissuing the original request.
 	 * For instance, a POST request must be repeated using another POST request.
 	 * It will ignore directive in configurations you must provide *full* URL.
-	 * ---
-	 * @param string $url
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$url
+	 * --
+	 * @return	void
 	 */
 	public static function Status307_TemporaryRedirect($url)
 	{
@@ -134,36 +131,42 @@ class HTTP
 
 	/**
 	 * The request contains bad syntax or cannot be fulfilled.
-	 * ---
-	 * @param bool $die
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$message
+	 * @param	boolean	$die
+	 * --
+	 * @return	void
 	 */
-	public static function Status400_BadRequest($die=true)
+	public static function Status400_BadRequest($message=null, $die=false)
 	{
 		header("HTTP/1.1 400 Bad Request");
 
-		# Will die!
 		if ($die) {
-			die($die);
+			die($message);
+		}
+		elseif ($message) {
+			Output::Set('AvreliaHTTP.Status400', $message);
 		}
 	}
 	//-
 
 	/**
 	 * The request requires user authentication.
-	 * ---
-	 * @param bool $die
-	 * ---
+	 * --
+	 * @param	string	$message
+	 * @param	boolean	$die
+	 * --
 	 * @return void
 	 */
-	public static function Status401_Unauthorized($die=true)
+	public static function Status401_Unauthorized($message=null, $die=false)
 	{
 		header("HTTP/1.1 401 Unauthorized");
 
-		# Will die!
 		if ($die) {
-			die($die);
+			die($message);
+		}
+		elseif ($message) {
+			Output::Set('AvreliaHTTP.Status401', $message);
 		}
 	}
 	//-
@@ -171,16 +174,21 @@ class HTTP
 	/**
 	 * The request was a legal request, but the server is refusing to respond to it.
 	 * Unlike a 401 Unauthorized response, authenticating will make no difference.
-	 * ---
-	 * @param bool $die
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$message
+	 * @param	boolean	$die
+	 * --
+	 * @return	void
 	 */
-	public static function Status403_Forbidden($die=true)
+	public static function Status403_Forbidden($message=null, $die=false)
 	{
 		header("HTTP/1.1 403 Forbidden");
+
 		if ($die) {
-			die($die);
+			die($message);
+		}
+		elseif ($message) {
+			Output::Set('AvreliaHTTP.Status403', $message);
 		}
 	}
 	//-
@@ -188,16 +196,21 @@ class HTTP
 	/**
 	 * The requested resource could not be found but may be available again in the future.
 	 * Subsequent requests by the client are permissible.
-	 * ---
-	 * @param string $die -- if not false, the message will be outputed.
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$message
+	 * @param	boolean	$die
+	 * --
+	 * @return	void
 	 */
-	public static function Status404_NotFound($die=false)
+	public static function Status404_NotFound($message=null, $die=false)
 	{
 		header("HTTP/1.0 404 Not Found");
+
 		if ($die) {
-			die($die);
+			die($message);
+		}
+		elseif ($message) {
+			Output::Set('AvreliaHTTP.Status404', $message);
 		}
 	}
 	//-
@@ -208,16 +221,21 @@ class HTTP
 	 * to return this code and a 404 Not Found can be issued instead.
 	 * Upon receiving a 410 status code, the client should not request the resource again in the future.
 	 * Clients such as search engines should remove the resource from their indexes.
-	 * ---
-	 * @param bool $die
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$message
+	 * @param	boolean	$die
+	 * --
+	 * @return	void
 	 */
-	public static function Status410_Gone($die=true)
+	public static function Status410_Gone($message=null, $die=false)
 	{
 		header("HTTP/1.0 410 Gone");
+
 		if ($die) {
-			die($die);
+			die($message);
+		}
+		elseif ($message) {
+			Output::Set('AvreliaHTTP.Status410', $message);
 		}
 	}
 	//-
@@ -225,42 +243,55 @@ class HTTP
 	/**
 	 * The server is currently unavailable (because it is overloaded or down for maintenance).
 	 * Generally, this is a temporary state.
-	 * ---
-	 * @param bool $die
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$message
+	 * @param	boolean	$die
+	 * --
+	 * @return	void
 	 */
-	public static function Status503_ServiceUnavailable($die=true)
+	public static function Status503_ServiceUnavailable($message=null, $die=false)
 	{
 		header("HTTP/1.0 503 Service Unavailable");
+
 		if ($die) {
-			die($die);
+			die($message);
+		}
+		elseif ($message) {
+			Output::Set('AvreliaHTTP.Status503', $message);
 		}
 	}
 	//-
 
 	/**
 	 * Return JSON response and DIE!
-	 * ---
-	 * @param mixed  $Value    -- The value being encoded. Can be any type except a resource . This function only works with UTF-8 encoded data.
-	 * @param int    $options  -- Bitmask consisting of JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP, JSON_HEX_APOS, JSON_FORCE_OBJECT.
-	 * ---
-	 * @param mixed $Value
+	 * --
+	 * @param	mixed	$Value		The value being encoded. Can be any type except a resource . This function only works with UTF-8 encoded data.
+	 * @param	boolean	$die
+	 * @param	integer	$options	Bitmask consisting of JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP, JSON_HEX_APOS, JSON_FORCE_OBJECT.
+	 * --
+	 * @param	void
 	 */
-	public static function JsonResponse($Value, $options=0)
+	public static function JsonResponse($Value, $die=false, $options=0)
 	{
 		header("Content-type: application/json");
-		echo uJSON::Encode($Value, $options);
-		die();
+
+		$message = uJSON::Encode($Value, $options);
+
+		if ($die) {
+			die($message);
+		}
+		else {
+			Output::Set('AvreliaHTTP.JsonResponse', $message);
+		}
 	}
 	//-
 
 	/**
 	 * Check if redirects are allowed at all...
-	 *
-	 * @param string $url -- for log
-	 * @param boolean $force -- was used force?
-	 *
+	 * --
+	 * @param	string	$url	For log
+	 * @param	boolean	$force	Was used force?
+	 * --
 	 * @return boolean
 	 */
 	private static function isAllowed($url, $force=false)
@@ -277,6 +308,5 @@ class HTTP
 		}
 	}
 	//-
-
 }
 //--

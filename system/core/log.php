@@ -256,7 +256,7 @@ class Log
 		if (self::CanWrite() || $wasFatal) {
 			self::$enabled = false;
 			$return = FileSystem::Write(self::Get($how, $LogTypes), $filename, true, 0777);
-			chmod($filename, 0777); // Always full write to file
+			@chmod($filename, 0777); // Always full write to file
 			self::$enabled = true;
 			return $return;
 		}
@@ -294,7 +294,7 @@ class Log
 
 		self::$enabled = false;
 		$return = FileSystem::Write($toFile, self::$filename, true, 0777);
-		chmod(self::$filename, 0777); // Always full write to file
+		@chmod(self::$filename, 0777); // Always full write to file
 		self::$enabled = true;
 
 		return $return;

@@ -6,9 +6,6 @@ $AvreliaConfig['system']['routes'] = array
 	# If there's no parameteres set in our URL, this will be called.
 	0 => 'home->index()',
 
-	'before' => 'home->before()',
-	'after'  => 'home->after()',
-
 	# The 404 route.
 	# If not provided / not found, the system will look for 404.php view;
 	# if that won't be found either, only 404 plain message will be shown.

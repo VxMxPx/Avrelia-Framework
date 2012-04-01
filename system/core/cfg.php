@@ -12,32 +12,40 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2011-04-01
+ * --
+ * @property	array	$Config	All Configurations
  */
-
 class Cfg
 {
-	# All Configurations
 	private static $Config = array();
 
 	/**
 	 * Append some config
-	 * ---
-	 * @param array $Config
-	 * ---
-	 * @return void
+	 * --
+	 * @param	array	$Config
+	 * --
+	 * @return	void
 	 */
 	public static function Append($Config)
 	{
-		self::$Config = array_merge_recursive(self::$Config, $Config);
+		# Doesn't work, change 404 to 1 and on duplicates create new array
+		//self::$Config = array_merge_recursive(self::$Config, $Config);
+
+		# Doesn't work, merge failed
+		//self::$Config = array_merge(self::$Config, $Config);
+
+
+		# Works perfectly
+		self::$Config = vArray::Merge(self::$Config, $Config);
 	}
 	//-
 
 	/**
 	 * Will load and append config file
 	 * --
-	 * @param string $filename -- fullpath or only name of file
+	 * @param	string	$filename	Fullpath or only name of file
 	 * --
-	 * @return bool
+	 * @return	boolean
 	 */
 	public static function Load($filename)
 	{
@@ -73,8 +81,8 @@ class Cfg
 
 	/**
 	 * Output all config
-	 * ---
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	public static function Debug()
 	{
@@ -84,11 +92,11 @@ class Cfg
 
 	/**
 	 * Get Config Item
-	 *
-	 * @param string $path   - in format: key/subkey
-	 * @param mixed $default - default value, if config isn't set
-	 *
-	 * @return mixed
+	 * --
+	 * @param	string	$path		In format: key/subkey
+	 * @param	mixed	$default	Default value, if config isn't set
+	 * --
+	 * @return	mixed
 	 */
 	public static function Get($path, $default=null)
 	{

@@ -165,7 +165,7 @@ function avreliaErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
 	if ($SimpleType[$errno] == 'ERR')
 	{
 		# Write log (fatal)
-		if (Cfg::Get('log/write_all_on_fatal')) {
+		if (Cfg::Get('log/enabled') && Cfg::Get('log/write_all_on_fatal')) {
 			Log::WriteAll(true);
 		}
 

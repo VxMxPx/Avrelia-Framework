@@ -20,14 +20,14 @@ class vArray
 	 * Converts Multi-dimensional Array, to _flat array_ (one dimension),
 	 * for example, from: [key] => array([sub-key] => [value]) to: [key] => [value]
 	 * if we provide parameter "$setKey", example would look like this:
-	 *      from: [key] => array([sub-key] => [value], [another-key] => [another-val]) to: [another-val] => [value]
-	 *      {if we use: ($Array, 'sub-key', 'another-key')}
-	 * ---
-	 * @param array/object  $Array    -- array or object data
-	 * @param string        $selValue -- for value, we use which sub-key's value?
-	 * @param string        $setKey   -- for key, we use which sub-key's value?
-	 * ---
-	 * @return array
+	 * 		from: [key] => array([sub-key] => [value], [another-key] => [another-val]) to: [another-val] => [value]
+	 * 		{if we use: ($Array, 'sub-key', 'another-key')}
+	 * --
+	 * @param	mixed	$Array		Array or object data
+	 * @param	string	$selValue	For value, we use which sub-key's value?
+	 * @param	string	$setKey		For key, we use which sub-key's value?
+	 * --
+	 * @return	array
 	 */
 	public static function Flat($Array, $selValue, $setKey=false)
 	{
@@ -62,11 +62,11 @@ class vArray
 
 	/**
 	 * Will implode array's keys.
-	 * ---
-	 * @param string $glue
-	 * @param array $Pieces
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$glue
+	 * @param	array	$Pieces
+	 * --
+	 * @return	string
 	 */
 	public static function ImplodeKeys($glue, $Pieces)
 	{
@@ -78,13 +78,13 @@ class vArray
 	 * In multi dimensional arrays, set sub-key, to main key, for example:
 	 * array(0 => array('id' => 'sunshine', 'name' => 'Lisa', 'age' => '25' )), if we provide 'id' as $selectKey,
 	 * the array will be reshaped to: array('sunshine' => array('id' => 'sunshine', 'name' => 'Lisa', 'age' => '25'))
-	 * ---
-	 * @param array $Array
-	 * @param string $selectKey
-	 * @param mixed $autoKeys -- if select key isn't set, should we do auto key? (will be numeric, you can provide prefix)
-	 * @param bool  $rewrite  -- rewrite is key exists (else, add number after it, example: sunshine, sunshine_1, sunshine_2)
-	 * ---
-	 * @return array
+	 * --
+	 * @param	array	$Array
+	 * @param	string	$selectKey
+	 * @param	mixed	$autoKeys	If select key isn't set, should we do auto key? (will be numeric, you can provide prefix)
+	 * @param	boolean	$rewrite	Rewrite is key exists (else, add number after it, example: sunshine, sunshine_1, sunshine_2)
+	 * --
+	 * @return	array
 	 */
 	public static function SubToKey($Array, $selectKey, $autoKeys=false, $rewrite=true)
 	{
@@ -124,10 +124,10 @@ class vArray
 
 	/**
 	 * Will Remove Empty Values Out Of Array
-	 * ---
-	 * @param array $Array
-	 * ---
-	 * @return $Array
+	 * --
+	 * @param	array	$Array
+	 * --
+	 * @return	array
 	 */
 	public static function RemoveEmpty($Array)
 	{
@@ -155,11 +155,11 @@ class vArray
 	/**
 	 * Will Explode Every Array Value and Set key
 	 * e.g.: [0] => my_key:sample  => [my_key] => sample
-	 * ---
-	 * @param array  $Array
-	 * @param string $seperator
-	 * ---
-	 * @return $Array
+	 * --
+	 * @param	array	$Array
+	 * @param	string	$seperator
+	 * --
+	 * @return	array
 	 */
 	public static function ExplodeToKey($Array, $seperator=':')
 	{
@@ -177,13 +177,13 @@ class vArray
 
 	/**
 	 * Clean Array keys - remove spaces, dashes, etc...
-	 * ---
-	 * @param  array $Array
-	 * @param string $type -- to what should spaces be converted, enter character; type: # to convert them to camelcase
-	 * @param string $case -- convert case: upper, lower, ucfirst, lcfirst
-	 * @param array  $Filter -- define new filter
-	 * ---
-	 * @return array
+	 * --
+	 * @param	array	$Array
+	 * @param	string	$type	To what should spaces be converted, enter character; type: # to convert them to camelcase
+	 * @param	string	$case	Convert case: upper, lower, ucfirst, lcfirst
+	 * @param	array	$Filter	Define new filter
+	 * --
+	 * @return	array
 	 */
 	public static function CleanKeys($Array, $type, $case=false, $Filter=false)
 	{
@@ -239,11 +239,11 @@ class vArray
 	/**
 	 * Check if key of aray is valid - will check for:
 	 * isset, is_array, !empty
-	 *
-	 * @param array $Arr  -- array
-	 * @param string $key -- if you'd like to check if key of $Arr is valid array
-	 *
-	 * @return bool
+	 * --
+	 * @param	array	$Arr
+	 * @param	string	$key	If you'd like to check if key of $Arr is valid array
+	 * --
+	 * @return	boolean
 	 */
 	public static function IsValidKey($Arr, $key=null)
 	{
@@ -261,10 +261,10 @@ class vArray
 
 	/**
 	 * Better Merger (this will keep values in sub-arrays)
-	 *
-	 * @param array -
-	 *
-	 * @return array
+	 * --
+	 * @param	array ...
+	 * --
+	 * @return	array
 	 */
 	public static function Merge()
 	{
@@ -298,12 +298,12 @@ class vArray
 	/**
 	 * Check if array has particular keys, this will set isset, and if you set
 	 * $strict to true, then also, if key has any value (or if that values is empty)
-	 * ---
-	 * @param array $Array
-	 * @param string $keys -- 'one,two,three'
-	 * @param bool $strict
-	 * ---
-	 * @return bool
+	 * --
+	 * @param	array	$Array
+	 * @param	string	$keys	'one,two,three'
+	 * @param	boolean	$strict
+	 * --
+	 * @return	boolean
 	 */
 	public static function HasKeys($Array, $keys, $strict=false)
 	{
@@ -327,12 +327,12 @@ class vArray
 	 * Will get array value by entering path, example:
 	 * array('user' => array('addres' => 'My Address')),
 	 * to get "My Address", we can enter: user/address
-	 *
-	 * @param string $path
-	 * @param array  $Array
-	 * @param mixed  $default
-	 *
-	 * @return mixed
+	 * --
+	 * @param	string	$path
+	 * @param	array	$Array
+	 * @param	mixed	$default
+	 * --
+	 * @return	mixed
 	 */
 	public static function GetByPath($path, $Array, $default=null)
 	{
@@ -361,12 +361,12 @@ class vArray
 	 * Will set array value by entering path, example:
 	 * array('user' => array('addres' => 'My Address')),
 	 * to set "address" to "My New Address", we can enter: $path = user/address, $value = My New Address
-	 *
-	 * @param string $path
-	 * @param mixed  $value
-	 * @param array  $Array -- passed as reference
-	 *
-	 * @return void
+	 * --
+	 * @param	string	$path
+	 * @param	mixed 	$value
+	 * @param	array	$Array	Passed as reference
+	 * --
+	 * @return	void
 	 */
 	public static function SetByPath($path, $value, &$Array)
 	{
@@ -390,11 +390,11 @@ class vArray
 	 * Will delete array value by entering path, example:
 	 * array('user' => array('addres' => 'My Address')),
 	 * to delete "address", we can enter: user/address
-	 * ---
-	 * @param string $what
-	 * @param array  $Array
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$what
+	 * @param	array	$Array
+	 * --
+	 * @return	void
 	 */
 	public static function DeleteByPath($path, &$Array)
 	{
@@ -403,13 +403,13 @@ class vArray
 	//-
 
 	/**
-	 * Help Removes Items Out Of Array...
-	 *
-	 * @param array  $Array
-	 * @param string $path
-	 * @param string $cp
-	 *
-	 * @return array
+	 * Helper Remove Items Out Of Array...
+	 * --
+	 * @param	array	$Array
+	 * @param	string	$path
+	 * @param	string	$cp
+	 * --
+	 * @return	array
 	 */
 	protected static function DeleteByPathHelper($Array, $path, $cp)
 	{
@@ -435,11 +435,11 @@ class vArray
 
 	/**
 	 * Will trim array values(!)
-	 * ---
-	 * @param array $Array
-	 * @param string $mask
-	 * ---
-	 * @return void
+	 * --
+	 * @param	array	$Array
+	 * @param	string	$mask
+	 * --
+	 * @return	void
 	 */
 	public static function Trim(&$Array, $mask=false)
 	{
@@ -459,17 +459,17 @@ class vArray
 	 * For example, if you have Array of unknown srouce (can be $_POST), you can
 	 * filter its values by:
 	 * ($_POST, array('username' => 'string', 'password' => 'string'))
-	 * ---
-	 * @param mixed $Variable -- can be array or string / integer / ...
-	 * @param mixed $Params   -- can be string or array, if array, then it should be
-	 *  used as 'param' => 'setttings', where param represent key of $Variable.
-	 * Else, only settings can be provided. The following settings are possible:
-	 *      string    optional: string[regular_expression_for_filter]|default_value_if_wasn_not_set
-	 *      boolean   optional: boolean|false (false=default value)
-	 *      integer   optional: integer[-1,200]|12 (range min, max - if you want only min use: [12,] else [,12], default)
-	 *      float     optional: float[-1.00,200.00]|12.00 (range min, max - if you want only min use: [12.00,] else [,12.00], default)
-	 * ---
-	 * @return mixed
+	 * --
+	 * @param	mixed	$Variable	Can be array or string / integer / ...
+	 * @param	mixed	$Params		Can be string or array, if array, then it should be
+	 * 		used as 'param' => 'setttings', where param represent key of $Variable.
+	 *		Else, only settings can be provided. The following settings are possible:
+	 * 			string		optional: string[regular_expression_for_filter]|default_value_if_wasn_not_set
+	 * 			boolean		optional: boolean|false (false=default value)
+	 * 			integer		optional: integer[-1,200]|12 (range min, max - if you want only min use: [12,] else [,12], default)
+	 * 			float		optional: float[-1.00,200.00]|12.00 (range min, max - if you want only min use: [12.00,] else [,12.00], default)
+	 * --
+	 * @return	mixed
 	 */
 	public static function Filter(&$Variable, $Params)
 	{
