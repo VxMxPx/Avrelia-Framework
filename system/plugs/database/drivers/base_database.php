@@ -55,13 +55,7 @@ class baseDatabase
 	{
 		Log::Add('INF', "Will prepare following statement: `{$statement}` with params: " . print_r($bind, true), __LINE__, __FILE__);
 
-		try {
-			$link = $this->PDO->prepare($statement);
-		}
-		catch (PDOException $e) {
-			trigger_error("Failed to prepare: `" . $e->getMessage() . '`.', E_USER_WARNING);
-			return false;
-		}
+		$link = $this->PDO->prepare($statement);
 
 		if (is_object($link))
 		{
@@ -85,13 +79,12 @@ class baseDatabase
 					$link->bindValue(':'.$key, $value, $type);
 				}
 			}
-
-			return new cDatabaseResult($link);
 		}
 		else {
 			trigger_error("Failed to prepare: `" . print_r($this->PDO->errorInfo(), true) . '`.', E_USER_WARNING);
-			return false;
 		}
+
+		return new cDatabaseResult($link);
 	}
 	//-
 

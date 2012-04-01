@@ -17,14 +17,6 @@
  * @property	array			$Fetched		List of fetched items.
  * @property	mixed			$lastId			Last inserted ID.
  * @property	boolean			$status			The status of PDO statement.
- * ---
- * @method boolean			succeed
- * @method string			failed
- * @method integer			count
- * @method array			asArray
- * @method cDatabaseRecord	asRecord
- * @method PDOStatement		asRaw
- * @method integer			insertId
  */
 class cDatabaseResult
 {
@@ -37,23 +29,32 @@ class cDatabaseResult
 	 * Construct the database result object.
 	 * This require prepeared PDOStatement, which will be executed on construction
 	 * of this this class.
-	 * ---
-	 * @param PDOStatement $PDOStatement -- prepeared PDO statement.
-	 * ---
-	 * @return void
+	 * --
+	 * @param	PDOStatement	$PDOStatement	Prepeared PDO statement.
+	 * --
+	 * @return	void
 	 */
 	public function __construct($PDOStatement)
 	{
-		$this->PDOStatement = $PDOStatement;
-		$this->status = $this->PDOStatement->execute();
-		$this->lastId = cDatabase::_getDriver()->getPDO()->lastInsertId();
+		if ($PDOStatement) {
+			$this->PDOStatement = $PDOStatement;
+			$this->status = $this->PDOStatement->execute();
+			$this->lastId = cDatabase::_getDriver()->getPDO()->lastInsertId();
+
+			if (!$this->status) {
+				trigger_error("Failed to execute: `" . print_r(cDatabase::_getDriver()->getPDO()->errorInfo(), true) . '`.', E_USER_WARNING);
+			}
+		}
+		else {
+			$this->status = false;
+		}
 	}
 	//-
 
 	/**
 	 * Return true if this query succeed, and false if didn't
-	 * ---
-	 * @return boolean
+	 * --
+	 * @return	boolean
 	 */
 	public function succeed()
 	{
@@ -63,8 +64,8 @@ class cDatabaseResult
 
 	/**
 	 * Return true if this query failed, and false if succeed
-	 * ---
-	 * @return boolean
+	 * --
+	 * @return	boolean
 	 */
 	public function failed()
 	{
@@ -75,8 +76,8 @@ class cDatabaseResult
 	/**
 	 * Returns the number of columns in the result set represented by the PDOStatement object.
 	 * If there is no result set, PDOStatement::columnCount() returns 0.
-	 * ---
-	 * @return integer
+	 * --
+	 * @return	integer
 	 */
 	public function count()
 	{
@@ -88,10 +89,10 @@ class cDatabaseResult
 	 * Will return ALL rows as an array.
 	 * You can enter index, if you want particular row (this will still fetch all).
 	 * You can set index to true, to get get next row (if you're doing loop).
-	 * ---
-	 * @param int $index
-	 * ---
-	 * @return array
+	 * --
+	 * @param	integer	$index
+	 * --
+	 * @return	array
 	 */
 	public function asArray($index=false)
 	{
@@ -115,10 +116,10 @@ class cDatabaseResult
 	 * Will put particular result's index, to record.
 	 * You MUST enter index, of particular row! Most likely this will be 0, for
 	 * first item returned (offten the only one).
-	 * ---
-	 * @param int $index
-	 * ---
-	 * @return cDatabaseRecord
+	 * --
+	 * @param	integer	$index
+	 * --
+	 * @return	cDatabaseRecord
 	 */
 	# public function asRecord($index)
 	# {
@@ -129,8 +130,8 @@ class cDatabaseResult
 	/**
 	 * Return _raw_ PDOStatement object.
 	 * Read more about it here: http://www.php.net/manual/en/class.pdostatement.php
-	 * ---
-	 * @return PDOStatement
+	 * --
+	 * @return	PDOStatement
 	 */
 	public function asRaw()
 	{
@@ -140,8 +141,8 @@ class cDatabaseResult
 
 	/**
 	 * Return ID (of last inserted statement)
-	 * ---
-	 * @return mixed
+	 * --
+	 * @return	mixed
 	 */
 	public function insertId()
 	{
