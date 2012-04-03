@@ -89,7 +89,7 @@ class cSession
 		if (self::$Driver) {
 			return true;
 		}
-		
+
 		# Get Config
 		$Config = Plug::GetConfig(__FILE__);
 
@@ -132,12 +132,14 @@ class cSession
 	 * --
 	 * @param	string	$username
 	 * @param	string	$password
+	 * @param	boolean	$rememberMe	If set to false, session will expire when user
+	 * 								close browser's window.
 	 * --
 	 * @return	boolean
 	 */
-	public static function Login($username, $password)
+	public static function Login($username, $password, $rememberMe=true)
 	{
-		return self::$Driver ? self::$Driver->login($username, $password) : false;
+		return self::$Driver ? self::$Driver->login($username, $password, $rememberMe) : false;
 	}
 	//-
 

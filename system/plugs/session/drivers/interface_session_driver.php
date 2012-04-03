@@ -46,10 +46,11 @@ interface interfaceSessionDriver
 	 * --
 	 * @param	string	$username
 	 * @param	string	$password
+	 * @param	boolean	$rememberMe
 	 * --
 	 * @return	boolean
 	 */
-	function login($username, $password);
+	function login($username, $password, $rememberMe=true);
 
 	/**
 	 * Logout (if logged in) the user

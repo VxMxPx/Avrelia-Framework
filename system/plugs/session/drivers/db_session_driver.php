@@ -128,17 +128,17 @@ class dbSessionDriver implements interfaceSessionDriver
 	 * --
 	 * @param	string	$username
 	 * @param	string	$password
-	 * @param	boolean	$remeberMe	If set to false, session will expire when user
+	 * @param	boolean	$rememberMe	If set to false, session will expire when user
 	 * 								close browser's window.
 	 * --
 	 * @return	boolean
 	 */
-	public function login($username, $password, $remeberMe=true)
+	public function login($username, $password, $rememberMe=true)
 	{
 		$return = $this->userSet($username, $password);
 
 		if ($return) {
-			$this->sessionSet($this->CurrentUser['id'], $remeberMe);
+			$this->sessionSet($this->CurrentUser['id'], $rememberMe);
 			return true;
 		}
 		else {

@@ -137,10 +137,12 @@ class jsonSessionDriver implements interfaceSessionDriver
 	 * --
 	 * @param	string	$username
 	 * @param	string	$password
+	 * @param	boolean	$rememberMe	If set to false, session will expire when user
+	 * 								close browser's window.
 	 * --
 	 * @return	boolean
 	 */
-	public function login($username, $password)
+	public function login($username, $password, $rememberMe=true)
 	{
 		$id = self::unameToId($username);
 
@@ -157,7 +159,7 @@ class jsonSessionDriver implements interfaceSessionDriver
 
 		# Okay, set session and current user
 		$this->userSet($User['id']);
-		$this->sessionSet($User['id']);
+		$this->sessionSet($User['id'], $rememberMe);
 
 		return true;
 	}
@@ -367,15 +369,22 @@ class jsonSessionDriver implements interfaceSessionDriver
 	 * Set session (set cookie, add info to sessions file)
 	 * --
 	 * @param	string	$userId
+	 * @param	boolean	$rememberMe	If set to false, session will expire when user
+	 * 								close browser's window.
 	 * --
 	 * @return	boolean
 	 */
-	private function sessionSet($userId)
+	private function sessionSet($userId, $rememberMe=true)
 	{
 		# Set expires to some time in future. It 0 was set in config, then we
 		# set it to expires imidietly when browser window is closed.
-		$expires = (int) $this->Config['expires'];
-		$expires = $expires > 0 ? $expires + time() : 0;
+		if ($rememberMe === false) {
+			$expires = 0;
+		}
+		else {
+			$expires = (int) $this->Config['expires'];
+			$expires = $expires > 0 ? $expires + time() : 0;
+		}
 
 		# Create unique id
 		$qId  = time() . '_' . vString::Random(20, 'aA1');
