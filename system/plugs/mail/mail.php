@@ -45,9 +45,9 @@ class cMail
 	private $Config       = array();
 	private $safeMode     = false;
 	private $subject      = '';
-	private $bodyHtml     = '';
-	private $bodyPlain    = '';
-	private $bodyFinal    = '';
+	private $bodyHtml     = null;
+	private $bodyPlain    = null;
+	private $bodyFinal    = null;
 	private $altBoundary  = '';
 	private $atcBoundary  = '';
 	private $headerStr    = '';
@@ -274,11 +274,11 @@ class cMail
 	public function message($html=false, $plain=false)
 	{
 		if ($html) {
-			$this->bodyHtml = stripslashes(rtrim(str_replace("\r", '', $html)));
+			$this->bodyHtml = stripslashes(rtrim(str_replace(array("\r", "\n"), array('', '<br />'), $html)));
 		}
 
 		if ($plain) {
-			$this->bodyPlain = $plain;
+			$this->bodyPlain = str_replace('\n', "\n", $plain);
 		}
 
 		return $this;
@@ -489,6 +489,8 @@ class cMail
 	 */
 	private function getContentType()
 	{
+		$this->bodyHtml = trim($this->bodyHtml);
+
 		if	($this->bodyHtml && count($this->attachName) == 0) {
 			return 'html';
 		}
@@ -792,10 +794,10 @@ class cMail
 
 				if ($this->getProtocol() == 'mail') {
 					$this->headerStr .= $hdr;
-					$this->bodyFinal = $this->bodyHtml;
+					$this->bodyFinal = $this->bodyPlain;
 				}
 				else {
-					$this->bodyFinal = $hdr . $this->Config['newline'] . $this->Config['newline'] . $this->bodyHtml;
+					$this->bodyFinal = $hdr . $this->Config['newline'] . $this->Config['newline'] . $this->bodyPlain;
 				}
 
 				return;
@@ -852,7 +854,7 @@ class cMail
 				$body .= "Content-Type: text/plain; charset=" . $this->Config['charset'] . $this->Config['newline'];
 				$body .= "Content-Transfer-Encoding: " . $this->getEncoding() . $this->Config['newline'] . $this->Config['newline'];
 
-				$body .= $this->bodyHtml . $this->Config['newline'] . $this->Config['newline'];
+				$body .= $this->bodyPlain . $this->Config['newline'] . $this->Config['newline'];
 
 				break;
 
@@ -1225,11 +1227,11 @@ class cMail
 	 */
 	private function sendWithSendmail()
 	{
-		$fp = @popen($this->Config['mailpath'] . " -oi -f ".$this->cleanEmail($this->headers['From'])." -t", 'w');
+		$fp = @popen($this->Config['mailpath'] . ' -oi -f ' . $this->cleanEmail($this->headers['From']) . ' -t', 'w');
 
 		if ($fp === false || $fp === NULL) {
-			# server probably has popen disabled, so nothing we can do to get a verbose error.
-			Log::Add('ERR', "It seems server has `popen` disabled.", __LINE__, __FILE__);
+			# Server probably has popen disabled, so nothing we can do to get a verbose error.
+			Log::Add('ERR', 'It seems server has `popen` disabled.', __LINE__, __FILE__);
 			return false;
 		}
 
@@ -1243,7 +1245,7 @@ class cMail
 		}
 
 		if ($status != 0) {
-			Log::Add('ERR', "Email exit status: " . $status, __LINE__, __FILE__);
+			Log::Add('ERR', 'Email exit status: ' . $status, __LINE__, __FILE__);
 			return false;
 		}
 
@@ -1259,7 +1261,7 @@ class cMail
 	private function sendWithSmtp()
 	{
 		if (!$this->Config['SMTP']['host']) {
-			Log::Add('WAR', "SMTP has no host set!", __LINE__, __FILE__);
+			Log::Add('WAR', 'SMTP has no host set!', __LINE__, __FILE__);
 			return false;
 		}
 
@@ -1300,11 +1302,11 @@ class cMail
 		$reply = $this->getSmtpData();
 
 		if (strncmp($reply, '250', 3) != 0) {
-			Log::Add('ERR', "SMTP error: " . $reply, __LINE__, __FILE__);
+			Log::Add('ERR', 'SMTP error: ' . $reply, __LINE__, __FILE__);
 			return false;
 		}
 		else {
-			Log::Add('INF', "SMTP replay: " . $reply, __LINE__, __FILE__);
+			Log::Add('INF', 'SMTP replay: ' . $reply, __LINE__, __FILE__);
 		}
 
 		$this->sendCommand('quit');
