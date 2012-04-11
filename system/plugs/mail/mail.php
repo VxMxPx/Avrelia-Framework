@@ -14,59 +14,39 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2011-07-05
- * ---
- * @property	array	$Config
- * @property	boolean	$safeMode
- * @property	string	$subject
- * @property	string	$bodyHtml
- * @property	string	$bodyPlain
- * @property	string	$bodyFinal
- * @property	string	$altBoundary
- * @property	string	$atcBoundary
- * @property	string	$headerStr
- * @property	string	$encoding
- * @property	string	$IP
- * @property	string	$smtpAuth
- * @property	boolean	$replyToFlag
- * @property	array	$recipients
- * @property	array	$ccArray
- * @property	array	$bccArray
- * @property	array	$headers
- * @property	array	$attachName
- * @property	array	$attachType
- * @property	array	$attachDisp
- * @property	array	$protocols
- * @property	array	$baseCharsets
- * @property	array	$bitDepths
- * @property	array	$priorities
  */
 class cMail
 {
-	private $Config       = array();
-	private $safeMode     = false;
-	private $subject      = '';
-	private $bodyHtml     = null;
-	private $bodyPlain    = null;
-	private $bodyFinal    = null;
-	private $altBoundary  = '';
-	private $atcBoundary  = '';
-	private $headerStr    = '';
-	private $smtpConnect  = '';
-	private $encoding     = '8bit';
-	private $IP           = false;
-	private $smtpAuth     = false;
-	private $replyToFlag  = false;
-	private $recipients   = array();
-	private $ccArray      = array();
-	private $bccArray     = array();
-	private $headers      = array();
-	private $attachName   = array();
-	private $attachType   = array();
-	private $attachDisp   = array();
-	private $protocols    = array('mail', 'sendmail', 'smtp');	# Allowed protocols
-	private $baseCharsets = array('us-ascii', 'iso-2022-');		# 7-bit charsets (excluding language suffix)
-	private $bitDepths    = array('7bit', '8bit');
-	private $priorities   = array('1 (Highest)', '2 (High)', '3 (Normal)', '4 (Low)', '5 (Lowest)');
+	private $Config       = array();	# array		All the configurations for this instance
+	private $safeMode     = false;		# boolean	Is PHP safe-mode turned on?
+	private $subject      = '';			# string	The subject of message
+	private $bodyHtml     = null;		# string	HTML version of body
+	private $bodyPlain    = null;		# string	Plain version of body
+	private $bodyFinal    = null;		# string
+	private $altBoundary  = '';			# string
+	private $atcBoundary  = '';			# string
+	private $headerStr    = '';			# string
+	private $smtpConnect  = '';			# string
+	private $encoding     = '8bit';		# string
+	private $IP           = false;		# string
+	private $smtpAuth     = false;		# boolean
+	private $replyToFlag  = false;		# boolean
+	private $recipients   = array();	# array
+	private $ccArray      = array();	# array
+	private $bccArray     = array();	# array
+	private $headers      = array();	# array
+	private $attachName   = array();	# array
+	private $attachType   = array();	# array
+	private $attachDisp   = array();	# array
+	private $protocols    = array(		# array		Allowed protocols
+								'mail', 'sendmail', 'smtp');
+	private $baseCharsets = array(		# array		7-bit charsets (excluding language suffix)
+								'us-ascii', 'iso-2022-');
+	private $bitDepths    = array(		# array
+								'7bit', '8bit');
+	private $priorities   = array(		# array
+								'1 (Highest)', '2 (High)', '3 (Normal)', '4 (Low)', '5 (Lowest)');
+
 
 	/**
 	 * Set some default configs

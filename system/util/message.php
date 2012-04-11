@@ -12,12 +12,11 @@
  * @link       http://avrelia.com
  * @since      Version 0.80
  * @since      Tue Nov 08 11:13:20 2011
- * ---
- * @property	array	$List	Messages List
  */
 class uMessage
 {
-	private static $List = array();
+	private static $List = array();	# array	The list of all messages
+
 
 	/**
 	 * Add a Message To The List.

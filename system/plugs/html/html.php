@@ -12,14 +12,11 @@
  * @link       http://cms.avrelia.com
  * @since      Version 0.60
  * @since      Date 2009-08-18
- * ---
- * @property	array	$Headers
- * @property	array	$Footers
  */
 class cHTML
 {
-	private static $Headers = array();
-	private static $Footers = array();
+	private static $Headers = array();	# array
+	private static $Footers = array();	# array
 
 	/**
 	 * Will init the object
@@ -68,6 +65,8 @@ class cHTML
 	 */
 	public static function GetHeaders($echo=true)
 	{
+		Event::Trigger('chtml.before.getheaders', self::$Headers);
+
 		$return = '';
 
 		if (!empty(self::$Headers)) {
@@ -120,6 +119,8 @@ class cHTML
 	 */
 	public static function GetFooters($echo=true)
 	{
+		Event::Trigger('chtml.before.getfooters', self::$Footers);
+
 		$return = '';
 
 		if ( !empty(self::$Footers) ) {

@@ -12,16 +12,13 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-01-19
- * ---
- * @property	array					$Config			All Plug's Config
- * @property	interfaceSessionDriver	$Driver			Session driver instance
- * @property	string					$driverClass	Driver's class name
  */
 class cSession
 {
-	private static $Config;
-	private static $Driver;
-	private static $driverClass;
+	private static $Config;			# array						All Plug's Config
+	private static $Driver;			# interfaceSessionDriver	Session driver instance
+	private static $driverClass;	# string					Driver's class name
+
 
 	/**
 	 * Cload config and apropriate driver

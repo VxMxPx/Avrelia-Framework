@@ -12,18 +12,29 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-03-21
- * ---
- * @property	PDOStatement	$PDOStatement	Instance of PDF Statement.
- * @property	array			$Fetched		List of fetched items.
- * @property	mixed			$lastId			Last inserted ID.
- * @property	boolean			$status			The status of PDO statement.
  */
 class cDatabaseResult
 {
+	/**
+	 * @var	PDOStatement	Instance of PDOStatement
+	 */
 	private $PDOStatement;
+
+	/**
+	 * @var	array	List of fetched items.
+	 */
 	private $Fetched;
+
+	/**
+	 * @var	string	Last inserted ID.
+	 */
 	private $lastId;
+
+	/**
+	 * @var	boolean	The status of PDO statement. Was execution valid / successful or not.
+	 */
 	private $status;
+
 
 	/**
 	 * Construct the database result object.

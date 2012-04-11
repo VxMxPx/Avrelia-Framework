@@ -12,20 +12,14 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-03-27
- * ---
- * @property	boolean	$isValid
- * @property	boolean	$addMessage
- * @property	string	$value
- * @property	boolean	$name
- * @property	boolean	$needValue
  */
 class avrValidateAssign
 {
-	private $isValid    = true;
-	private $addMessage = true;
-	private $value      = '';
-	private $name       = false;
-	private $needValue  = false;
+	private $isValid    = true;		# boolean
+	private $addMessage = true;		# boolean	If true, uMessage will be added
+	private $value      = '';		# string	Actual field's value
+	private $name       = false;	# string	The name of field
+	private $needValue  = false;	# boolean	To be valid, does this field need to have value?
 
 	/**
 	 * New Validation Assigment!

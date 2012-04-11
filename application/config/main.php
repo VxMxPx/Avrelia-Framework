@@ -23,6 +23,7 @@ $AvreliaConfig['system']['routes'] = array
 );
 
 # List of enabled plugs
-$AvreliaConfig['plug']['enabled'] = array('html', 'jquery');
+$AvreliaConfig['plug']['auto_load'] = array('debug');
+$AvreliaConfig['plug']['enabled']   = array('html', 'jquery', 'debug');
 
 # For more configurations see system/config/main.php

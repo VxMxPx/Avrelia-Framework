@@ -34,7 +34,7 @@ class HTTP
 		if (!self::isAllowed($url, $force)) { return false; }
 
 		# Trigger Event Before Redirect
-		Event::Trigger('Avrelia.Before.Redirect', $url);
+		Event::Trigger('http.before.redirect', $url);
 
 		if(headers_sent($file, $line)) {
 			trigger_error("Sorry: Can't redirect to: `{$url}`, since output has already started in file: `{$file}`, on line: `{$line}`.", E_USER_WARNING);

@@ -12,16 +12,12 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-02-19
- * ---
- * @property	array	$Config
- * @property	string	$link
- * @property	string	$tag
  */
 class cJquery
 {
-	private static $Config;
-	private static $link;
-	private static $tag = '<script src="{{%link}}"></script>';
+	private static $Config;	# string	Plug's configs
+	private static $link;	# string	Actual full link to script (either local or googleapis)
+	private static $tag;	# string	Tag template
 
 	/**
 	 * Will add jQuery to cHTML footer.
@@ -44,7 +40,7 @@ class cJquery
 			self::$link = 'http://ajax.googleapis.com/ajax/libs/jquery/'.self::$Config['version'].'/jquery.min.js';
 		}
 
-		self::$tag = str_replace('{{%link}}', self::$link, self::$tag);
+		self::$tag = '<script src="'.self::$link.'"></script>';
 
 		# Add footer tag
 		cHTML::AddFooter(self::$tag, 'cjquery');

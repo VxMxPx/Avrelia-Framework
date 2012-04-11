@@ -12,26 +12,18 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-01-20
- * ---
- * @property	array	$Config			All configurations for this plug
- * @property	string	$fnameUsers		Full path to the users file
- * @property	string	$fnameSessions	Full path to the sessions file
- * @property	array	$Users			All users
- * @property	array	$Sessions		All sessions
- * @property	array	$CurrentUser	Current User's Data
- * @property	array	$CurrentSession	Current Session's Data
- * @property	boolean	$loggedIn		Do we have user logged in?
  */
 class jsonSessionDriver implements interfaceSessionDriver
 {
-	private $Config;
-	private $fnameUsers;
-	private $fnameSessions;
-	private $Users;
-	private $Sessions;
-	private $CurrentUser;
-	private $CurrentSession;
-	private $loggedIn = false;
+	private $Config;			# array		All configurations for this plug
+	private $fnameUsers;		# string	Full path to the users file
+	private $fnameSessions;		# string	Full path to the sessions file
+	private $Users;				# array		All users
+	private $Sessions;			# array		All sessions
+	private $CurrentUser;		# array		Current User's Data
+	private $CurrentSession;	# array		Current Session's Data
+	private $loggedIn = false;	# boolean	Do we have user logged in?
+
 
 	/**
 	 * Initialize the session - setup everything, read the cookies, etc...

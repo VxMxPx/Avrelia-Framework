@@ -12,12 +12,14 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2011-04-01
- * --
- * @property	array	$Config	All Configurations
  */
 class Cfg
 {
+	/**
+	 * @var	array	All configurations.
+	 */
 	private static $Config = array();
+
 
 	/**
 	 * Append some config

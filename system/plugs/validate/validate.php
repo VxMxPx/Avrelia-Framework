@@ -12,12 +12,10 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2011-11-19
- * ---
- * @property	array	$ValidationsList
  */
 class cValidate
 {
-	private static $ValidationsList = array();
+	private static $ValidationsList = array();	# array
 
 	/**
 	 * Get files, ...

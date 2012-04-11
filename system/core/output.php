@@ -73,7 +73,7 @@ class Output
 	public static function Get($particular=false, $asArray=false)
 	{
 		# Before get
-		Event::Trigger('Avrelia.Output.Before.Get', self::$Output);
+		Event::Trigger('output.before.get', self::$Output);
 
 		if ($particular) {
 			if (isset(self::$Output[$particular])) {
@@ -85,7 +85,7 @@ class Output
 		}
 		else {
 			# Before get all
-			Event::Trigger('Avrelia.Output.Before.GetAll', self::$Output);
+			Event::Trigger('output.before.getall', self::$Output);
 
 			if ($asArray) {
 				return self::$Output;

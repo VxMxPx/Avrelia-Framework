@@ -12,16 +12,13 @@
  * @link       http://avrelia.com
  * @since      Version 0.80
  * @since      sre dec 07 16:33:56 2011
- * --
- * @property	array	$Allow			Allowed image extensions
- * @property	array	$Source			Info about source image
- * @property	array	$Destination	Info about destination
  */
 class cImage
 {
-	private $Allow       = array('jpg','jpeg','gif','png');
-	private $Source      = array();
-	private $Destination = array();
+	private $Allow       = array('jpg','jpeg','gif','png');	# array	Allowed image extensions
+	private $Source      = array();							# array	Info about source image
+	private $Destination = array();							# array	Info about destination
+
 
 	/**
 	 * Create new image from filename

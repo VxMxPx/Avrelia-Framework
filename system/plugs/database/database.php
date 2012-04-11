@@ -12,12 +12,14 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-03-21
- * ---
- * @property	interfaceDatabase	$Driver	PDO Database Driver Instance
  */
 class cDatabase
 {
+	/**
+	 * @var	interfaceDatabase	PDO Database Driver Instance
+	 */
 	private static $Driver;
+
 
 	/**
 	 * Init the Database object
@@ -27,7 +29,7 @@ class cDatabase
 	public static function _DoInit()
 	{
 		self::LoadDriver();
-	
+
 		if (!self::$Driver->connect()) {
 			Log::Add('ERR', "Can't connect to or create database.", __LINE__, __FILE__);
 			return false;
@@ -71,7 +73,7 @@ class cDatabase
 		if (self::$Driver) {
 			return true;
 		}
-	
+
 		$Config = Plug::GetConfig(__FILE__);
 
 		# Get basepath
@@ -128,6 +130,7 @@ class cDatabase
 		self::$Driver = new $driverClass($Config);
 
 		# Finally load all other required libraries
+		if (!class_exists('cDatabaseQuery',     false)) { include(ds($path.'/database_query.php'));     }
 		if (!class_exists('cDatabaseRecord',    false)) { include(ds($path.'/database_record.php'));    }
 		if (!class_exists('cDatabaseResult',    false)) { include(ds($path.'/database_result.php'));    }
 		if (!class_exists('cDatabaseStatement', false)) { include(ds($path.'/database_statement.php')); }
@@ -148,14 +151,14 @@ class cDatabase
 	//-
 
 	/**
-	 * SQL query
+	 * Execute raw SQL statement
 	 * --
 	 * @param	string	$statement
 	 * @param	array	$bind
 	 * --
 	 * @return	cDatabaseResult
 	 */
-	public static function Query($statement, $bind=false)
+	public static function Execute($statement, $bind=false)
 	{
 		$Statement = new cDatabaseStatement($statement);
 

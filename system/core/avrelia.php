@@ -19,15 +19,18 @@ class Avrelia
 	const NAME      = 'Avrelia Framework';
 	const AUTHOR    = 'Avrelia';
 	const FOUNDER   = 'Marko Gajšt';
-	const WEBSITE   = 'http://avrelia.com/';
+	const WEBSITE   = 'http://framework.avrelia.com';
 	const COPYRIGHT = '2010';
 
-	# Items which needs to be autoloaded...
+	/**
+	 * @var	array	Items which needs to be autoloaded...
+	 */
 	private $Load = array(
 		'cfg', 'http', 'model', 'v_array', 'event', 'input', 'output',
 		'v_boolean', 'benchmark', 'file_system', 'language', 'plug', 'view',
 		'cache', 'log', 'util', 'v_string',
 	);
+
 
 	/**
 	 * Will init the framework
@@ -91,7 +94,7 @@ class Avrelia
 		set_error_handler("avreliaErrorHandler");
 
 		# Trigger event after framework initialization
-		Event::Trigger('Avrelia.After.InitFramework');
+		Event::Trigger('avrelia.after.init');
 
 		return $this;
 	}
@@ -105,7 +108,7 @@ class Avrelia
 	public function boot()
 	{
 		# We will decide where to go from here...
-		Event::Trigger('Avrelia.Before.BootAPP');
+		Event::Trigger('avrelia.before.boot');
 
 		# Init the input
 		Input::Init();
@@ -190,7 +193,7 @@ class Avrelia
 			}
 		}
 
-		Event::Trigger('Avrelia.After.BootAPP');
+		Event::Trigger('avrelia.after.boot');
 	}
 	//-
 
@@ -275,7 +278,7 @@ class Avrelia
 	public function __destruct()
 	{
 		# Final event
-		Event::Trigger('Avrelia.Before.Destruct');
+		Event::Trigger('avrelia.before.destruct');
 
 		# Write log (fatal)
 		if (Cfg::Get('log/enabled') && Cfg::Get('log/write_individual') === false) {

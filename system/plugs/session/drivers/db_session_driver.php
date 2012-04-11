@@ -12,16 +12,13 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-03-27
- * ---
- * @property	array	$Config
- * @property	array	$CurrentUser
- * @property	boolean	$loggedIn
  */
 class dbSessionDriver implements interfaceSessionDriver
 {
-	private $Config;
-	private $CurrentUser;
-	private $loggedIn = false;
+	private $Config;			# array
+	private $CurrentUser;		# array
+	private $loggedIn = false;	# boolean
+
 
 	/**
 	 * Will construct the database object.
@@ -50,8 +47,8 @@ class dbSessionDriver implements interfaceSessionDriver
 	{
 		# Create users table (if doesn't exists)
 		if (Plug::Has('database')) {
-			cDatabase::Query($Config['db']['Tables']['users_table']);
-			cDatabase::Query($Config['db']['Tables']['sessions_table']);
+			cDatabase::Execute($Config['db']['Tables']['users_table']);
+			cDatabase::Execute($Config['db']['Tables']['sessions_table']);
 		}
 		else {
 			trigger_error("Can't create, database plug must be enabled.", E_USER_ERROR);
@@ -81,8 +78,8 @@ class dbSessionDriver implements interfaceSessionDriver
 	 */
 	public static function _destroy($Config)
 	{
-		cDatabase::Query('DROP TABLE IF EXISTS ' . $Config['db']['users_table']);
-		cDatabase::Query('DROP TABLE IF EXISTS ' . $Config['db']['sessions_table']);
+		cDatabase::Execute('DROP TABLE IF EXISTS ' . $Config['db']['users_table']);
+		cDatabase::Execute('DROP TABLE IF EXISTS ' . $Config['db']['sessions_table']);
 	}
 	//-
 

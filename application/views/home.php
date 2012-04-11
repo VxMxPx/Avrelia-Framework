@@ -17,10 +17,5 @@
 
 <h2>What just happened?</h2>
 <p>
-	If you're curious what's going on under the hood, <a href="#log" id="not_toggleLog">see the log</a>.
+	If you're curious what's going on under the hood, <a href="#log" id="toggleLog">see the log</a>.
 </p>
-
-<div id="log">
-	<a name="log"></a>
-	<?php echo Log::Get(2, false); ?>
-</div>

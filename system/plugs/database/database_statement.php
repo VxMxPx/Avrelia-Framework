@@ -12,26 +12,26 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-03-21
- * ---
- * @property	string	$statement	SQL statement
- * @property	array	$Bind		Binded values
- * ---
- * @method	$this			add
- * @method	$this			replace
- * @method	$this			bind
- * @method	cDatabaseResult	execute
  */
 class cDatabaseStatement
 {
+	/**
+	 * @var	string	$statement	An SQL statement which will be executed.
+	 */
 	private $statement;
+
+	/**
+	 * @var	array	An array of all values which need to be binded.
+	 */
 	private $Bind;
+
 
 	/**
 	 * Construct object with some initial statement.
-	 * ---
-	 * @param string $statement
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$statement
+	 * --
+	 * @return	void
 	 */
 	public function __construct($statement)
 	{
@@ -41,10 +41,10 @@ class cDatabaseStatement
 
 	/**
 	 * Add string to the end of the statement.
-	 * ---
-	 * @param string $statement
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	string	$statement
+	 * --
+	 * @return	$this
 	 */
 	public function add($statement)
 	{
@@ -55,10 +55,10 @@ class cDatabaseStatement
 
 	/**
 	 * Replace whole statement with something else.
-	 * ---
-	 * @param string $statement
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	string	$statement
+	 * --
+	 * @return	$this
 	 */
 	public function replace($statement)
 	{
@@ -70,11 +70,11 @@ class cDatabaseStatement
 	/**
 	 * Will bind values. Can accept $key as array or as string,
 	 * If you entered $key as string, then you must enter $val also.
-	 * ---
-	 * @param mixed $key
-	 * @param string $val
-	 * ---
-	 * @return $this
+	 * --
+	 * @param	mixed	$key
+	 * @param	string	$val
+	 * --
+	 * @return	$this
 	 */
 	public function bind($key, $val=false)
 	{
@@ -93,8 +93,8 @@ class cDatabaseStatement
 
 	/**
 	 * Execute statement and return cDatabaseResult object.
-	 * ---
-	 * @return cDatabaseResult
+	 * --
+	 * @return	cDatabaseResult
 	 */
 	public function execute()
 	{

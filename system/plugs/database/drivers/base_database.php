@@ -12,24 +12,19 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-03-22
- * ---
- * @property	array	$Config	Array of all configurations, set on construction
- * @property	PDO		$PDO	Link to the PDO Connection
- * ----
- * @method	PDOStatement	prepare
- * @method	PDO				getPDO
  */
 class baseDatabase
 {
-	protected $Config;
-	protected $PDO;
+	protected $Config;	# array	Array of all configurations, set on construction
+	protected $PDO;		# PDO	Link to the PDO Connection
+
 
 	/**
 	 * Init the database driver, called initialy when connection is established.
-	 * ---
-	 * @param array $Config
-	 * ---
-	 * @return void
+	 * --
+	 * @param	array	$Config
+	 * --
+	 * @return	void
 	 */
 	public function __construct($Config)
 	{
@@ -45,11 +40,11 @@ class baseDatabase
 
 	/**
 	 * Bind values and execute particular statement.
-	 * ---
-	 * @param string $statement
-	 * @param array $bind
-	 * ---
-	 * @return PDOStatement
+	 * --
+	 * @param	string	$statement
+	 * @param	array	$bind
+	 * --
+	 * @return	PDOStatement
 	 */
 	public function prepare($statement, $bind=false)
 	{
@@ -90,8 +85,8 @@ class baseDatabase
 
 	/**
 	 * Will get -raw- PDO class.
-	 * ---
-	 * @return PDO
+	 * --
+	 * @return	PDO
 	 */
 	public function getPDO()
 	{

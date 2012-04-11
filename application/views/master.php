@@ -47,9 +47,7 @@
 				e.preventDefault();
 			});
 
-			$("#toggleLog").click(function() {
-				$("#log").slideToggle('fast');
-			});
+			$("#toggleLog").on('click', cDebug.panelShow);
 		});
 	</script>
 </body>

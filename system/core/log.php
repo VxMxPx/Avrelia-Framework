@@ -12,37 +12,45 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.60
  * @since      Date 2009-08-18
- * ---
- * @property	array	$Logs
- * @property	boolean	$enabled
- * @property	string	$filename
- * @property	array	$Types
- * @property	boolean	$writeIndividual
- * @property	string	$filenameOnFatal
  */
 class Log
 {
-	# Array of all log items
+	/**
+	 * @var	array	All log items
+	 */
 	private static $Logs = array();
 
-	# Turn everything off.
-	# This is useful when we're saving log message (individualy),
-	# if In that process error happened, it may cause infinite loop.
+	/**
+	 * @var	array	Turn everything off.
+	 * 				This is useful when we're saving log message (individualy),
+	 * 				if In that process error happened, it may cause infinite loop.
+	 */
 	private static $enabled = false;
 
-	# Full path to log file, if this is set to false, the log won't be saved
+	/**
+	 * @var	string	Full path to log file, if this is set to false,
+	 * 				the log won't be saved.
+	 */
 	private static $filename = null;
 
-	# Log types. Select which type of messages should be saved.
-	# Available options are: INF, ERR, WAR; To log "INF" isn't recommended.
+	/**
+	 * @var	array	Log types. Select which type of messages should be saved.
+	 * 				Available options are: INF, ERR, WAR; To log "INF" isn't recommended.
+	 */
 	private static $Types = array('ERR', 'WAR');
 
-	# If set to true, every log message will be saved individually;
-	# If set to false, all messages will be saved at the end of script execution
+	/**
+	 * @var	boolean	If set to true, every log message will be saved individually;
+	 * 				If set to false, all messages will be saved at the end of script execution
+	 */
 	private static $writeIndividual = true;
 
-	# This won't append, but create always fresh file, so it should be unique filename
+	/**
+	 * @var	string	This won't append, but create always fresh file,
+	 * 				so it should be unique filename.
+	 */
 	private static $filenameOnFatal = null;
+
 
 	/**
 	 * Init the Log

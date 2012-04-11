@@ -13,14 +13,12 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2011-07-21
- * --
- * @property	array	$FormData	Specific settings for form
- * @property	array	$Defaults	Default values for form
  */
 class cForm
 {
-	private $FormData = array('wrap' => false);
-	private $Defaults = array();
+	private $FormData = array('wrap' => false);	# array	Specific settings for form
+	private $Defaults = array();				# array	Default values for form
+
 
 	/**
 	 * Load Assign Class
