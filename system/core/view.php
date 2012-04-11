@@ -14,28 +14,31 @@
  * @since      2011-12-20
  */
 
-
 class View
 {
-	# You can define your own start level (to check URI segment and call apropriate method)
-	protected static $startAt       = null;
-
-	# How many vew rendering is in progress? (for calls from template itself)
+	/**
+	 * @var	integer	How many vew rendering is in progress? (for calls from template itself)
+	 */
 	protected static $viewsProgress = 0;
 
-	# Variables For Views
+	/**
+	 * @var	array	Variables For Views
+	 */
 	protected static $ViewsData     = array();
 
-	# Amount of all loaded views
+	/**
+	 * @var	integer	Amount of all loaded views
+	 */
 	protected static $viewsLoaded   = 0;
+
 
 	/**
 	 * Add Data To View (at any point)
-	 * ---
-	 * @param mixed  $key -- Key Name - Or Array Of Variables
-	 * @param string $content -- Content (only in case if you didn't provide array as key)
-	 * ---
-	 * @return void
+	 * --
+	 * @param	mixed	$key		Key Name - Or Array Of Variables
+	 * @param	string	$content	Content (only in case if you didn't provide array as key)
+	 * --
+	 * @return	void
 	 */
 	public static function AddVar($key, $content=null)
 	{
@@ -50,11 +53,11 @@ class View
 
 	/**
 	 * Will Load The View, and output it
-	 * ---
-	 * @param string $file -- only filename
-	 * @param array $Data  -- list of variables to inclued
-	 * ---
-	 * @return ViewAssign
+	 * --
+	 * @param	string	$file	Only filename
+	 * @param	array	$Data	List of variables to inclued
+	 * --
+	 * @return	ViewAssign
 	 */
 	public static function Get($file, $Data=array())
 	{
@@ -74,11 +77,12 @@ class View
 
 	/**
 	 * Will Load The View, and return it
-	 * ---
-	 * @param string $file -- only filename
-	 * @param array $Data  -- list of variables to inclued
-	 * ---
-	 * @return bool -- depends if view was found and loaded or not
+	 * Return string or boolean - depends if view was found and loaded or not.
+	 * --
+	 * @param	string	$file	Only filename
+	 * @param	array	$Data	List of variables to inclued
+	 * --
+	 * @return	string
 	 */
 	public static function Render($file, $Data=array())
 	{
@@ -122,34 +126,37 @@ class View
 
 	/**
 	 * Placeholder for region
-	 * ---
-	 * @param string $name
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$name
+	 * --
+	 * @return	void
 	 */
 	public static function Region($name)
 	{
 		echo Output::Take('AvreliaView.region.'.$name) . '<!-- Avrelia Framework Region {'.$name.'} -->';
 	}
 	//-
-	}
-	//--
 
-	class ViewAssign
-	{
+}
+//--
+
+
+class ViewAssign
+{
 	# View's content
 	private $contents;
 
 	# View's Output key
 	private $outputKey;
 
+
 	/**
 	 * Construct ViewAssign
-	 * ---
-	 * @param string $contents
-	 * @param string $outputKey
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$contents
+	 * @param	string	$outputKey
+	 * --
+	 * @return	void
 	 */
 	public function __construct($contents, $outputKey)
 	{
@@ -160,8 +167,8 @@ class View
 
 	/**
 	 * Set current view as master
-	 * ---
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	public function asMaster()
 	{
@@ -172,10 +179,10 @@ class View
 
 	/**
 	 * Will assign current view as region
-	 * ---
-	 * @param string $name -- region's name
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$name	Region's name
+	 * --
+	 * @return	void
 	 */
 	public function asRegion($name)
 	{
@@ -196,8 +203,8 @@ class View
 
 	/**
 	 * Echo view
-	 * ---
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	public function toScreen()
 	{
@@ -207,8 +214,8 @@ class View
 
 	/**
 	 * Return view
-	 * ---
-	 * @return void
+	 * --
+	 * @return	string
 	 */
 	public function doReturn()
 	{

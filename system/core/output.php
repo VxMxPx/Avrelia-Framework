@@ -23,12 +23,12 @@ class Output
 
 	/**
 	 * Set Output
-	 *
-	 * @param string $name    -- name the item
-	 * @param string $output  -- $content
-	 * @param bool   $replace -- replace existing output (else will add to it)
-	 *
-	 * @return void
+	 * --
+	 * @param	string	$name		Name the item
+	 * @param	string	$output		Content to output
+	 * @param	boolean	$replace	Replace existing output (else will add to it)
+	 * --
+	 * @return	void
 	 */
 	public static function Set($name, $output, $replace=false)
 	{
@@ -47,12 +47,12 @@ class Output
 	//-
 
 	/**
-	 * Will take particular output (it will return it, and then uset it)
-	 *
-	 * @param string $particular -- get particular output item - if set to false, will get all
-	 * @param bool $asArray    -- return all items as an array, or join them together and return string?
-	 *
-	 * @return string / array
+	 * Will take particular output (it will return it, and then erase it)
+	 * --
+	 * @param	string	$particular	Get particular output item - if set to false, will get all
+	 * @param	boolean	$asArray	Return all items as an array, or join them together and return string?
+	 * --
+	 * @return	mixed
 	 */
 	public static function Take($particular=false, $asArray=false)
 	{
@@ -64,11 +64,11 @@ class Output
 
 	/**
 	 * Return Output
-	 * ---
-	 * @param bool $particular -- get particular output item - if set to false, will get all
-	 * @param bool $asArray    -- return all items as an array, or join them together and return string?
-	 * ---
-	 * @return string / array
+	 * --
+	 * @param	boolean	$particular	Get particular output item - if set to false, will get all
+	 * @param	boolean	$asArray	Return all items as an array, or join them together and return string?
+	 * --
+	 * @return	mixed
 	 */
 	public static function Get($particular=false, $asArray=false)
 	{
@@ -97,12 +97,13 @@ class Output
 	}
 	//-
 
+
 	/**
 	 * Do we have particular view?
-	 * ---
-	 * @param string $what
-	 * ---
-	 * @return boolean
+	 * --
+	 * @param	string	$what
+	 * --
+	 * @return	boolean
 	 */
 	public static function Has($what)
 	{
@@ -112,10 +113,10 @@ class Output
 
 	/**
 	 * Clear Output
-	 *
-	 * @param string $particular -- do you wanna clear particular output?
-	 *
-	 * @return void
+	 * --
+	 * @param	string	$particular	Do you wanna clear particular output?
+	 * --
+	 * @return	void
 	 */
 	public static function Clear($particular=false)
 	{
@@ -129,6 +130,5 @@ class Output
 		}
 	}
 	//-
-
 }
 //--
