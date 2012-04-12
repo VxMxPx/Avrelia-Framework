@@ -194,12 +194,16 @@ class Language
 		{
 			$return = self::$Dictionary[$key];
 
-			# Check for any variables (%s)
-			if (!empty($Params)) {
+			# Check for any variables {1}, ...
+			if ($Params) {
 				if (!is_array($Params)) {
 					$Params = array($Params);
 				}
-				$return = vsprintf($return, $Params);
+				//$return = vsprintf($return, $Params);
+				foreach ($Params as $key => $param) {
+					$key = $key + 1;
+					$return = preg_replace('/{'.$key.' ?(.*?)}/', str_replace('{?}', '$1', $param), $return);
+				}
 			}
 
 			return $return;

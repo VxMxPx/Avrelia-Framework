@@ -459,6 +459,7 @@ class vArray
 	 * For example, if you have Array of unknown srouce (can be $_POST), you can
 	 * filter its values by:
 	 * ($_POST, array('username' => 'string', 'password' => 'string'))
+	 * Note that fields which aren't specefied will be droped.
 	 * --
 	 * @param	mixed	$Variable	Can be array or string / integer / ...
 	 * @param	mixed	$Params		Can be string or array, if array, then it should be
