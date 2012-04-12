@@ -50,7 +50,7 @@ class cDebug
 	 */
 	public static function AddPanel()
 	{
-		cHTML::AddFooter(View::Render(ds(dirname(__FILE__).'/views/panel.php')), 'cdebugPanel');
+		cHTML::AddFooter(View::Get(ds(dirname(__FILE__).'/views/panel.php'))->doReturn(), 'cdebugPanel');
 		cHTML::AddFooter('<script>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.js')).'</script>', 'cdebug_js');
 	}
 	//-

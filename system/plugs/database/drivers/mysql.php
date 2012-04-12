@@ -13,7 +13,7 @@
  * @since      Version 0.80
  * @since      2012-03-22
  */
-class mysqlDatabaseDriver extends baseDatabase implements interfaceDatabase
+class cDatabaseDriverMysql extends cDatabaseDriverBase implements cDatabaseDriverInterface
 {
 	/**
 	 * Init the database driver, called initialy when connection is established.

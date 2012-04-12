@@ -12,14 +12,8 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-03-22
- * ---
- * @method	PDO				connect
- * @method	PDOStatement	prepare
- * @method	PDO				getPDO
- * @method	boolean			create
- * @method	boolean			destroy
  */
-interface interfaceDatabase
+interface cDatabaseDriverInterface
 {
 	/**
 	 * Make the connection.

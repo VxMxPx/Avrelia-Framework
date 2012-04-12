@@ -16,7 +16,7 @@
 class cDatabase
 {
 	/**
-	 * @var	interfaceDatabase	PDO Database Driver Instance
+	 * @var	cDatabaseDriverInterface	PDO Database Driver Instance
 	 */
 	private static $Driver;
 
@@ -80,37 +80,37 @@ class cDatabase
 		$path = dirname(__FILE__);
 
 		# Load Interface
-		if (!class_exists('interfaceDatabase', false))
+		if (!class_exists('cDatabaseDriverInterface', false))
 		{
-			$ifDatabasePath = ds($path . '/drivers/interface_database.php');
+			$ifDatabasePath = ds($path . '/drivers/interface.php');
 			if (file_exists($ifDatabasePath)) {
 				include($ifDatabasePath);
 			}
 			else {
-				Log::Add('ERR', "Can't find file `interface_database.php` file in: `{$ifDatabasePath}`.", __LINE__, __FILE__);
+				Log::Add('ERR', "Can't find file `/drivers/interface.php` file in: `{$ifDatabasePath}`.", __LINE__, __FILE__);
 				return false;
 			}
 		}
 
 		# Load Base class
-		if (!class_exists('baseDatabase', false))
+		if (!class_exists('cDatabaseDriverBase', false))
 		{
-			$baseDatabasePath = ds($path . '/drivers/base_database.php');
+			$baseDatabasePath = ds($path . '/drivers/base.php');
 			if (file_exists($baseDatabasePath)) {
 				include($baseDatabasePath);
 			}
 			else {
-				Log::Add('ERR', "Can't find file `base_database.php` file in: `{$baseDatabasePath}`.", __LINE__, __FILE__);
+				Log::Add('ERR', "Can't find file `/drivers/base.php` file in: `{$baseDatabasePath}`.", __LINE__, __FILE__);
 				return false;
 			}
 		}
 
 		# Get Driver
-		$driverClass = $Config['driver'] . 'DatabaseDriver';
+		$driverClass = 'cDatabaseDriver' . ucfirst($Config['driver']);
 
 		if (!class_exists($driverClass, false))
 		{
-			$driverPath = ds($path . '/drivers/' . toUnderline($driverClass) . '.php');
+			$driverPath = ds($path . '/drivers/' . $Config['driver'] . '.php');
 
 			if (file_exists($driverPath)) {
 				include($driverPath);
@@ -142,7 +142,7 @@ class cDatabase
 	/**
 	 * Return PDO Driver object.
 	 * ---
-	 * @return	interfaceDatabase
+	 * @return	cDatabaseDriverInterface
 	 */
 	public static function _getDriver()
 	{
@@ -199,7 +199,7 @@ class cDatabase
 	//-
 
 	/**
-	 * Will read items from database.
+	 * Will read (select) items from database.
 	 * --
 	 * @param	string	$table
 	 * @param	mixed	$condition	['id' => 12] || 'id=:id AND name=:name' and bind it later.
@@ -209,7 +209,7 @@ class cDatabase
 	 * --
 	 * @return	cDatabaseResult
 	 */
-	public static function Read($table, $condition=false, $bind=false, $limit=false, $order=false)
+	public static function Find($table, $condition=false, $bind=false, $limit=false, $order=false)
 	{
 		# Initial statement
 		$sql = "SELECT * FROM {$table}";

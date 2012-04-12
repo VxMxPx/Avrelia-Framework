@@ -13,7 +13,7 @@
  * @since      Version 0.80
  * @since      2012-01-20
  */
-class jsonSessionDriver implements interfaceSessionDriver
+class cSessionDriverJson implements cSessionDriverInterface
 {
 	private $Config;			# array		All configurations for this plug
 	private $fnameUsers;		# string	Full path to the users file

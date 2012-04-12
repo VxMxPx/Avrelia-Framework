@@ -16,7 +16,7 @@
 class cSession
 {
 	private static $Config;			# array						All Plug's Config
-	private static $Driver;			# interfaceSessionDriver	Session driver instance
+	private static $Driver;			# cSessionDriverInterface	Session driver instance
 	private static $driverClass;	# string					Driver's class name
 
 
@@ -93,22 +93,22 @@ class cSession
 		# Get driver if exists
 		$path   = dirname(__FILE__);
 		$driver = $Config['driver'];
-		$class  = $driver.'SessionDriver';
+		$class  = 'cSessionDriver'.ucfirst($driver);
 
 		# Load interface first
-		if (!interface_exists('interfaceSessionDriver', false)) {
-			if (file_exists(ds($path."/drivers/interface_session_driver.php"))) {
-				include(ds($path."/drivers/interface_session_driver.php"));
+		if (!interface_exists('cSessionDriverInterface', false)) {
+			if (file_exists(ds($path."/drivers/interface.php"))) {
+				include(ds($path."/drivers/interface.php"));
 			}
 			else {
-				Log::Add('WAR', "Can't load interface driver: " . ds($path."/drivers/interface_session_driver.php"), __LINE__, __FILE__);
+				Log::Add('WAR', "Can't load interface driver: " . ds($path."/drivers/interface.php"), __LINE__, __FILE__);
 				return false;
 			}
 		}
 
 		if (!class_exists($class, false)) {
-			if (file_exists(ds($path . "/drivers/{$driver}_session_driver.php"))) {
-				include(ds($path . "/drivers/{$driver}_session_driver.php"));
+			if (file_exists(ds($path . "/drivers/{$driver}.php"))) {
+				include(ds($path . "/drivers/{$driver}.php"));
 			}
 		}
 

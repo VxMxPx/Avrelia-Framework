@@ -19,15 +19,15 @@
  * Function which is automatically called in case you are trying to use a class/interface
  * which hasn't been defined yet. By calling this function the scripting engine
  * is given a last chance to load the class before PHP fails with an error.
- *
- * @param string $className
- *
- * @return void
+ * --
+ * @param	string	$className
+ * --
+ * @return	void
  */
 function __autoload($className)
 {
-	# If we have "u" prefix, We Load Util Class
-	# If we have "c" prefix, We Load Component's Class
+	# If we have "u" prefix, We Load Util's Class
+	# If we have "c" prefix, We Load Plug's Class
 	$classPrefix = substr($className, 0, 1);
 	$fileName    = toUnderline(substr($className, 1));
 
@@ -64,10 +64,10 @@ function __autoload($className)
 
 /**
  * Correct Directory Separators
- *
- * @param string $path
- *
- * @return string
+ * --
+ * @param	string	$path
+ * --
+ * @return	string
  */
 function ds($path)
 {
@@ -82,12 +82,12 @@ function ds($path)
 
 /**
  * Output variable as: <pre> print_r($variable) </pre> (this is only for debuging)
- * ---
- * @param mixed $variable
- * @param bool  $die      -- do you wanna -stop- system after output?
- * @param bool  $return   -- should function return or echo results?
- * ---
- * @return string
+ * --
+ * @param	mixed	$variable
+ * @param	boolean	$die		Do you wanna -stop- system after output?
+ * @param	boolean	$return		Should function return or echo results?
+ * --
+ * @return	string
  */
 function dumpVar($variable, $die=true, $return=false)
 {
@@ -112,8 +112,8 @@ function dumpVar($variable, $die=true, $return=false)
 
 /**
  * Error handler
- * ---
- * @return void
+ * --
+ * @return	void
  */
 function avreliaErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
 {
@@ -184,13 +184,13 @@ function avreliaErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
 /**
  * Generate full absolute URL
  * For example: http://my-site.dev/my-uri
- *
- * @param string $uri
- * @param bool   $prefixZero -- will prefix zero element from uri: main/etc (prefix "main")
+ * --
+ * @param	string	$uri
+ * @param	boolean	$prefixZero	Will prefix zero element from uri: main/etc (prefix "main")
  * 								if zero element wasn't set, and you pass in string, then
  * 								that will be used.
- *
- * @return string
+ * --
+ * @return	string
  */
 function url($uri=null, $prefixZero=false)
 {
@@ -207,13 +207,13 @@ function url($uri=null, $prefixZero=false)
  * Generate full absolute URL
  * For example: http://my-site.dev/my-uri
  * And echo(!) the result
- *
- * @param string $uri
- * @param bool   $prefixZero -- will prefix zero element from uri: main/etc (prefix "main")
+ * --
+ * @param	string	$uri
+ * @param	boolean	$prefixZero	Will prefix zero element from uri: main/etc (prefix "main")
  * 								if zero element wasn't set, and you pass in string, then
  * 								that will be used.
- *
- * @return void
+ * --
+ * @return	void
  */
 function urle($uri=null, $prefixZero=false)
 {
@@ -223,13 +223,11 @@ function urle($uri=null, $prefixZero=false)
 
 /**
  * This will build url (by replacing existing) from segments / actions.
- *
- * @param array $Uri -- examples:
- * 	array(0 => 'segment', 1 => 'segment1', 'action' => 'value')
- *
- * @param bool $updateCurrent -- will keep current uri's segments / actions and update them
- *
- * @return string
+ * --
+ * @param	array	$Uri			Examples: array(0 => 'segment', 1 => 'segment1', 'action' => 'value')
+ * @param	boolean	$updateCurrent	Will keep current uri's segments / actions and update them
+ * --
+ * @return	string
  */
 function urlB($Uri, $updateCurrent=true)
 {
@@ -241,13 +239,11 @@ function urlB($Uri, $updateCurrent=true)
 /**
  * This will build url (by replacing existing) from segments / actions.
  * And echo(!) the result
- *
- * @param array $Uri -- examples:
- * 	array(0 => 'segment', 1 => 'segment1', 'action' => 'value')
- *
- * @param bool $updateCurrent -- will keep current uri's segments / actions and update them
- *
- * @return void
+ * --
+ * @param	array	$Uri			Examples: array(0 => 'segment', 1 => 'segment1', 'action' => 'value')
+ * @param	boolean	$updateCurrent	Will keep current uri's segments / actions and update them
+ * --
+ * @return	void
  */
 function urlBe($Uri, $updateCurrent=true)
 {
@@ -257,11 +253,11 @@ function urlBe($Uri, $updateCurrent=true)
 
 /**
  * Language helper
- *
- * @param string $string
- * @param array $Params
- *
- * @return string
+ * --
+ * @param	string	$string
+ * @param	array	$Params
+ * --
+ * @return	string
  */
 function l($string, $Params=array(), $languageKey='general')
 {
@@ -272,11 +268,11 @@ function l($string, $Params=array(), $languageKey='general')
 /**
  * Language helper
  * This will call l() function and echo(!) the result.
- *
- * @param string $string
- * @param array $Params
- *
- * @return void
+ * --
+ * @param	string	$string
+ * @param	array	$Params
+ * --
+ * @return	void
  */
 function le($string, $Params=array(), $languageKey='general')
 {
@@ -286,8 +282,8 @@ function le($string, $Params=array(), $languageKey='general')
 
 /**
  * Will Init The Cli
- *
- * @return void
+ * --
+ * @return	void
  */
 function initCli()
 {
@@ -327,12 +323,12 @@ function initCli()
 
 /**
  * Replace the last occurrence of a string.
- * ---
- * @param string $search
- * @param string $replace
- * @param string $subject
- * ---
- * @return string
+ * --
+ * @param	string	$search
+ * @param	string	$replace
+ * @param	string	$subject
+ * --
+ * @return	string
  */
 function str_lreplace($search, $replace, $subject)
 {
@@ -351,11 +347,11 @@ function str_lreplace($search, $replace, $subject)
 
 /**
  * Convert to camel case
- * ---
- * @param string $string
- * @param $bool  $ucFirst -- upper case first letter also?
- * ---
- * @return string
+ * --
+ * @param	string	$string
+ * @param	boolean	$ucFirst	Upper case first letter also?
+ * --
+ * @return	string
  */
 function toCamelCase($string, $ucFirst=true)
 {
@@ -373,10 +369,10 @@ function toCamelCase($string, $ucFirst=true)
 
 /**
  * Convert camel case to underlines
- * ---
- * @param string $string
- * ---
- * @return string
+ * --
+ * @param	string	$string
+ * --
+ * @return	string
  */
 function toUnderline($string)
 {

@@ -322,8 +322,11 @@ class Plug
 
 			# Is it enabled?
 			if (!isset(self::$Available[$component]) || self::$Available[$component] == false) {
-				trigger_error("Plug `{$component}` isn't enabled, can't continue.", E_USER_ERROR);
-				return false;
+				# If we're dealing with _sub-class_
+				if (!self::Guess($component)) {
+					trigger_error("Plug `{$component}` isn't enabled, can't continue.", E_USER_ERROR);
+					return false;
+				}
 			}
 
 			# Do we have class already?
@@ -368,6 +371,48 @@ class Plug
 		}
 
 		return (empty($Failed)) ? true : $Failed;
+	}
+	//-
+
+	/**
+	 * Used when we want to construct sub-class for particular plug before main
+	 * class was initialized. For example: cDatabaseQuery (before we called cDatabase,
+	 * which would actually included this class).
+	 * This will only find main class and initialize it, then if sub-class exists,
+	 * return true else false.
+	 * --
+	 * @param	string	$plug	Sub-class name
+	 * --
+	 * @return	boolean
+	 */
+	private static function Guess($plug)
+	{
+		# If we don't have any _, then we know it's not sub-class
+		if (strpos($plug,'_') === false) {
+			return false;
+		}
+
+		# Check if parent component is enable...
+		$Plug = explode('_', $plug);
+		$final = '';
+
+		foreach($Plug as $p)
+		{
+			$final .= trim('_' . $p, '_');
+
+			if (self::Has($final)) {
+				# Include it
+				if (self::Inc($final)) {
+					# Do we have this class now?
+					return class_exists('c'.toCamelCase($plug), false);
+				}
+				else {
+					break;
+				}
+			}
+		}
+
+		return false;
 	}
 	//-
 

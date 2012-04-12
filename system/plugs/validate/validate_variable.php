@@ -13,7 +13,7 @@
  * @since      Version 0.80
  * @since      2012-03-27
  */
-class avrValidateAssign
+class cValidateVariable
 {
 	private $isValid    = true;		# boolean
 	private $addMessage = true;		# boolean	If true, uMessage will be added

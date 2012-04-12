@@ -79,19 +79,45 @@ class Log
 	 * Add System Log Message
 	 * If you added OK or INF true will be returned else false.
 	 * --
-	 * @param	string	$type		INF|WAR|ERR|OK == information, warning, error, successfully done
 	 * @param	string	$message	Plain englisg message
-	 * @param	integer $line		__LINE__
-	 * @param	string	$file		__FILE__
+	 * @param	string	$type		INF|WAR|ERR|OK == information, warning, error, successfully done
 	 * --
 	 * @return	boolean
 	 */
-	public static function Add($type, $message, $line, $file)
+	public static function Add($message, $type='INF')
 	{
+		# Auto assign line and file
+		$BT   = debug_backtrace();
+		$line = $BT[0]['line'];
+		$file = $BT[0]['file'];
+
+		# For the sake of backward compatibility, we can switch type and message
+		if (in_array(strtoupper($message), array('INF', 'OK', 'ERR', 'WAR'))) {
+			$t = $type;
+			$type = $message;
+			$message = $t;
+		}
+
+		# Always upper case
 		$type = strtoupper($type);
 
 		# Write this message into file?
 		self::Write($type, $message, $line, $file);
+
+		# Add backtrace if error
+		if ($type === 'ERR') {
+			$message .= "\n";
+			foreach ($BT as $Trace) {
+				$trace  = '';
+				$trace .= isset($Trace['class']) ? $Trace['class'] : '';
+				$trace .= isset($Trace['type']) ? $Trace['type'] : '';
+				$trace .= isset($Trace['function']) ? $Trace['function'] . '()' : '';
+				$trace .= ' [' . basename($Trace['file']) . ' ' . $Trace['line'] . ']';
+
+
+				$message .= "\n{$trace}";
+			}
+		}
 
 		# Add Item to An Array
 		self::$Logs[] = array

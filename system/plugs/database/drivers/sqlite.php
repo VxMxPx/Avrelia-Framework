@@ -15,7 +15,7 @@
  * ---
  * @param boolean $valid Was construct successful?
  */
-class sqliteDatabaseDriver extends baseDatabase implements interfaceDatabase
+class cDatabaseDriverSqlite extends cDatabaseDriverBase implements cDatabaseDriverInterface
 {
 	private $valid;
 

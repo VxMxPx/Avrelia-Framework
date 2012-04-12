@@ -15,8 +15,12 @@
  */
 class cValidate
 {
-	private static $ValidationsList = array();	# array
+	/**
+	 * @var	array	List of fields to be validated
+	 */
+	private static $ValidationsList = array();
 
+	
 	/**
 	 * Get files, ...
 	 * --
@@ -25,7 +29,7 @@ class cValidate
 	public static function _DoInit()
 	{
 		# Get validate asssign
-		include ds(dirname(__FILE__) . '/validate_assign.php');
+		include ds(dirname(__FILE__) . '/validate_variable.php');
 
 		# Get language
 		Plug::GetLanguage(__FILE__);
@@ -40,11 +44,11 @@ class cValidate
 	 * @param	mixed	$value
 	 * @param	string	$name	If there's no name, no message will be set!
 	 * --
-	 * @return	avrValidateAssign
+	 * @return	cValidateVariable
 	 */
 	public static function Add($value, $name=false)
 	{
-		$Validator = new avrValidateAssign($value, $name);
+		$Validator = new cValidateVariable($value, $name);
 		self::$ValidationsList[] = $Validator;
 		return $Validator;
 	}
@@ -78,23 +82,23 @@ class cValidate
 	 * --
 	 * @param	mixed	$value
 	 * --
-	 * @return	avrValidateAssign
+	 * @return	cValidateVariable
 	 */
 	private static function AddSimple($value)
 	{
-		return new avrValidateAssign($value, false);
+		return new cValidateVariable($value, false);
 	}
 	//-
 
 	/**
 	 * Check if value is valid e-mail address
-	 * ---
+	 * --
 	 * @param	string	$value
 	 * @param	string	$domain	Check if is on particular domain (example: @gmail.com)
 	 * --
 	 * @return	boolean
 	 */
-	public static function isEmail($value, $domain=null)
+	public static function IsEmail($value, $domain=null)
 	{
 		return self::AddSimple($value)->hasValue()->isEmail($domain)->isValid();
 	}

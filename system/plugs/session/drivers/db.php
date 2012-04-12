@@ -13,7 +13,7 @@
  * @since      Version 0.80
  * @since      2012-03-27
  */
-class dbSessionDriver implements interfaceSessionDriver
+class cSessionDriverDb implements cSessionDriverInterface
 {
 	private $Config;			# array
 	private $CurrentUser;		# array
@@ -189,10 +189,10 @@ class dbSessionDriver implements interfaceSessionDriver
 	{
 		# Select user
 		if ($password) {
-			$User = cDatabase::Read($this->Config['db']['users_table'], array('uname' => $user));
+			$User = cDatabase::Find($this->Config['db']['users_table'], array('uname' => $user));
 		}
 		else {
-			$User = cDatabase::Read($this->Config['db']['users_table'], array('id' => (int)$user));
+			$User = cDatabase::Find($this->Config['db']['users_table'], array('id' => (int)$user));
 		}
 
 		# Valid user?
@@ -240,7 +240,7 @@ class dbSessionDriver implements interfaceSessionDriver
 		if ($sessionId = uCookie::Read($this->Config['cookie_name']))
 		{
 			# Look for session
-			$SessionDetails = cDatabase::Read(
+			$SessionDetails = cDatabase::Find(
 									$this->Config['db']['sessions_table'],
 									array('id' => vString::Clean($sessionId, 400, 'aA1c', '_'))
 								);

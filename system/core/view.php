@@ -61,9 +61,17 @@ class View
 	 */
 	public static function Get($file, $Data=array())
 	{
+		$BT     = debug_backtrace();
+		if (isset($BT[3]['class']) &&  isset($BT[3]['type']) && isset($BT[3]['function'])) {
+			$btType = $BT[3]['class'] . $BT[3]['type'] . $BT[3]['function'];
+		}
+		else {
+			$btType = false;
+		}
+
 		$result = self::Render($file, $Data);
 
-		if (self::$viewsProgress == 0) {
+		if ($btType !== 'View::Get') {
 			$outputKey = 'AvreliaView.'.self::$viewsLoaded.'.'.$file;
 			Output::Set($outputKey, $result);
 			return new ViewAssign($result, $outputKey);

@@ -12,16 +12,8 @@
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
  * @since      2012-03-25
- * ---
- * @method	boolean	_canConstruct
- * @method	boolean	_create
- * @method	boolean	_destroy
- * @method	boolean	login
- * @method	void	logout
- * @method	boolean	isLoggedin
- * @method	array	asArray
  */
-interface interfaceSessionDriver
+interface cSessionDriverInterface
 {
 	/**
 	 * Create all files / tables required by this plug to work

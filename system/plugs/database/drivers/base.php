@@ -13,7 +13,7 @@
  * @since      Version 0.80
  * @since      2012-03-22
  */
-class baseDatabase
+class cDatabaseDriverBase
 {
 	protected $Config;	# array	Array of all configurations, set on construction
 	protected $PDO;		# PDO	Link to the PDO Connection
