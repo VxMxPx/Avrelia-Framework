@@ -1,7 +1,7 @@
 !BACK_TO_FRIST_PAGE: Back to first page
 !BACK_TO_PREVI_PAGE: Back to previous page
 !GO_TO_PAGE:         Go to page
-!CURRENT_PAGE:       Current page %s
-!GO_TO_PAGE:         Go to page %s
+!CURRENT_PAGE:       Current page {1}
+!GO_TO_PAGE:         Go to page {1}
 !GO_TO_NEXT_PAGE:    Go to next page
 !GO_TO_LAST_PAGE:    Go to last page
