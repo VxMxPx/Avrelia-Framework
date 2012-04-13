@@ -154,14 +154,15 @@ class cDatabaseQuery
 	/**
 	 * WHERE condition
 	 * --
-	 * @param	string	$key	name || name != || (name || name)
+	 * @param	string	$key	name || name !=
 	 * @param	string	$value
+	 * @param	boolean	$group	true=start group ( || false=stop group )
 	 * --
 	 * @return	$this
 	 */
-	public function where($key, $value)
+	public function where($key, $value, $group=null)
 	{
-		$this->andWhere($key, $value);
+		$this->andWhere($key, $value, $group);
 		return $this;
 	}
 	//-
@@ -169,13 +170,23 @@ class cDatabaseQuery
 	/**
 	 * AND (WHERE) condition
 	 * --
-	 * @param	string	$key	name || name != || (name || name)
+	 * @param	string	$key	name || name !=
 	 * @param	string	$value
+	 * @param	boolean	$group	true=start group ( || false=stop group )
 	 * --
 	 * @return	$this
 	 */
-	public function andWhere($key, $value)
+	public function andWhere($key, $value, $group=null)
 	{
+		if ($group !== null) {
+			if ($group === true) {
+				$key = '(' . $key;
+			}
+			elseif ($group === false) {
+				$key = $key . ')';
+			}
+		}
+
 		$key = $this->where ? 'AND ' . $key  : $key;
 		$this->where[$key] = $value;
 
@@ -186,13 +197,23 @@ class cDatabaseQuery
 	/**
 	 * OR (WHERE) condition
 	 * --
-	 * @param	string	$key	name || name != || (name || name)
+	 * @param	string	$key	name || name !=
 	 * @param	string	$value
+	 * @param	boolean	$group	true=start group ( || false=stop group )
 	 * --
 	 * @return	$this
 	 */
-	public function orWhere($key, $value)
+	public function orWhere($key, $value, $group=null)
 	{
+		if ($group !== null) {
+			if ($group === true) {
+				$key = '(' . $key;
+			}
+			elseif ($group === false) {
+				$key = $key . ')';
+			}
+		}
+
 		$key = $this->where ? 'OR ' . $key  : $key;
 		$this->where[$key] = $value;
 
@@ -452,8 +473,15 @@ class cDatabaseQuery
 			$whereStr  = '';
 			foreach ($where as $k => $v) {
 				$k         = trim($k);
+				if (substr($k,-1) === ')') {
+					$clsGroup = ')';
+					$k = substr($k,0,-1);
+				}
+				else {
+					$clsGroup = '';
+				}
 				$divider   = strpos(str_replace(array('AND ', 'OR '), '', $k), ' ') !== false ? ' ' : ' = ';
-				$whereStr .= "{$k}{$divider}{$v} ";
+				$whereStr .= "{$k}{$divider}{$v}{$clsGroup} ";
 			}
 			$where = 'WHERE ' . substr($whereStr, 0, -1);
 			$sql  .= ' ' . $where;
