@@ -292,9 +292,68 @@ function lu()
 	$List  = array();
 
 	foreach ($Links as $link) {
-		$List[] = '<a href="' . url($link) . '">{?}</a>';
+		$link   = strpos('://', $link) !== false ? $link : url($link);
+		$List[] = '<a href="' . $link . '">{?}</a>';
 	}
-	
+
+	return $List;
+}
+//-
+
+/**
+ * Make list (array) of HTML elements, to be used in translations.
+ * Each element can be passed in zen-like formatt: span.dark || strong em
+ * For links, with url use: a(uri//url).class#id strong.class em
+ */
+function lh()
+{
+	$Elements = func_get_args();
+	$List     = array();
+
+	foreach ($Elements as $element) {
+		if (strpos($element, ' ') !== false) {
+			$Element = explode(' ', $element);
+		}
+		else {
+			$Element = array($element);
+		}
+
+		$closeTags = '';
+		$openTags  = '';
+
+		foreach ($Element as $tag) {
+			# Reset to empty
+			$url  = $class = $id = null;
+
+			preg_match('/\((.*?)\)/',         $tag, $url);
+			$tag = preg_replace('/\((.*?)\)/', '', $tag);
+			preg_match_all('/\.([a-zA-Z0-9_]*)/', $tag, $class);
+			preg_match('/\#([a-zA-Z0-9_]*)/', $tag, $id);
+			preg_match('/^([a-zA-Z]*)/',      $tag, $tag);
+
+			$openTags .= '<' . $tag[1];
+
+			if (!empty($url)) {
+				$url = $url[1];
+				$url = strpos('://', $url) !== false ? $url : url($url);
+				$openTags .= ' href="' . $url . '"';
+			}
+
+			if (!empty($class[1])) {
+				$openTags .= ' class="' . implode(' ', $class[1]) . '"';
+			}
+
+			if (!empty($id)) {
+				$openTags .= ' id="' . $id[1] . '"';
+			}
+
+			$openTags .= '>';
+			$closeTags = "</{$tag[1]}>" . $closeTags;
+		}
+
+		$List[] = $openTags . '{?}' . $closeTags;
+	}
+
 	return $List;
 }
 //-

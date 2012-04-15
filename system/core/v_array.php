@@ -502,9 +502,11 @@ class vArray
 				}
 			}
 
-			Log::Add('INF', "Filter was used, the following keys were removed: `" .
-								implode(', ', $Drop) . '` and added: `' .
-								implode(', ', $Add)  . '`.', __LINE__, __FILE__);
+			if (!empty($Drop) || !empty($Add)) {
+				Log::Add('INF', "Filter was used, the following keys were removed: `" .
+									implode(', ', $Drop) . '` and added: `' .
+									implode(', ', $Add)  . '`.', __LINE__, __FILE__);
+			}
 			return true;
 		}
 
@@ -546,7 +548,7 @@ class vArray
 						return $min;
 					}
 
-					if ($max && (int) $Variable < $max) {
+					if ($max && (int) $Variable > $max) {
 						return $max;
 					}
 				}
