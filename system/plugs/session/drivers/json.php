@@ -158,6 +158,29 @@ class cSessionDriverJson implements cSessionDriverInterface
 	//-
 
 	/**
+	 * Will log-in user based on id.
+	 * --
+	 * @param	integer	$id
+	 * @param	boolean	$rememberMe
+	 * --
+	 * @return	boolean
+	 */
+	public function loginId($id, $rememberMe=true)
+	{
+		# Do we have valid user?
+		if (!$User = $this->userValid($id)) {
+			return false;
+		}
+
+		# Okay, set session and current user
+		$this->userSet($User['id']);
+		$this->sessionSet($User['id'], $rememberMe);
+
+		return true;
+	}
+	//-
+
+	/**
 	 * Will logout current user
 	 * ---
 	 * @return	void

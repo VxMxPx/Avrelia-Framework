@@ -281,6 +281,25 @@ function le($string, $Params=array(), $languageKey='general')
 //-
 
 /**
+ * Make list (array) of links, to be used in translations.
+ * Meaning, they are formatted like <a href="#url">{?}</a>
+ * --
+ * @return	array
+ */
+function lu()
+{
+	$Links = func_get_args();
+	$List  = array();
+
+	foreach ($Links as $link) {
+		$List[] = '<a href="' . url($link) . '">{?}</a>';
+	}
+	
+	return $List;
+}
+//-
+
+/**
  * Will Init The Cli
  * --
  * @return	void

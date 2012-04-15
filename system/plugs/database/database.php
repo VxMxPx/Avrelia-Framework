@@ -131,7 +131,6 @@ class cDatabase
 
 		# Finally load all other required libraries
 		if (!class_exists('cDatabaseQuery',     false)) { include(ds($path.'/database_query.php'));     }
-		if (!class_exists('cDatabaseRecord',    false)) { include(ds($path.'/database_record.php'));    }
 		if (!class_exists('cDatabaseResult',    false)) { include(ds($path.'/database_result.php'));    }
 		if (!class_exists('cDatabaseStatement', false)) { include(ds($path.'/database_statement.php')); }
 
@@ -216,11 +215,7 @@ class cDatabase
 
 		# Parse condition, if is an array
 		if (is_array($condition)) {
-			# So, it's quite simple, if we have array in condition, then for sure,
-			# we don't have bind, set, because, bind is used only if we have costume,
-			# string condition. So we'll assign, array condition, to bind.
-			$bind      = $condition;
-			$condition = self::ParseCondition($condition);
+			$bind = self::ParseCondition($condition);
 		}
 
 		# Append condition
@@ -288,8 +283,7 @@ class cDatabase
 		$sql = substr($sql, 0, -2);
 
 		if (is_array($condition)) {
-			$bind      = $condition;
-			$condition = self::ParseCondition($condition);
+			$bind = self::ParseCondition($condition);
 		}
 
 		$sql .= ' '.$condition;
@@ -318,8 +312,7 @@ class cDatabase
 		$sql  = "DELETE FROM {$table}";
 
 		if (is_array($condition)) {
-			$bind = $condition;
-			$condition = self::ParseCondition($condition);
+			$bind = self::ParseCondition($condition);
 		}
 
 		$sql .= ' ' . $condition;
@@ -341,17 +334,21 @@ class cDatabase
 	 * --
 	 * @return	string
 	 */
-	private static function ParseCondition($condition)
+	private static function ParseCondition(&$condition)
 	{
 		if (is_array($condition)) {
-
+			$bind         = array();
 			$newCondition = 'WHERE ';
 
 			foreach ($condition as $k => $v) {
-				$newCondition .= "{$k}=:{$k} AND ";
+				$divider = strpos(str_replace(array('AND ', 'OR '), '', $k), ' ') !== false ? ' ' : ' = ';
+				$kclean  = vString::Clean($k, 100, 'aA1c', '_');
+				$newCondition .= "{$k}{$divider}:{$kclean} AND ";
+				$bind[$kclean] = $v;
 			}
 
-			return substr($newCondition, 0, -5);
+			$condition = substr($newCondition, 0, -5);
+			return $bind;
 		}
 		else {
 			Log::Add('WAR', "Condition must be an array: {$condition}.", __LINE__, __FILE__);

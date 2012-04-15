@@ -45,6 +45,16 @@ interface cSessionDriverInterface
 	function login($username, $password, $rememberMe=true);
 
 	/**
+	 * Will log-in user based on id.
+	 * --
+	 * @param	mixed	$id
+	 * @param	boolean	$rememberMe
+	 * --
+	 * @return	boolean
+	 */
+	function loginId($id, $rememberMe=true);
+
+	/**
 	 * Logout (if logged in) the user
 	 * --
 	 * @return	void

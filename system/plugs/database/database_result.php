@@ -47,7 +47,7 @@ class cDatabaseResult
 	 */
 	public function __construct($PDOStatement)
 	{
-		if ($PDOStatement) {
+		if (is_object($PDOStatement)) {
 			$this->PDOStatement = $PDOStatement;
 			$this->status = $this->PDOStatement->execute();
 			$this->lastId = cDatabase::_getDriver()->getPDO()->lastInsertId();
@@ -92,7 +92,7 @@ class cDatabaseResult
 	 */
 	public function count()
 	{
-		return count($this->asArray());
+		return $this->status ? count($this->asArray()) : 0;
 	}
 	//-
 
@@ -124,21 +124,6 @@ class cDatabaseResult
 	//-
 
 	/**
-	 * Will put particular result's index, to record.
-	 * You MUST enter index, of particular row! Most likely this will be 0, for
-	 * first item returned (offten the only one).
-	 * --
-	 * @param	integer	$index
-	 * --
-	 * @return	cDatabaseRecord
-	 */
-	# public function asRecord($index)
-	# {
-    #
-	# }
-	//-
-
-	/**
 	 * Return _raw_ PDOStatement object.
 	 * Read more about it here: http://www.php.net/manual/en/class.pdostatement.php
 	 * --
@@ -155,7 +140,7 @@ class cDatabaseResult
 	 * --
 	 * @return	mixed
 	 */
-	public function insertId()
+	public function insertedId()
 	{
 		return $this->lastId;
 	}

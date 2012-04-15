@@ -145,6 +145,28 @@ class cSessionDriverDb implements cSessionDriverInterface
 	//-
 
 	/**
+	 * Will log-in user based on id.
+	 * --
+	 * @param	integer	$id
+	 * @param	boolean	$rememberMe
+	 * --
+	 * @return	boolean
+	 */
+	public function loginId($id, $rememberMe=true)
+	{
+		$return = $this->userSet($id);
+
+		if ($return) {
+			$this->sessionSet($this->CurrentUser['id'], $rememberMe);
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	//-
+
+	/**
 	 * Will logout current user
 	 * ---
 	 * @return	void

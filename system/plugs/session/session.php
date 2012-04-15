@@ -152,6 +152,21 @@ class cSession
 	//-
 
 	/**
+	 * Will log-in user based on id.
+	 * --
+	 * @param	mixed	$id
+	 * @param	boolean	$rememberMe	If set to false, session will expire when user
+	 * 								close browser's window.
+	 * --
+	 * @return	boolean
+	 */
+	public static function LoginId($id, $rememberMe=true)
+	{
+		return self::$Driver ? self::$Driver->loginId($id, $rememberMe) : false;
+	}
+	//-
+
+	/**
 	 * Is User logged in?
 	 * --
 	 * @return	boolean

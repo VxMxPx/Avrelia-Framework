@@ -162,7 +162,7 @@ class cDatabaseQuery
 	 */
 	public function where($key, $value, $group=null)
 	{
-		$this->andWhere($key, $value, $group);
+		$this->makeWhere($key, $value, $group, 'AND');
 		return $this;
 	}
 	//-
@@ -178,18 +178,7 @@ class cDatabaseQuery
 	 */
 	public function andWhere($key, $value, $group=null)
 	{
-		if ($group !== null) {
-			if ($group === true) {
-				$key = '(' . $key;
-			}
-			elseif ($group === false) {
-				$key = $key . ')';
-			}
-		}
-
-		$key = $this->where ? 'AND ' . $key  : $key;
-		$this->where[$key] = $value;
-
+		$this->makeWhere($key, $value, $group, 'AND');
 		return $this;
 	}
 	//-
@@ -205,6 +194,23 @@ class cDatabaseQuery
 	 */
 	public function orWhere($key, $value, $group=null)
 	{
+		$this->makeWhere($key, $value, $group, 'OR');
+		return $this;
+	}
+	//-
+
+	/**
+	 * Make AND | OR Where statement
+	 * --
+	 * @param	string	$key	name || name !=
+	 * @param	string	$value
+	 * @param	boolean	$group	true=start group ( || false=stop group )
+	 * @param	string	$type	OR || AND
+	 * --
+	 * @return	$this
+	 */
+	private function makeWhere($key, $value, $group, $type)
+	{
 		if ($group !== null) {
 			if ($group === true) {
 				$key = '(' . $key;
@@ -214,10 +220,16 @@ class cDatabaseQuery
 			}
 		}
 
-		$key = $this->where ? 'OR ' . $key  : $key;
-		$this->where[$key] = $value;
+		# Duplicated?
+		// $i = 2;
+		// $nKey = $key;
+		// while (isset($this->where[$nKey])) {
+		// 	$nKey = $key . '_' . $i;
+		// 	$i ++;
+		// }
 
-		return $this;
+		$key = $this->where ? $type . ' ' . $key  : $key;
+		$this->where[$key] = $value;
 	}
 	//-
 
@@ -472,7 +484,7 @@ class cDatabaseQuery
 			$where     = $this->prepareBind($this->where, 'w_');
 			$whereStr  = '';
 			foreach ($where as $k => $v) {
-				$k         = trim($k);
+				$k = trim($k);
 				if (substr($k,-1) === ')') {
 					$clsGroup = ')';
 					$k = substr($k,0,-1);
@@ -517,9 +529,18 @@ class cDatabaseQuery
 		foreach ($Values as $key => $val)
 		{
 			$keyBind = str_replace(array('AND ', 'OR ', 'LIKE'), '', $key);
-			$keyBind = ':' . $prefix . vString::Clean($keyBind, 200, 'aA1c', '_');
-			$Result[$key] = $keyBind;
-			$this->bindedValues[$keyBind] = $val;
+			$keyBind = $prefix . vString::Clean($keyBind, 200, 'aA1c', '_');
+
+			# Duplicated?
+			$nKeyBind = $keyBind;
+			$i = 2;
+			while (isset($this->bindedValues[$nKeyBind])) {
+				$nKeyBind = "{$keyBind}_{$i}";
+				$i++;
+			}
+
+			$Result[$key] = ':'.$nKeyBind;
+			$this->bindedValues[$nKeyBind] = $val;
 		}
 
 		return $Result;
