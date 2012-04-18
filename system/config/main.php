@@ -53,7 +53,7 @@ $AvreliaConfig = array
 		'allow_redirects'  => true,
 
 		# Cache directory
-		'cache_dir'        => APPPATH . '/database/cache',
+		'cache_dir'        => DATPATH . '/cache',
 
 		# The files / folder which we need to ignore when copying...
 		'ignore_on_copy'   => array('.svn'),

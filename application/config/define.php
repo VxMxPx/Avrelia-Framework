@@ -21,6 +21,7 @@ if (file_exists($localDefine)) {
 }
 
 # Try To get Path Automatically, You should change this in case of problems...
-if (!defined('APPPATH')) { define('APPPATH', realpath(dirname(__FILE__).'/../')); }
-if (!defined('PUBPATH')) { define('PUBPATH', realpath(APPPATH.'/public'));    }
-if (!defined('SYSPATH')) { define('SYSPATH', realpath(APPPATH.'/../system'));   }
+if (!defined('APPPATH')) define('APPPATH', realpath(dirname(__FILE__).'/../'));
+if (!defined('PUBPATH')) define('PUBPATH', realpath(APPPATH.'/public'));
+if (!defined('DATPATH')) define('DATPATH', realpath(APPPATH.'/database'));
+if (!defined('SYSPATH')) define('SYSPATH', realpath(APPPATH.'/../system'));

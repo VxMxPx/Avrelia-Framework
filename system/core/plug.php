@@ -438,7 +438,7 @@ class Plug
 	 */
 	public static function GetDatabasePath($path=null)
 	{
-		return ds(APPPATH . '/database/' . Cfg::Get('plug/public_dir', 'plugs') . '/' . $path);
+		return ds(DATPATH . '/' . Cfg::Get('plug/public_dir', 'plugs') . '/' . $path);
 	}
 	//-
 

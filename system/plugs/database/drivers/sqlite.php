@@ -37,7 +37,7 @@ class cDatabaseDriverSqlite extends cDatabaseDriverBase implements cDatabaseDriv
 		}
 
 		# Since This Is SQLite database, we must define only path & database filename
-		$this->Config['databasePath'] = ds(APPPATH.'/database/'.$this->Config['sqlite']['filename']);
+		$this->Config['databasePath'] = ds(DATPATH.'/'.$this->Config['sqlite']['filename']);
 
 		# File was found?
 		if (!file_exists($this->Config['databasePath'])) {
