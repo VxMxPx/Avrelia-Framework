@@ -71,7 +71,7 @@ class Avrelia
 			}
 		}
 
-		# Init Config
+		# Load both, default system's and application's config
 		Cfg::Load(ds(SYSPATH . '/config/main.php'));
 		Cfg::Load(ds(APPPATH . '/config/main.php'));
 
@@ -88,10 +88,10 @@ class Avrelia
 		Log::Init();
 
 		# First Log Entry...
-		Log::Add('INF', 'PHP version: ' . PHP_VERSION . ' | Framework version: ' . self::VERSION, __LINE__, __FILE__);
+		Log::Add('PHP version: ' . PHP_VERSION . ' | Framework version: ' . self::VERSION, 'INF');
 
 		# Error Handling
-		set_error_handler("avreliaErrorHandler");
+		set_error_handler('avreliaErrorHandler');
 
 		# Trigger event after framework initialization
 		Event::Trigger('avrelia.after.init');
@@ -140,7 +140,7 @@ class Avrelia
 		# Do we have before?
 		if (Cfg::Get('system/routes/before', false)) {
 			if (!$this->routeCall(Cfg::Get('system/routes/before'))) {
-				Log::Add('WAR', "Before is set in config, but can't find method: `".Cfg::Get('system/routes/before', false)."`.", __LINE__, __FILE__);
+				Log::Add('Before is set in config, but can\'t find method: `'.Cfg::Get('system/routes/before', false).'`.', 'WAR');
 			}
 		}
 
@@ -174,7 +174,7 @@ class Avrelia
 		# Call 404 if we have false
 		if (!$found) {
 			HTTP::Status404_NotFound();
-			Log::Add('INF', "We have 404 on `{$requestUri}`.", __LINE__, __FILE__);
+			Log::Add("We have 404 on `{$requestUri}`.", 'INF');
 
 			if (Cfg::Get('system/routes/404')) {
 				$found = $this->routeCall(Cfg::Get('system/routes/404'));
@@ -189,7 +189,7 @@ class Avrelia
 		# Do we have after?
 		if (Cfg::Get('system/routes/after', false)) {
 			if (!$this->routeCall(Cfg::Get('system/routes/after'))) {
-				Log::Add('WAR', "After is set in config, but can't find method: `".Cfg::Get('system/routes/after', false)."`.", __LINE__, __FILE__);
+				Log::Add('After is set in config, but can\'t find method: `'.Cfg::Get('system/routes/after', false).'`.', 'WAR');
 			}
 		}
 
