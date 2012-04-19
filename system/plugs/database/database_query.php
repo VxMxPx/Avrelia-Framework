@@ -35,6 +35,16 @@ class cDatabaseQuery
 	private $values;
 
 	/**
+	 * @var	array	List of joins
+	 */
+	private $joins;
+
+	/**
+	 * @var	string	Group by
+	 */
+	private $group;
+
+	/**
 	 * @var	string	Table name, set by: into, from, update, delete
 	 */
 	private $table;
@@ -360,6 +370,35 @@ class cDatabaseQuery
 	//-
 
 	/**
+	 * Will LEFT JOIN table
+	 * --
+	 * @param	string	$table
+	 * @param	strign	$on
+	 * --
+	 * @return	$this
+	 */
+	public function join($table, $on)
+	{
+		$this->joins[$table] = $on;
+		return $this;
+	}
+	//-
+
+	/**
+	 * Will GROUP BY field
+	 * --
+	 * @param	string	$field
+	 * --
+	 * @return	$this
+	 */
+	public function group($field)
+	{
+		$this->group = $field;
+		return $this;
+	}
+	//-
+
+	/**
 	 * Execute statement
 	 * --
 	 * @return	cDatabaseResult
@@ -446,6 +485,14 @@ class cDatabaseQuery
 			case 'SELECT':
 				# Select values from database
 				$sql = 'SELECT ' . $this->select . ' FROM ' . $this->table;
+
+				# Joins
+				if (is_array($this->joins)) {
+					foreach ($this->joins as $jKey => $jVal) {
+						$sql .= " LEFT JOIN {$jKey} ON {$jVal}";
+					}
+				}
+
 				break;
 
 			case 'INSERT':
@@ -507,6 +554,11 @@ class cDatabaseQuery
 		# Append limit
 		if ($this->limit) {
 			$sql .= ' ' . $this->limit;
+		}
+
+		# Group?
+		if ($this->group) {
+			$sql .= ' GROUP BY ' . $this->group;
 		}
 
 		return $sql;
