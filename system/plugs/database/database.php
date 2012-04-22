@@ -47,7 +47,7 @@ class cDatabase
 	public static function _DoEnable()
 	{
 		self::LoadDriver();
-		self::$Driver->_create();
+		return self::$Driver->_create();
 	}
 	//-
 

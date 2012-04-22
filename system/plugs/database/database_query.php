@@ -560,8 +560,7 @@ class cDatabaseQuery
 		if ($this->group) {
 			$sql .= ' GROUP BY ' . $this->group;
 		}
-if ($this->joins) {
-	dumpVar($sql); }
+
 		return $sql;
 	}
 	//-

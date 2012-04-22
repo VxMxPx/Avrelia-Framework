@@ -78,13 +78,15 @@ class cDatabaseStatement
 	 */
 	public function bind($key, $val=false)
 	{
-		if (is_array($key)) {
-			foreach ($key as $k => $v) {
-				$this->Bind[$k] = $v;
+		if ($key) {
+			if (is_array($key)) {
+				foreach ($key as $k => $v) {
+					$this->Bind[$k] = $v;
+				}
 			}
-		}
-		else {
-			$this->Bind[$key] = $val;
+			else {
+				$this->Bind[$key] = $val;
+			}
 		}
 
 		return $this;
