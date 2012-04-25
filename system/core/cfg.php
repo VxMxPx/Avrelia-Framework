@@ -20,6 +20,11 @@ class Cfg
 	 */
 	private static $Config = array();
 
+	/**
+	 * @var	array	Cached values
+	 */
+	private static $Cache = array();
+
 
 	/**
 	 * Append some config
@@ -30,12 +35,14 @@ class Cfg
 	 */
 	public static function Append($Config)
 	{
+		# First we'll clear all cached values
+		self::$Cache = array();
+
 		# Doesn't work, change 404 to 1 and on duplicates create new array
 		//self::$Config = array_merge_recursive(self::$Config, $Config);
 
 		# Doesn't work, merge failed
 		//self::$Config = array_merge(self::$Config, $Config);
-
 
 		# Works perfectly
 		self::$Config = vArray::Merge(self::$Config, $Config);
@@ -88,7 +95,10 @@ class Cfg
 	 */
 	public static function Debug()
 	{
-		return dumpVar(self::$Config, false, true);
+		return 
+		'Cache ' . dumpVar(self::$Cache, false, true) .
+		"\n" .
+		'Config ' . dumpVar(self::$Config, false, true);
 	}
 	//-
 
@@ -102,7 +112,28 @@ class Cfg
 	 */
 	public static function Get($path, $default=null)
 	{
-		return vArray::GetByPath($path, self::$Config, $default);
+		if (!isset(self::$Cache[$path])) {
+			self::$Cache[$path] = vArray::GetByPath($path, self::$Config, $default);
+		}
+
+		return self::$Cache[$path];
+	}
+	//-
+
+	/**
+	 * Overwrite particular config key
+	 * --
+	 * @param	string	$path	In format: key/subkey
+	 * @param	mixed	$value
+	 * --
+	 * @return	void
+	 */
+	public static function Overwrite($path, $value)
+	{
+		# Clear cache to awoid conflicts
+		self::$Cache = array();
+
+		vArray::SetByPath($path, $value, self::$Config);
 	}
 	//-
 
