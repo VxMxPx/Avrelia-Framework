@@ -141,10 +141,10 @@ class vString
 
 	/**
 	 * Standardize line endings
-	 * ---
-	 * @param string $input
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$input
+	 * --
+	 * @return	string
 	 */
 	public static function StandardizeLineEndings($input)
 	{
@@ -154,12 +154,12 @@ class vString
 
 	/**
 	 * Prepare handle (to be inserted into database)
-	 * for example, will convers: My Title {to} my-title
-	 * ---
-	 * @param string $string       -- string that WILL be converted to handle
-	 * @param array  $HandlesList  -- list of existing handles (if we don't wanna duplicates)
-	 * ---
-	 * @return string
+	 * for example, will convert: "My Title" to "my-title"
+	 * --
+	 * @param	string	$string			String that WILL be converted to handle
+	 * @param	array	$HandlesList	List of existing handles (if we don't wanna duplicates)
+	 * --
+	 * @return	string
 	 */
 	public static function ToHandle($string, $HandlesList)
 	{
@@ -192,13 +192,13 @@ class vString
 
 	/**
 	 * Clean string data
-	 * --------
-	 * @param string $string
-	 * @param int    $length -- define maximum length || 0 - for disable
-	 * @param string $type   -- define type  -  type.: a A 1 c s (as)  small a-z, up A-Z, nums, costum, spaces
-	 * @param string $costum -- define costum  -  example.: ', - + * ! ? #' (use space)
-	 * --------
-	 * @return string
+	 * --
+	 * @param	string	$string
+	 * @param	integer	$length	Define maximum length || 0 - for disable
+	 * @param	string	$type	Define type - type.: a A 1 c s (as)  small a-z, up A-Z, nums, costum, spaces
+	 * @param	string	$costum	Define costum - example.: ', - + * ! ? #' (use space)
+	 * --
+	 * @return	string
 	 */
 	public static function Clean($string, $length=0, $type='aA1cs', $costum='')
 	{
@@ -259,11 +259,12 @@ class vString
 	//-
 
 	/**
-	 * Clean string data
-	 * --------
-	 * @param string $string
-	 * @param string $regEx  -- Regular Expression
-	 * --------
+	 * Clean string data with the help of regular expression.
+	 * Matches are removed!
+	 * --
+	 * @param	string	$string
+	 * @param	string	$regEx		Regular Expression
+	 * --
 	 * @return string
 	 */
 	public static function RegExClean($string, $regEx)
@@ -273,11 +274,11 @@ class vString
 	//-
 
 	/**
-	 * Normalize to Clean Latin characters... (for example convert č => c)
-	 * ---
-	 * @param string $string
-	 * ---
-	 * @return string
+	 * Normalize to Clean Latin characters, for example convert č => c
+	 * --
+	 * @param	string	$string
+	 * --
+	 * @return	string
 	 */
 	public static function Normalize($string)
 	{
@@ -330,34 +331,37 @@ class vString
 	 * Strip HTML Tags, and Attributes
 	 * from PHP.net by Nick
 	 * <?php vString::stripTagsAttributes($string,'<strong><em><a>','href,rel'); ?>
-	 * ----
-	 * @param string            $string
-	 * @param string            $allowTags       - <strong><em><a>
-	 * @param string | array    $allowAttributes - href,rel
-	 * ----
-	 * @return string
+	 * --
+	 * @param	string	$string
+	 * @param	string	$allowTags			<strong><em><a>
+	 * @param	mixed	$allowAttributes	href,rel
+	 * --
+	 * @return	string
 	 */
-	public static function StripTagsAttributes($string, $allowTags=NULL, $allowAttributes=NULL)
+	public static function StripTagsAttributes($string, $allowTags=null, $allowAttributes=null)
 	{
 		if ($allowAttributes) {
-			if(!is_array($allowAttributes))
-				$allowAttributes = explode(",", $allowAttributes);
+			if (!is_array($allowAttributes)) {
+				$allowAttributes = explode(',', $allowAttributes);
+			}
 
-			if(is_array($allowAttributes))
-				$allowAttributes = implode("|", $allowAttributes);
+			if (is_array($allowAttributes)) {
+				$allowAttributes = implode('|', $allowAttributes);
+			}
 
 			$rep = '/([^>]*) ('.$allowAttributes.')(=)(\'.*\'|".*")/i';
 			$string = preg_replace($rep, '$1 $2_-_-$4', $string);
 		}
 
-		if(preg_match('/([^>]*) (.*)(=\'.*\'|=".*")(.*)/i',$string) > 0) {
+		if (preg_match('/([^>]*) (.*)(=\'.*\'|=".*")(.*)/i', $string) > 0) {
 			$string = preg_replace('/([^>]*) (.*)(=\'.*\'|=".*")(.*)/i', '$1$4', $string);
 		}
 
 		$rep = '/([^>]*) ('.$allowAttributes.')(_-_-)(\'.*\'|".*")/i';
 
-		if($allowAttributes)
+		if ($allowAttributes) {
 			$string = preg_replace($rep, '$1 $2=$4', $string);
+		}
 
 		return strip_tags($string, $allowTags);
 	}
@@ -365,10 +369,10 @@ class vString
 
 	/**
 	 * Will Convert HTML tags (< >) to save-for-output (&lt; &gt;)
-	 * ---
-	 * @param string $input
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$input
+	 * --
+	 * @return	string
 	 */
 	public static function EncodeEntities($input)
 	{
@@ -379,10 +383,10 @@ class vString
 
 	/**
 	 * Will Convert save-for-output tags (&lt; &gt;) back to HTML tags (< >)!
-	 * ---
-	 * @param string $input
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$input
+	 * --
+	 * @return	string
 	 */
 	public static function RestoreEntities($input)
 	{
@@ -393,11 +397,11 @@ class vString
 
 	/**
 	 * Get desired number of words - shorten string nicely...
-	 * ---
-	 * @param string $input
-	 * @param int $numberOfWords
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$input
+	 * @param	integer	$numberOfWords
+	 * --
+	 * @return	string
 	 */
 	public static function GetWords($input, $numberOfWords)
 	{
@@ -421,12 +425,12 @@ class vString
 
 	/**
 	 * Explode and trim data
-	 * ---
-	 * @param string $seperator -- if array, then we'll explode by and of them!
-	 * @param string $str
-	 * @param int    $limit
-	 * ---
-	 * @return array
+	 * --
+	 * @param	string	$seperator	If array, then we'll explode by and of them!
+	 * @param	string	$str
+	 * @param	integer	$limit
+	 * --
+	 * @return	array
 	 */
 	public static function ExplodeTrim($seperator, $str, $limit=false)
 	{
@@ -461,11 +465,12 @@ class vString
 
 	/**
 	 * Will safely unserialize string
-	 *
-	 * @param string $string -- serialized data
-	 * @param mixed $default
-	 * @param string $expected -- trype of expected return array|boolean|string|numeric|object
-	 *      if we didn't got expected return, then we'll return default
+	 * --
+	 * @param	string	$string		Serialized data
+	 * @param	mixed	$default
+	 * @param	string	$expected	Type of expected return array|boolean|string|numeric|object
+	 * 								If we didn't got expected return, then we'll return default
+	 * --
 	 * @return mixed
 	 */
 	public static function Unserialize($string, $default=array(), $expected='array')
@@ -503,13 +508,13 @@ class vString
 
 	/**
 	 * Split text by particular delimiter and return particular piece of it.
-	 * ---
-	 * @param string $delimiter
-	 * @param string $string
-	 * @param integer $piece
-	 * @param boolean $limit
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$delimiter
+	 * @param	string	$string
+	 * @param	integer	$piece
+	 * @param	boolean	$limit
+	 * --
+	 * @return	string
 	 */
 	public static function Split($delimiter, $string, $piece, $limit=false)
 	{

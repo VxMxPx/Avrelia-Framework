@@ -20,7 +20,7 @@ class Avrelia
 	const AUTHOR    = 'Avrelia';
 	const FOUNDER   = 'Marko Gajšt';
 	const WEBSITE   = 'http://framework.avrelia.com';
-	const COPYRIGHT = '2010';
+	const COPYRIGHT = '2010-2012';
 
 	/**
 	 * @var	array	Items which needs to be autoloaded...
@@ -35,7 +35,7 @@ class Avrelia
 	/**
 	 * Will init the framework
 	 * --
-	 * @return	void
+	 * @return	$this
 	 */
 	public function init()
 	{
@@ -92,6 +92,9 @@ class Avrelia
 
 		# Error Handling
 		set_error_handler('avreliaErrorHandler');
+
+		# Init the cache
+		Cache::Init();
 
 		# Init the input
 		Input::Init();
@@ -203,7 +206,7 @@ class Avrelia
 	 * @param	string	$callName
 	 * @param	array	$Patterns
 	 * --
-	 * @return	void
+	 * @return	boolean
 	 */
 	private function routeCall($callName, $Patterns=false)
 	{

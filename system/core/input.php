@@ -29,8 +29,8 @@ class Input
 	/**
 	 * Get Rid Of Globals & Set Uri Segment
 	 * from: http://www.phpguru.org/article/yet-more-on-cleaning-input-data
-	 *
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	public static function Init()
 	{
@@ -62,8 +62,8 @@ class Input
 
 	/**
 	 * Set Get Actions And Segments
-	 *
-	 * @return void
+	 * --
+	 * @return	void
 	 */
 	private static function SetGet()
 	{
@@ -116,10 +116,10 @@ class Input
 
 	/**
 	 * Get the request uri (example /edit/me/now)
-	 * ---
-	 * @param bool $includeActions
-	 * ---
-	 * @return string
+	 * --
+	 * @param	boolean	$includeActions
+	 * --
+	 * @return	string
 	 */
 	public static function GetRequestUri($includeActions=true)
 	{
@@ -131,11 +131,11 @@ class Input
 	 * Will set default value for particular segment,...
 	 * This is mostly used when we don't have set segment 0, and we need it to
 	 * build firther navigation!
-	 * ---
-	 * @param array $Uri -- array(0 => 'home')
-	 * @param bool $ifNotSet will set it only if it's not already set
-	 * ---
-	 * @return void
+	 * --
+	 * @param	array	$Uri		Array(0 => 'home')
+	 * @param	boolean	$ifNotSet	Will set it only if it's not already set
+	 * --
+	 * @return	void
 	 */
 	public static function BuildUriSet($Uri, $ifNotSet=true)
 	{
@@ -149,13 +149,11 @@ class Input
 
 	/**
 	 * This will build url (by replacing existing) from segments / actions.
-	 *
-	 * @param array $Uri -- examples:
-	 * 	array(0 => 'segment', 1 => 'segment1', 'action' => 'value')
-	 *
-	 * @param bool $updateCurrent -- will keep current uri's segments / actions and update them
-	 *
-	 * @return string
+	 * --
+	 * @param	array	$Uri			Examples: array(0 => 'segment', 1 => 'segment1', 'action' => 'value')
+	 * @param	boolean	$updateCurrent	Will keep current uri's segments / actions and update them
+	 * --
+	 * @return	string
 	 */
 	public static function BuildUri($Uri, $updateCurrent=true)
 	{
@@ -217,12 +215,11 @@ class Input
 
 	/**
 	 * Fetch an item from the POST array
-	 *
-	 * @param mixed $key  ---  If key is empty, then we'll return whole post!
-	 *
-	 * @param mixed $default -- default if variable isn't set....
-	 *
-	 * @return mixed
+	 * --
+	 * @param	mixed	$key		If key is empty, then we'll return whole post!
+	 * @param	mixed	$default	Default if variable isn't set....
+	 * --
+	 * @return	mixed
 	 */
 	public static function Post($key=false, $default=null)
 	{
@@ -256,8 +253,8 @@ class Input
 
 	/**
 	 * Return true if any data was posted, and false if wasn't
-	 * ---
-	 * @return bool
+	 * --
+	 * @return	boolean
 	 */
 	public static function HasPost()
 	{
@@ -268,10 +265,10 @@ class Input
 	/**
 	 * Return current url, if withQuery is set to true, it will return full url,
 	 * query included.
-	 * ---
-	 * @param bool $withQuery
-	 * ---
-	 * @return string
+	 * --
+	 * @param	boolean	$withQuery
+	 * --
+	 * @return	string
 	 */
 	public static function GetUrl($withQuery=false)
 	{

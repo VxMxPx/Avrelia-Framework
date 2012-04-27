@@ -52,11 +52,23 @@ $AvreliaConfig = array
 		# Allow redirects? Useful for debuging.
 		'allow_redirects'  => true,
 
-		# Cache directory
-		'cache_dir'        => DATPATH . '/cache',
-
 		# The files / folder which we need to ignore when copying...
 		'ignore_on_copy'   => array('.svn'),
+	),
+
+	# Cache settings.
+	'cache' => array
+	(
+		# Which type to use (file or php's apc)
+		# Options: file || apc
+		# To read more about apc, see: http://www.php.net/manual/en/ref.apc.php
+		'type'     => 'file',
+
+		# Where to store type:file cache
+		'location' => DATPATH . '/cache',
+
+		# Apc prefix (to avoid confict with other applications)
+		'apc_prefix' => 'avrelia_framework_',
 	),
 
 	# Plugs settings.

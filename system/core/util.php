@@ -16,15 +16,18 @@
 
 class Util
 {
-	# List of loaded utils
+	/**
+	 * @var	array	List of loaded files
+	 */
 	private static $Loaded = array();
+
 
 	/**
 	 * Will load util file
-	 *
-	 * @param string $name
-	 *
-	 * @return void
+	 * --
+	 * @param	string	$name
+	 * --
+	 * @return	void
 	 */
 	public static function Get($name)
 	{

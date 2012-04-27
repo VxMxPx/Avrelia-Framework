@@ -13,20 +13,20 @@
  * @since      Version 0.80
  * @since      Date sob avg 07 18:18:44 2010
  */
-
-
 class Benchmark
 {
-	# Has all times stored
+	/**
+	 * @var	array	All timers
+	 */
 	private static $MicroTimes;
 
 
 	/**
 	 * MircoTime start
-	 * ---
-	 * @param string $name -- we should gave unique name to our timer
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$name	We should give unique name to our timer
+	 * --
+	 * @return	void
 	 */
 	public static function SetTimer($name)
 	{
@@ -37,10 +37,10 @@ class Benchmark
 
 	/**
 	 * Return the time that was set in "setTimer"
-	 *  ------
-	 * @param string $name -- name of the timer
-	 *  ------
-	 * @return string
+	 * --
+	 * @param	string	$name	Name of the timer
+	 * --
+	 * @return	string
 	 */
 	public static function GetTimer($name)
 	{
@@ -58,11 +58,11 @@ class Benchmark
 
 	/**
 	 * Return memory usage
-	 *
-	 * @param bool $peak
-	 * @param bool $formated
-	 *
-	 * @return string
+	 * --
+	 * @param	boolean	$peak
+	 * @param	boolean	$formated
+	 * --
+	 * @return	string
 	 */
 	public static function GetMemoryUsage($peak=true, $formated=true)
 	{
@@ -78,6 +78,5 @@ class Benchmark
 		return ($formated) ? FileSystem::FormatSize($memory) : $memory;
 	}
 	//-
-
 }
 //--

@@ -159,7 +159,7 @@ function avreliaErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
 		E_USER_DEPRECATED    => 'INF',
 	);
 
-	Log::Add($SimpleType[$errno], $errmsg, $linenum, $filename);
+	Log::Add($errmsg, $SimpleType[$errno], $linenum, $filename);
 
 	# Fatal error.
 	if ($SimpleType[$errno] == 'ERR')

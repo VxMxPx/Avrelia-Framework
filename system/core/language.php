@@ -36,8 +36,8 @@ class Language
 
 	/**
 	 * Will return language debug (info)
-	 * ---
-	 * @return array
+	 * --
+	 * @return	array
 	 */
 	public static function Debug()
 	{
@@ -53,10 +53,10 @@ class Language
 
 	/**
 	 * Set list of default languages
-	 * ---
-	 * @param array $Defaults
-	 * ---
-	 * @return void
+	 * --
+	 * @param	array	$Defaults
+	 * --
+	 * @return	void
 	 */
 	public static function SetDefaults($Defaults)
 	{
@@ -66,16 +66,16 @@ class Language
 
 	/**
 	 * Will load particular language file
-	 * ---
-	 * @param string $file -- following options:
-	 * 		- enter short name: "my_lang", and the path will be calculated automatically: APPPATH/languages/my_lang.lng
-	 * 		- enter full path: SYSPATH.'/languages/my_lang.lng', to load full path (must be with file extention! .lng)
-	 * 		- enter % in filename, to auto set the language based on languages list
-	 * @param bool $getFistDefault -- get first default language founf, in chase if we can't find requested, for example:
-	 * 		our request is, to get english or russian, but none of them can be found, but there is ukranian language available,
-	 * 		in case $getFistDefault the ukranian will be loaded
-	 * ---
-	 * @return boolean
+	 * --
+	 * @param	string	$file			Following options:
+	 * 									enter short name: "my_lang", and the path will be calculated automatically: APPPATH/languages/my_lang.lng
+	 * 									enter full path: SYSPATH.'/languages/my_lang.lng', to load full path (must be with file extention! .lng)
+	 * 									enter % in filename, to auto set the language based on languages list
+	 * @param	boolean	$getFistDefault	Get first default language founf, in chase if we can't find requested, for example:
+	 * 									our request is, to get english or russian, but none of them can be found, but there is ukranian language available,
+	 * 									in case $getFistDefault the ukranian will be loaded
+	 * --
+	 * @return	boolean
 	 */
 	public static function Load($file, $getFistDefault=false)
 	{
@@ -147,10 +147,10 @@ class Language
 
 	/**
 	 * Will process particular file and return an array (of expressions)
-	 * ---
-	 * @param string $filename
-	 * ---
-	 * @return array
+	 * --
+	 * @param	string	$filename
+	 * --
+	 * @return	array
 	 */
 	private static function Process($filename)
 	{
@@ -181,12 +181,12 @@ class Language
 
 	/**
 	 * Will translate particulat string
-	 * ---
-	 * @param string $key
-	 * @param array  $Params
-	 * @param string $languageKey
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$key
+	 * @param	array	$Params
+	 * @param	string	$languageKey
+	 * --
+	 * @return	string
 	 */
 	public static function Translate($key, $Params=array())
 	{
@@ -214,6 +214,5 @@ class Language
 		}
 	}
 	//-
-
 }
 //--

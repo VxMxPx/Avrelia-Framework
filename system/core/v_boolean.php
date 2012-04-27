@@ -19,10 +19,10 @@ class vBoolean
 	/**
 	 * Will parse string, and convert it to boolean.
 	 * This will convert '1', 1, 'yes' and 'true' to true
-	 *
-	 * @param string $input
-	 *
-	 * @return boolean
+	 * --
+	 * @param	string	$input
+	 * --
+	 * @return	boolean
 	 */
 	public static function Parse($input)
 	{

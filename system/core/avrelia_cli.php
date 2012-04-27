@@ -82,16 +82,16 @@ class AvreliaCli
 
 	/**
 	 * Will print out the message
-	 *
-	 * @param string $type
-	 * 		INF -- Regular white message
-	 * 		ERR -- Red message
-	 * 		WAR -- Yellow message
-	 * 		OK  -- Green message
-	 * @param string $message
-	 * @param bool   $newLine -- shoudl message be in new line
-	 *
-	 * @return void
+	 * --
+	 * @param	string	$type
+	 * 								INF -- Regular white message
+	 * 								ERR -- Red message
+	 * 								WAR -- Yellow message
+	 * 								OK  -- Green message
+	 * @param	string	$message
+	 * @param	boolean	$newLine	Should message be in new line
+	 * --
+	 * @return	void
 	 */
 	public static function Say($type, $message, $newLine=true)
 	{

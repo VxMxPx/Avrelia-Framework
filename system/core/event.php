@@ -13,21 +13,21 @@
  * @since      Version 0.80
  * @since      Date 2010-04-06
  */
-
-
 class Event
 {
-	# The waiting room. :)
+	/**
+	 * @var	array	List of events to be executed
+	 */
 	private static $Waiting = array();
 
 	/**
 	 * Wait for paticular event to happened - then call the assigned function / method.
-	 * ---
-	 * @param string  $event    -- name of the event you're waiting for
-	 * @param mixed   $call     -- can be name of the function, or array('className', 'methodName')
-	 * @param bool    $inFront  -- should be event added to the front of the list?
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$event		Name of the event you're waiting for
+	 * @param	mixed	$call		Can be name of the function, or array('className', 'methodName')
+	 * @param	boolean	$inFront	Should be event added to the front of the list?
+	 * --
+	 * @return	void
 	 */
 	public static function Watch($event, $call, $inFront=false)
 	{
@@ -46,11 +46,11 @@ class Event
 
 	/**
 	 * Trigger the event.
-	 * ---
-	 * @param string $event  -- which event?
-	 * @param mixed  $Params -- shall we provide any params?
-	 * ---
-	 * @return integer (number of called functions - function count only if "true" was returned)
+	 * --
+	 * @param	string	$event	Which event?
+	 * @param	mixed	$Params	Shall we provide any params?
+	 * --
+	 * @return	integer	Number of called functions - function count only if "true" was returned.
 	 */
 	public static function Trigger($event, &$Params=null)
 	{
@@ -66,6 +66,5 @@ class Event
 		return $num;
 	}
 	//-
-
 }
 //--

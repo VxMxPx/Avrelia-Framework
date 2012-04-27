@@ -19,18 +19,18 @@ class FileSystem
 
 	/**
 	 * Get file's content
-	 * ---
-	 * @param string $fileName
-	 * @param string $create  -- create file, if doesn't exists
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$fileName
+	 * @param	string	$create		Create file, if doesn't exists
+	 * --
+	 * @return	string
 	 */
 	public static function Read($fileName, $create=false)
 	{
 		$fileName = ds($fileName);
 
-		if (file_exists($fileName) and !is_dir($fileName)) {
-			Log::Add('INF', "File is valid: `{$fileName}`.", __LINE__, __FILE__);
+		if (file_exists($fileName) and !is_dir($fileName))
+		{
 			if (!$contents = file_get_contents($fileName, 1)) {
 				Log::Add('ERR', "Error while reading file: `{$fileName}`.", __LINE__, __FILE__);
 				return false;
@@ -51,12 +51,12 @@ class FileSystem
 
 	/**
 	 * Delete All Files (of selected type) In Selected Folder, will return number of deleted files
-	 * ---
-	 * @param string $fullPath -- if the path is directory, the whole directory will be removed
-	 * @param string $filter   -- use '*', for all files, '*-something' or 'something.*', enter filename - to just delete file
-	 * 								leave false, if you want to remove only one file or directory
-	 * ---
-	 * @return integer
+	 * --
+	 * @param	string	$fullPath	If the path is directory, the whole directory will be removed
+	 * @param	string	$filter		Use '*', for all files, '*-something' or 'something.*', enter filename - to just delete file
+	 * 								leave false, if you want to remove only one file or directory.
+	 * --
+	 * @return	integer
 	 */
 	public static function Remove($fullPath, $filter=false)
 	{
@@ -148,13 +148,13 @@ class FileSystem
 
 	/**
 	 * Rename File, please provide full name for both or none of them!
-	 * ---
-	 * @param string $oldName   -- full path with file name, or only filename
-	 * @param string $newName   -- full path with file name, or only filename
-	 * @param string $directory -- if you din't provide full path with 'oldName'
+	 * --
+	 * @param	string	$oldName	Full path with file name, or only filename
+	 * @param	string	$newName	Full path with file name, or only filename
+	 * @param	string	$directory	If you din't provide full path with 'oldName'
 	 * 								AND with 'newName', provided it here!
-	 * ---
-	 * @return bool
+	 * --
+	 * @return	boolean
 	 */
 	public static function Rename($oldName, $newName, $directory=false)
 	{
@@ -180,13 +180,13 @@ class FileSystem
 
 	/**
 	 * Save Content To File
-	 * ---
-	 * @param string $content
-	 * @param string $fileName   -- full path + file name
-	 * @param bool   $fileAppend -- add data to existing file
-	 * @param bool   $makeDir    -- create directory if doesn't exists (set mask or false)
-	 * ---
-	 * @return bool
+	 * --
+	 * @param	string	$content
+	 * @param	string	$fileName	Full path + file name
+	 * @param	boolean	$fileAppend	Add data to existing file
+	 * @param	boolean	$makeDir	Create directory if doesn't exists (set mask or false)
+	 * --
+	 * @return	boolean
 	 */
 	public static function Write($content, $fileName, $fileAppend=false, $makeDir=0755)
 	{
@@ -237,13 +237,13 @@ class FileSystem
 
 	/**
 	 * Copy File...
-	 * ---
-	 * @param string $source      -- source fullpath + file / if is dir, the whole folder will be copied
-	 * @param string $destination -- must be only destination folder (full path)
-	 * @param string $newFileName -- if false, filename will be taken from source!
-	 * @param string $exists -- If file exists: false|'replace'|'rename' (return false | replace original file | rename current file)
-	 * ---
-	 * @return bool
+	 * --
+	 * @param	string	$source			Source fullpath + file / if is dir, the whole folder will be copied
+	 * @param	string	$destination	Must be only destination folder (full path)
+	 * @param	string	$newFileName	If false, filename will be taken from source!
+	 * @param	string	$exists			If file exists: false|'replace'|'rename' (return false | replace original file | rename current file)
+	 * --
+	 * @return	boolean
 	 */
 	public static function Copy($source, $destination, $newFileName=false, $exists=false)
 	{
@@ -347,14 +347,14 @@ class FileSystem
 	/**
 	 * Will create unique filename. This will check if file/folder with provided name already exists.
 	 * If you're using this on file, the system will keep the extention, so you can enter $baseFilename with it!
-	 *
-	 * @param string $baseFilename   - only filename, not full path!
-	 * @param string $destinationDir - full absolute destination path
-	 * @param bool   $isFile         - are we generating UniqueName for file or folder?
-	 * @param string $divider        - divider for new filename, example:
-	 * 								   if divider is "_" then mynewfile will become mynewfile_1
-	 *
-	 * @return string
+	 * --
+	 * @param	string	$baseFilename	Only filename, not full path!
+	 * @param	string	$destinationDir	Full absolute destination path
+	 * @param	boolean	$isFile			Are we generating UniqueName for file or folder?
+	 * @param	string	$divider		Divider for new filename, example:
+	 * 									if divider is "_" then mynewfile will become mynewfile_1
+	 * --
+	 * @return	string
 	 */
 	public static function UniqueName($baseFilename, $destinationDir, $isFile=true, $divider='_')
 	{
@@ -393,13 +393,13 @@ class FileSystem
 
 	/**
 	 * Search All Directories For Specific File Type
-	 * ----
-	 * @param string $directory -- absolute path
-	 * @param string $fileType  -- you can use | to search for more file types example: jpg|jpeg|png|gif|bmp
-	 * @param bool   $deepScan  -- will search sub directories too
-	 * @param string $filter    -- (it will take filename without extention, won't apply for directories) *something | something* | *something*
-	 * ----
-	 * @return array
+	 * --
+	 * @param	string	$directory	Absolute path
+	 * @param	string	$fileType	You can use | to search for more file types example: jpg|jpeg|png|gif|bmp
+	 * @param	boolean	$deepScan	Will search sub directories too
+	 * @param	string	$filter		(it will take filename without extention, won't apply for directories) *something | something* | *something*
+	 * --
+	 * @return	array
 	 */
 	public static function Find($directory, $fileType, $deepScan=true, $filter=false)
 	{
@@ -486,12 +486,12 @@ class FileSystem
 
 	/**
 	 * Will scan folder, and return array of (md5) signatures.
-	 * ---
-	 * @param string $directory    -- directory which you want to scan
-	 * @param bool   $deepScan     -- should sub-directories be included too?
-	 * @param string $subDirectory -- you can leave this as it is -- since this will be used in recursion
-	 * ---
-	 * @return array
+	 * --
+	 * @param	string	$directory		Directory which you want to scan
+	 * @param	boolean	$deepScan		Should sub-directories be included too?
+	 * @param	string	$subDirectory	You can leave this as it is -- since this will be used in recursion
+	 * --
+	 * @return	array
 	 */
 	public static function GetSignatures($directory, $deepScan=true, $subDirectory=null)
 	{
@@ -513,10 +513,10 @@ class FileSystem
 
 	/**
 	 * Return File Extension
-	 * --------
-	 * @param string $fileName
-	 * --------
-	 * @return string
+	 * --
+	 * @param	string	$fileName
+	 * --
+	 * @return	string
 	 */
 	public static function Extension($fileName)
 	{
@@ -528,11 +528,11 @@ class FileSystem
 
 	/**
 	 * Get only filename from full path (example: /my_dir/sample/another/my_file.ext => my_file.ext | my_file)
-	 * ---
-	 * @param string $fullPath
-	 * @param bool   $noExtension -- no ext?
-	 * ---
-	 * @return string
+	 * --
+	 * @param	string	$fullPath
+	 * @param	boolean	$noExtension	No ext?
+	 * --
+	 * @return	string
 	 */
 	public static function FileName($fullPath, $noExtension=false)
 	{
@@ -554,10 +554,10 @@ class FileSystem
 	 *
 	 * If you need actually unique filename (with checking of existance),
 	 * then use method UniqueName()
-	 * ---
-	 * @param string $file
-	 * ----
-	 * @return string
+	 * --
+	 * @param	string	$file
+	 * --
+	 * @return	string
 	 */
 	public static function UniqueFilename($file)
 	{
@@ -587,10 +587,10 @@ class FileSystem
 
 	/**
 	 * Convert size (from bytes) to nicer (human readable) value (kb, mb)
-	 * ----
-	 * @param string $size (bytes)
-	 * ----
-	 * @return string
+	 * --
+	 * @param	integer	$size	(bytes)
+	 * --
+	 * @return	string
 	 */
 	public static function FormatSize($size)
 	{
@@ -608,12 +608,12 @@ class FileSystem
 
 	/**
 	 * Create Directory
-	 * ---
-	 * @param string  $folderName  -- must be full path, + new folder's name
-	 * @param bool    $recursive   --
-	 * @param integer $mode        -- 0755 Read and write for owner, read for everybody else
-	 * ---
-	 * @return bool
+	 * --
+	 * @param	string	$folderName	Must be full path, + new folder's name
+	 * @param	boolean	$recursive
+	 * @param	integer	$mode		0755 Read and write for owner, read for everybody else
+	 * --
+	 * @return	boolean
 	 */
 	public static function MakeDir($folderName, $recursive=true, $mode = 0755)
 	{
@@ -641,12 +641,14 @@ class FileSystem
 
 	/**
 	 * Create Many Directories
-	 * ---
-	 * @param string $root -- root dir
-	 * @param array  $Directories -- array of directories to create (you can enter whole path like this: array('mydir', 'another/something_else', 'first/second/third'))
-	 * @param integer $mode        -- 0755 Read and write for owner, read for everybody else
-	 * ---
-	 * @return integer (number of creted directories)
+	 * --
+	 * @param	string	$root			Root dir
+	 * @param	array	$Directories	Array of directories to create (you can
+	 * 									enter whole path like this:
+	 * 									array('mydir', 'another/something_else', 'first/second/third'))
+	 * @param	integer	$mode			0755 Read and write for owner, read for everybody else
+	 * --
+	 * @return	integer	Number of creted directories
 	 */
 	public static function MakeDirTree($root, $Directories, $mode=0755)
 	{
@@ -676,9 +678,9 @@ class FileSystem
 	/**
 	 * Check If Directory Is Writable
 	 * --
-	 * @param string $directory
+	 * @param	string	$directory
 	 * ---
-	 * @return bool
+	 * @return	boolean
 	 */
 	public static function IsWritable($directory)
 	{
@@ -721,10 +723,10 @@ class FileSystem
 
 	/**
 	 * Select file or folder (return object, with file / folder related methods)
-	 * ---
-	 * @param string $path
-	 * ---
-	 * @return FileSystemSelect
+	 * --
+	 * @param	string	$path
+	 * --
+	 * @return	FileSystemSelect
 	 */
 	public static function Select($path)
 	{
@@ -744,10 +746,10 @@ class FileSystemSelect
 
 	/**
 	 * Make new selection
-	 * ---
-	 * @param string $path
-	 * ---
-	 * @return void
+	 * --
+	 * @param	string	$path
+	 * --
+	 * @return	void
 	 */
 	public function __construct($path)
 	{
@@ -765,14 +767,14 @@ class FileSystemSelect
 
 	/**
 	 * Enter only filename (not full path)
-	 * ---
-	 * @param string $newFilename
-	 * @param bool   $autoOnExist   -- will autoname if file already exist
-	 * @param bool   $keepExtention -- will keep extention, for example:
-	 * 		if old filename is: cat.txt, and for new filename you enter kitty,
-	 * 		the result will be kitty.txt, if you have $keepExtention set to true.
-	 * ---
-	 * @return boolean (new filename (with full path) or false)
+	 * --
+	 * @param	string	$newFilename
+	 * @param	boolean	$autoOnExist	Will autoname if file already exist
+	 * @param	boolean	$keepExtention	Will keep extention, for example:
+	 * 									if old filename is: cat.txt, and for new filename you enter kitty,
+	 * 									the result will be kitty.txt, if you have $keepExtention set to true.
+	 * --
+	 * @return	mixed	New filename (with full path) or false
 	 */
 	public function rename($newFilename, $autoOnExist=true, $keepExtention=true)
 	{
@@ -813,12 +815,11 @@ class FileSystemSelect
 
 	/**
 	 * Will copy folder to new destination
-	 * ---
-	 * @param string $destination -- full absolute path, or use './new_folder' for relative path
-	 * @param bool   $selectCopy  -- will select copy, if set to true, or
-	 * 				keer current selection if set to false.
-	 * ---
-	 * @return boolean (new filename (with full path) or false)
+	 * --
+	 * @param	string	$destination	Full absolute path, or use './new_folder' for relative path
+	 * @param	boolean	$selectCopy		Will select copy, if set to true, or keer current selection if set to false.
+	 * --
+	 * @return	mixed	New filename (with full path) or false
 	 */
 	public function copy($destination, $selectCopy=false)
 	{

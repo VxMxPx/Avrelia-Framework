@@ -81,16 +81,13 @@ class Log
 	 * --
 	 * @param	string	$message	Plain englisg message
 	 * @param	string	$type		INF|WAR|ERR|OK == information, warning, error, successfully done
+	 * @param	mixed	$line		If not provided will be traced automatically
+	 * @param	mixed	$file		If not provided will be traced automatically
 	 * --
 	 * @return	boolean
 	 */
-	public static function Add($message, $type='INF')
+	public static function Add($message, $type='INF', $line=false, $file=false)
 	{
-		# Auto assign line and file
-		$BT   = debug_backtrace();
-		$line = $BT[0]['line'];
-		$file = $BT[0]['file'];
-
 		# For the sake of backward compatibility, we can switch type and message
 		if (in_array(strtoupper($message), array('INF', 'OK', 'ERR', 'WAR'))) {
 			$t = $type;
@@ -100,6 +97,13 @@ class Log
 
 		# Always upper case
 		$type = strtoupper($type);
+
+		# Auto assign line and file
+		if (!$line || !$file || $type == 'ERR') {
+			$BT   = debug_backtrace();
+			$line = $BT[0]['line'];
+			$file = $BT[0]['file'];
+		}
 
 		# Write this message into file?
 		self::Write($type, $message, $line, $file);
@@ -112,7 +116,9 @@ class Log
 				$trace .= isset($Trace['class']) ? $Trace['class'] : '';
 				$trace .= isset($Trace['type']) ? $Trace['type'] : '';
 				$trace .= isset($Trace['function']) ? $Trace['function'] . '()' : '';
-				$trace .= ' [' . basename($Trace['file']) . ' ' . $Trace['line'] . ']';
+				if (isset($Trace['file'])) {
+					$trace .= ' [' . basename($Trace['file']) . ' ' . $Trace['line'] . ']';
+				}
 
 
 				$message .= "\n{$trace}";

@@ -95,7 +95,7 @@ class Cfg
 	 */
 	public static function Debug()
 	{
-		return 
+		return
 		'Cache ' . dumpVar(self::$Cache, false, true) .
 		"\n" .
 		'Config ' . dumpVar(self::$Config, false, true);

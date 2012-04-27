@@ -13,25 +13,25 @@
  * @since      Version 0.80
  * @since      2011-12-20
  */
-
-
 class Model
 {
-	# Models storage
+	/**
+	 * @var	array	Loaded models cache
+	 */
 	protected static $Cache = array();
 
 	/**
 	 * Load Application's Model,
-	 * ---
-	 * @param string $name
-	 * @param bool $newInstance if set to true, this will create new instance of class, even if it exists ...
-	 * ---
-	 * @return obj || false
+	 * --
+	 * @param	string	$name
+	 * @param	boolean	$newInstance	If set to true, this will create new instance of class, even if it exists in cache
+	 * --
+	 * @return	mixed	Objct or false
 	 */
 	public static function Get($name, $newInstance=false)
 	{
 		$class = $name . 'Model';
-	
+
 		if (!$newInstance && isset(self::$Cache[$class]))
 		{
 			return self::$Cache[$class];
