@@ -107,18 +107,24 @@ class cDatabaseResult
 	 */
 	public function asArray($index=false)
 	{
-		if ($index === false) {
-			if (!is_array($this->Fetched)) {
-				$this->Fetched = $this->PDOStatement->fetchAll(PDO::FETCH_ASSOC);
+		if (is_object($this->PDOStatement)) {
+			if ($index === false) {
+				if (!is_array($this->Fetched)) {
+					$this->Fetched = $this->PDOStatement->fetchAll(PDO::FETCH_ASSOC);
+				}
+				return $this->Fetched;
 			}
-			return $this->Fetched;
+			elseif ($index === true) {
+				return $this->PDOStatement->fetch(PDO::FETCH_ASSOC);
+			}
+			elseif (is_integer($index)) {
+				$Fetched = $this->asArray(false);
+				return isset($Fetched[$index]) ? $Fetched[$index] : false;
+			}
 		}
-		elseif ($index === true) {
-			return $this->PDOStatement->fetch(PDO::FETCH_ASSOC);
-		}
-		elseif (is_integer($index)) {
-			$Fetched = $this->asArray(false);
-			return isset($Fetched[$index]) ? $Fetched[$index] : false;
+		else {
+			Log::Add('PDOStatement isn\'t object, returning empty array!', 'WAR');
+			return array();
 		}
 	}
 	//-
