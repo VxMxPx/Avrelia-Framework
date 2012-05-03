@@ -228,7 +228,7 @@ class cSessionDriverDb implements cSessionDriverInterface
 
 		if ($password) {
 			if ($User['password'] !== vString::Hash($password, $User['password'], true)) {
-				Log::Add('INF', "Invalid password entered for: `{$username}`.", __LINE__, __FILE__);
+				Log::Add('INF', "Invalid password entered for: `{$user}`.", __LINE__, __FILE__);
 				return false;
 			}
 		}
