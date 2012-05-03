@@ -62,8 +62,10 @@ $SessionConfig = array
 	(
 		array(
 			# root@domain.tld / root
+			'id'        => null,
 			'uname'		=> 'root@domain.tld',
 			'password'	=> 'root',
+			'active'    => true,
 		),
 	),
 

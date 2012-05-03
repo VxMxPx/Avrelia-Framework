@@ -57,11 +57,7 @@ class cSessionDriverDb implements cSessionDriverInterface
 
 		foreach ($Config['defaults'] as $DefUser)
 		{
-			$User['id']       = null;
-			$User['uname']    = $DefUser['uname'];
-			$User['password'] = vString::Hash($DefUser['password'], false, true);
-			$User['active']   = true;
-
+			$DefUser['password'] = vString::Hash($DefUser['password'], false, true);
 			cDatabase::Create($User, $Config['db']['users_table']);
 		}
 
