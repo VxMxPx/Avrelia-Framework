@@ -35,6 +35,16 @@
 	z-index: 92;
 }
 
+.cdebugToggleTag {
+    border-radius: 6px 6px 6px 6px;
+    font-size: 10px;
+    font-weight: normal;
+    padding: 1px 4px;
+}
+
+.cdebugToggleTag.cdtttError { background-color: #F66; }
+.cdebugToggleTag.cdtttWarning { background-color: #FB4; }
+
 #cdebugPanel {
     position: fixed;
     width: 800px;

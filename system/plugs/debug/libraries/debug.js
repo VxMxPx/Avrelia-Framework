@@ -93,12 +93,22 @@
 		 * Init the cDebug
 		 */
 		init : function() {
-
 			this.overlay = $(this.templates.overlay).appendTo('body');
 			this.toggle  = $(this.templates.toggle).appendTo('body');
 			this.toggleHeight = this.toggle.outerHeight();
 			this.contents   = this.panel.find('div.content');
 			this.navigation = this.panel.find('div.navigation');
+
+			var countWAR = $('#cdebugPanel .content.log .msgType_WAR').length;
+			var countERR = $('#cdebugPanel .content.log .msgType_ERR').length;
+
+			if (countERR > 0) {
+				this.toggle.append(' <span class="cdebugToggleTag cdtttError">' + countERR + '</span>');
+			}
+
+			if (countWAR > 0) {
+				this.toggle.append(' <span class="cdebugToggleTag cdtttWarning">' + countWAR + '</span>');
+			}
 
 			this.toggle.on('click', this.panelToggle);
 			this.overlay.on('click', this.panelHide);
