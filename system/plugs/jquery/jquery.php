@@ -33,7 +33,7 @@ class cJquery
 			Plug::SetPublic(__FILE__);
 
 			# Link
-			self::$link = url(Cfg::Get('Com/public_dir', 'components').'/jquery/jquery-'.self::$Config['version'].'.min.js');
+			self::$link = url(Cfg::Get('plug/public_dir', 'plugs').'/jquery/jquery-'.self::$Config['version'].'.min.js');
 		}
 		else {
 			# Link

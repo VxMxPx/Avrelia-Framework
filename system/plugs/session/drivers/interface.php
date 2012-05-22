@@ -69,6 +69,13 @@ interface cSessionDriverInterface
 	function isLoggedin();
 
 	/**
+	 * Will reload current user's informations; Useful after an update.
+	 * --
+	 * @return	void
+	 */
+	function reload();
+
+	/**
 	 * Return user's informations as an array.
 	 * If key is provided, only selected key will be returned, for example:
 	 * $key = 'id', the $User['id'] will be returned.

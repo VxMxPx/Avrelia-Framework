@@ -178,6 +178,19 @@ class cSession
 	//-
 
 	/**
+	 * Will reload current user's informations; Useful after you're doing an update.
+	 * --
+	 * @return	void
+	 */
+	public static function Reload()
+	{
+		if (self::IsLoggedin()) {
+			self::$Driver->reload();
+		}
+	}
+	//-
+
+	/**
 	 * Return user's information as an array. If key provided, then only particular
 	 * info can be returned. For example $key = uname
 	 * --

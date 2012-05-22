@@ -292,7 +292,7 @@ function lu()
 	$List  = array();
 
 	foreach ($Links as $link) {
-		$link   = strpos('://', $link) !== false ? $link : url($link);
+		$link   = !empty($link) && strpos('://', $link) !== false ? $link : url($link);
 		$List[] = '<a href="' . $link . '">{?}</a>';
 	}
 

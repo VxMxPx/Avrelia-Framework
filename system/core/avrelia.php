@@ -218,10 +218,13 @@ class Avrelia
 					);
 
 		# Set patterns
-		if ($Patterns && is_array($Patterns)) {
+		if ($Patterns && is_array($Patterns) && !empty($Patterns)) {
 			foreach($Patterns as $key => $pat) {
 				$callName = str_replace('%'.$key, $pat, $callName);
 			}
+		}
+		else {
+			$Patterns = false;
 		}
 
 		# Get Path
@@ -245,6 +248,14 @@ class Avrelia
 		# Params
 		$Params   = explode(' {#!<<PARAM!#} ', $callName);
 		vArray::Trim($Params);
+
+		# Cound params
+		if (!$Patterns) {
+			$Params = array();
+		}
+		else {
+			$Params = array_slice($Params, 0, count($Patterns));
+		}
 
 		if (!class_exists($controller.'Controller', false)) {
 			$includePath = ds(APPPATH.'/controllers/'.str_replace('.', '', $path).'/'.str_replace('.', '', $controller).'.php');

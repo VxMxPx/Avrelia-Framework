@@ -189,6 +189,19 @@ class cSessionDriverDb implements cSessionDriverInterface
 	}
 	//-
 
+	/**
+	 * Will reload current user's informations; Useful after an update.
+	 * --
+	 * @return	void
+	 */
+	public function reload()
+	{
+		if ($this->isLoggedin()) {
+			$this->userSet($this->CurrentUser['id']);
+		}
+	}
+	//-
+
 	/*  ****************************************************** *
 	 *          User Methods
 	 *  **************************************  */

@@ -208,6 +208,21 @@ class cSessionDriverJson implements cSessionDriverInterface
 	}
 	//-
 
+
+	/**
+	 * Will reload current user's informations; Useful after an update.
+	 * --
+	 * @return	void
+	 */
+	public function reload()
+	{
+		if ($this->isLoggedin()) {
+			$this->usersFetch();
+			$this->userSet($this->CurrentUser['id']);
+		}
+	}
+	//-
+
 	/**
 	 * Return user's information as an array. If key provided, then only particular
 	 * info can be returned. For example $key = uname
