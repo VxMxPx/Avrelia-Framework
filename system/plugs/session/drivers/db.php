@@ -76,6 +76,7 @@ class cSessionDriverDb implements cSessionDriverInterface
 	{
 		cDatabase::Execute('DROP TABLE IF EXISTS ' . $Config['db']['users_table']);
 		cDatabase::Execute('DROP TABLE IF EXISTS ' . $Config['db']['sessions_table']);
+		return true;
 	}
 	//-
 
