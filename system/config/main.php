@@ -52,8 +52,8 @@ $AvreliaConfig = array
 		# Allow redirects? Useful for debuging.
 		'allow_redirects'  => true,
 
-		# The files / folder which we need to ignore when copying...
-		'ignore_on_copy'   => array('.svn'),
+		# The files / folder which we need to ignore when copying / removing multiple files...
+		'fs_ignore'   => array('.svn'),
 	),
 
 	# Cache settings.

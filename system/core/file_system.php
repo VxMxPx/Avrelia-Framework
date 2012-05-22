@@ -50,98 +50,105 @@ class FileSystem
 	//-
 
 	/**
-	 * Delete All Files (of selected type) In Selected Folder, will return number of deleted files
+	 * Delete All Files / Folders (can be filtered) In Selected Folder, will return number of deleted files
 	 * --
-	 * @param	string	$fullPath	If the path is directory, the whole directory will be removed
-	 * @param	string	$filter		Use '*', for all files, '*-something' or 'something.*', enter filename - to just delete file
-	 * 								leave false, if you want to remove only one file or directory.
+	 * @param	string	$fullPath	If the path is directory, the whole directory will be removed, if it's file, the file will be removed.
+	 * @param	string	$filter		There are various options available for filter:
+	 *								- use '*', for all files, '*-something' or 'something.*' or 'something-*-more'
+	 *								- enter filename - to just delete file (as path enter directory)
+	 *								- regular expression: /[a-z]/i, matched files will be deleted
+	 * 								- false, if you want to remove $fullPath itself (if dir all files in it will be removed)
+	 * @param	boolean	$deepScan	If you provided filter, should sub-directories also be checked?
+	 * @param	boolean	$matchDir	If true, then will delete whole directory when its name is matched by filter, otherwise only files will be matched.
 	 * --
-	 * @return	integer
+	 * @return	integer	Number of deleted files / directories; false if failed!
 	 */
-	public static function Remove($fullPath, $filter=false)
+	public static function Remove($path, $filter=false, $deepScan=false, $matchDir=true)
 	{
-		if (is_dir($fullPath) || $filter==false) {
-			$path = $fullPath;
-			$num  = 0;
+		# Local copy of ignore list
+		$fsIgnore = Cfg::Get('system/fs_ignore', array());
 
-			if (is_dir($path))
-			{
-				$Entries = scandir($path);
-				foreach ($Entries as $entry) {
-					if ($entry != '.' && $entry != '..') {
-						$num = $num + self::Remove(ds($path.'/'.$entry));
-					}
+		# If we don't have filter we must remove just one file / folder
+		if (!$filter) {
+			if (is_dir($path)) {
+				$Files = scandir($path);
+				$count = 0;
+				foreach ($Files as $file) {
+					if ($file === '.' || $file === '..') { continue; }
+					if (in_array($file, $fsIgnore)) { continue; }
+
+					$newPath = ds($path . '/' . $file);
+					$count = $count + self::Remove($newPath, false);
 				}
-				if (rmdir($path)) {
-					Log::Add('INF', "Folder was removed: `{$path}`.", __LINE__, __FILE__);
-					$num++;
-				}
-				else {
-					Log::Add('WAR', "Folder was NOT removed: `{$path}`.", __LINE__, __FILE__);
-				}
+
+				return $count;
 			}
 			else {
-				if (unlink($path)) {
-					Log::Add('INF', "File deleted: `{$path}`.", __LINE__, __FILE__);
-					$num++;
+				if (file_exists($path)) {
+					if (unlink($path)) {
+						return 1;
+					}
+					else {
+						Log::Add("Failed to remove: `{$path}`!", 'WAR');
+						return false;
+					}
 				}
 				else {
-					Log::Add('WAR', "Can't delete file: `{$path}`.", __LINE__, __FILE__);
+					Log::Add("File not found: `{$path}`, can't remove it!", 'WAR');
+					return false;
 				}
 			}
-
-			return $num;
-		}
+		} # We have filter!
 		else {
-			// It's not a direcotry, so we'll remove files
-			$fullPath = ds($fullPath);
-
-			Log::Add('INF', "Request for removing files with filter: `{$filter}` in folder: `{$fullPath}`.", __LINE__, __FILE__);
-
-			if ($filter == '*') {
-				$type = 'all';
-			}
-			elseif ((substr($filter,0,1) == '*') && (substr($filter,-1,1) == '*') ) {
-				$type   = 'mid';
-				$string = substr($filter,1,-1);
-			}
-			elseif (substr($filter,0,1) == '*') {
-				$type   = 'end';
-				$string = substr($filter,1);
-				$len    = strlen($string);
-			}
-			elseif (substr($filter,-1,1) == '*') {
-				$type   = 'start';
-				$string = substr($filter,0,-1);
-				$len    = strlen($string);
-			}
-			else {
-				Log::Add('WAR', "No filter provided; the file: `{$filter}`, will be deleted.", __LINE__, __FILE__);
-				return unlink(ds($fullPath.'/'.$filter));
+			# It obviously must exists and be directory, if not, 
+			# it's just a file and we'll remove it in regular way - if it doesn't exists of course.
+			if (!is_dir($path)) {
+				return self::Remove($path, false);
 			}
 
-			$i = 0;
+			# Check if we already have regular expression as a filter
+			if (substr($filter, 0, 1) !== '/') {
+				# Escape the string
+				$filter = preg_quote($filter);
 
-			if (is_dir($fullPath)) {
-				$Entries = scandir($fullPath);
-				foreach ($Entries as $entry) {
-					if ($entry != '.' && $entry != '..') {
-						if (($type == 'all') ||
-							( ($type == 'mid') && (strpos($entry, $string)) ) OR
-							( ($type == 'end') && (substr($entry,-$len,$len) == $string) ) OR
-							( ($type == 'start') && (substr($entry,0,$len) == $string) )) {
-							self::Remove(ds($fullPath.'/'.$entry), $filter);
-							$i++;
-						}
+				# Restore * character
+				$filter = str_replace('\*', '.*?', $filter);
+
+				# Set appropriate format for regular expression
+				$filter = '/^' . $filter . '$/';
+			}
+
+			# Scan the directory now
+			$Files = scandir($path);
+
+			if (empty($Files)) {
+				Log::Add("No files found in directory: `{$path}`, nothing will be removed.", 'INF');
+				return 0;
+			}
+
+			$count = 0;
+
+			foreach ($Files as $file) {
+				if ($file === '.' || $file === '..') { continue; }
+				if (in_array($file, $fsIgnore)) { continue; }
+
+				$newPath = ds($path . '/' . $file);
+				# Do we have a match?
+				if (preg_match($filter, $file)) {
+					# Remove directory or file
+					if ((is_dir($newPath) && $matchDir) || !is_dir($newPath)) {
+						$count = $count + self::Remove($newPath, false);
+						continue;
 					}
 				}
-			}
-			else {
-				unlink($path);
-				return 1;
+
+				# No match or is directory which shouldn't be removed, so need to be scanned, perhaps?
+				if (is_dir($newPath) && $deepScan) {
+					$count = $count + self::Remove($newPath, $filter, $deepScan, $matchDir);
+				}
 			}
 
-			return $i;
+			return $count;
 		}
 	}
 	//-
@@ -249,7 +256,7 @@ class FileSystem
 	{
 		# Should we ignore it?
 		$nameOnly = basename($source);
-		if (in_array($nameOnly, Cfg::Get('system/ignore_on_copy', array()))) {
+		if (in_array($nameOnly, Cfg::Get('system/fs_ignore', array()))) {
 			Log::Add('INF', "This file/folder was set to be ignored on copy: `{$nameOnly}`!", __LINE__, __FILE__);
 			return true;
 		}
