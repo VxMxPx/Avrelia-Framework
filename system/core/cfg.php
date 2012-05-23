@@ -121,7 +121,8 @@ class Cfg
 	//-
 
 	/**
-	 * Overwrite particular config key
+	 * Overwrite particular config key, this is temporary action,
+	 * the changes won't get saved.
 	 * --
 	 * @param	string	$path	In format: key/subkey
 	 * @param	mixed	$value
@@ -130,7 +131,7 @@ class Cfg
 	 */
 	public static function Overwrite($path, $value)
 	{
-		# Clear cache to awoid conflicts
+		# Clear cache to avoid conflicts
 		self::$Cache = array();
 
 		vArray::SetByPath($path, $value, self::$Config);

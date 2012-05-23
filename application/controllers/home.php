@@ -3,9 +3,9 @@
 class homeController
 {
 	/**
-	 * Default Controller's Action
-	 *
-	 * @return void
+	 * Default Action
+	 * --
+	 * @return	void
 	 */
 	public function index()
 	{
@@ -15,7 +15,7 @@ class homeController
 		# Set variable
 		View::AddVar('greeting', '<span class="fade">Hello from</span> Avrelia Framework');
 
-		# Get Master template (always first!)
+		# Get Master template
 		View::Get('master')->asMaster();
 
 		# Get master's region
