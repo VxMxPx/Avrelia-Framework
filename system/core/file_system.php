@@ -101,12 +101,12 @@ class FileSystem
 		} # We have filter!
 		else {
 			# It obviously must exists and be directory, if not, 
-			# it's just a file and we'll remove it in regular way - if it doesn't exists of course.
+			# it's just a file and we'll remove it in regular way - if it does exists of course.
 			if (!is_dir($path)) {
 				return self::Remove($path, false);
 			}
 
-			# Check if we already have regular expression as a filter
+			# We don't have regular expression as a filter?
 			if (substr($filter, 0, 1) !== '/') {
 				# Escape the string
 				$filter = preg_quote($filter);
@@ -122,7 +122,7 @@ class FileSystem
 			$Files = scandir($path);
 
 			if (empty($Files)) {
-				Log::Add("No files found in directory: `{$path}`, nothing will be removed.", 'INF');
+				Log::Add("No files found in directory: `{$path}`, nothing will be removed.");
 				return 0;
 			}
 

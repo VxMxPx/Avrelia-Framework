@@ -571,7 +571,7 @@ class cForm
 	 */
 	public function end()
 	{
-		$this->FormData = array('wrap' => false);
+		//$this->FormData = array('wrap' => false);
 		return "\n</form>";
 	}
 	//-
