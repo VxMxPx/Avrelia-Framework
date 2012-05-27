@@ -63,7 +63,7 @@ class Cache
 	 */
 	public static function Set($contents, $key, $expires=false)
 	{
-		# Conver to seconds
+		# Convert to seconds
 		$expires = $expires !== false ? $expires : 0;
 
 		Log::Add("Set cache: `{$key}` to expires in `{$expires}` seconds.", 'INF');

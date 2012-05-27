@@ -30,7 +30,7 @@ class Benchmark
 	 */
 	public static function SetTimer($name)
 	{
-		$temp = explode( ' ', microtime() );
+		$temp = explode(' ', microtime());
 		self::$MicroTimes[$name] = $temp[1] + $temp[0];
 	}
 	//-

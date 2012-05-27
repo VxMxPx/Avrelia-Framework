@@ -151,7 +151,7 @@ class Avrelia
 		if (empty($requestUri)) {
 			if (Cfg::Get('system/routes/0')) {
 				$this->routeCall(Cfg::Get('system/routes/0'));
-				$found = true;;
+				$found = true;
 			}
 		}
 		else
@@ -249,7 +249,7 @@ class Avrelia
 		$Params   = explode(' {#!<<PARAM!#} ', $callName);
 		vArray::Trim($Params);
 
-		# Cound params
+		# Do we have any params...
 		if (!$Patterns) {
 			$Params = array();
 		}
@@ -284,8 +284,7 @@ class Avrelia
 	//-
 
 	/**
-	 * Say your prayers, you're going down after this.
-	 * This is the last method after execution. It's even after boot, routing, etc...
+	 * Executed at the very end of everything
 	 * --
 	 * @return	void
 	 */
@@ -294,7 +293,7 @@ class Avrelia
 		# Final event
 		Event::Trigger('avrelia.before.destruct');
 
-		# Write log (fatal)
+		# Write final log
 		if (Cfg::Get('log/enabled') && Cfg::Get('log/write_individual') === false) {
 			Log::WriteAll(false);
 		}
