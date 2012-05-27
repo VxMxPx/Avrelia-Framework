@@ -80,7 +80,7 @@ class FileSystem
 					$newPath = ds($path . '/' . $file);
 					$count = $count + self::Remove($newPath, false);
 				}
-
+				$count = $count + rmdir($path);
 				return $count;
 			}
 			else {
