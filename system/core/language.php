@@ -69,11 +69,11 @@ class Language
 	 * --
 	 * @param	string	$file			Following options:
 	 * 									enter short name: "my_lang", and the path will be calculated automatically: APPPATH/languages/my_lang.lng
-	 * 									enter full path: SYSPATH.'/languages/my_lang.lng', to load full path (must be with file extention! .lng)
+	 * 									enter full path: SYSPATH.'/languages/my_lang.lng', to load full path (must be with file extension! .lng)
 	 * 									enter % in filename, to auto set the language based on languages list
-	 * @param	boolean	$getFistDefault	Get first default language founf, in chase if we can't find requested, for example:
-	 * 									our request is, to get english or russian, but none of them can be found, but there is ukranian language available,
-	 * 									in case $getFistDefault the ukranian will be loaded
+	 * @param	boolean	$getFistDefault	Get first default language found, in chase if we can't find requested, for example:
+	 * 									our request is, to get English or Russian, but none of them can be found, but there is Ukrainian language available,
+	 * 									in case $getFistDefault the Ukrainian will be loaded
 	 * --
 	 * @return	boolean
 	 */
@@ -139,7 +139,7 @@ class Language
 
 		if (is_array($Result)) {
 			self::$Dictionary = array_merge(self::$Dictionary, $Result);
-			Log::Add('INF', "Loaded: `{$file}`", __LINE__, __FILE__);
+			Log::Add("Language loaded: `{$file}`", 'INF');
 			return true;
 		}
 	}
@@ -180,7 +180,7 @@ class Language
 	//-
 
 	/**
-	 * Will translate particulat string
+	 * Will translate particular string
 	 * --
 	 * @param	string	$key
 	 * @param	array	$Params

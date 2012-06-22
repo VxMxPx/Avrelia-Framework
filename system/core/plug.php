@@ -30,7 +30,7 @@ class Plug
 	 * This will refresh plugs in particular folder. This method will make sure,
 	 * that all plugs which we need are enabled.
 	 *
-	 * Return list of all plugs, with their statuses (timestamp if was enabled, false if not).
+	 * Return list of all plugs, with their statuses (time-stamp if was enabled, false if not).
 	 * --
 	 * @param	array	$List
 	 * --
@@ -188,7 +188,7 @@ class Plug
 
 	/**
 	 * Will copy (if not found) all files from plug's "public" folder to
-	 * actul public folder.
+	 * actual public folder.
 	 * The public folder name will be set based on plug's _id_ (name).
 	 * --
 	 * @param	string	$fullPath	You can just pass __FILE__
@@ -240,30 +240,40 @@ class Plug
 	 */
 	public static function GetConfig($fullPath)
 	{
-		Log::Add('INF', "Getting config for: `{$fullPath}`.", __LINE__, __FILE__);
 		$path     = dirname($fullPath);
 		$name     = FileSystem::FileName($path);
 		$cConf    = ds("{$path}/{$name}_config.php");
 		$aConf    = ds(APPPATH."/config/plugs/{$name}_config.php");
 		$alConf   = ds(APPPATH."/config/plugs/{$name}_config.local.php");
 		$variable = toCamelCase("{$name}_config");
+		$included = array();
 
 		# Include plug's default settings (from plug's folder)
 		if (file_exists($cConf)) {
+			$included[] = $cConf;
 			include $cConf;
 		}
 
 		# Include settings for plug from application folder
 		if (file_exists($aConf)) {
+			$included[] = $aConf;
 			include $aConf;
 		}
 
 		# Include settings for plug from application folder, local version
 		if (file_exists($alConf)) {
+			$included[] = $alConf;
 			include $alConf;
 		}
 
-		# Return variable (if is set)
+		# Check if variable is set and return it!
+		if (!isset($$variable)) {
+			$$variable = false;
+		}
+
+		# Log the list of included files
+		Log::Add("The following config files were included: \n" . implode("\n", $included), 'INF');
+
 		return $$variable;
 	}
 	//-
@@ -273,13 +283,12 @@ class Plug
 	 * --
 	 * @param	string	$fullPath	Full path to plug (including filename for main static class __FILE__)
 	 * @param	string	$language	Do we need particular language?
-	 * @param	boolean	$getDefault	Get fisr default language, if requested can't be found
+	 * @param	boolean	$getDefault	Get first default language, if requested can't be found
 	 * --
 	 * @return	void
 	 */
 	public static function GetLanguage($fullPath, $language=false, $getDefault=false)
 	{
-		Log::Add('INF', "Getting language for: `{$fullPath}`.", __LINE__, __FILE__);
 		$language = !$language ? '%' : $language;
 		$path     = dirname($fullPath);
 		$name     = FileSystem::FileName($path, true);
@@ -293,11 +302,11 @@ class Plug
 
 	/**
 	 * Include plug(s).
-	 * Return true if successfull and array (list of failed plugs) if not.
+	 * Return true if successful and array (list of failed plugs) if not.
 	 * --
 	 * @param	array	$Components		List of plugs to initialize
-	 * @param	boolean	$autoInit		By default all plugs will be autoinitialize,
-	 * 									set this to false, to avoid this behaviour.
+	 * @param	boolean	$autoInit		By default all plugs will be auto-initialize,
+	 * 									set this to false, to avoid this behavior.
 	 * 									Plug need to have static public method "_DoInit".
 	 * @param	boolean	$stopOnFailed	If one of the plugs, doesn't initialize, should we stop loading?
 	 * --
@@ -322,7 +331,7 @@ class Plug
 
 			# Is it enabled?
 			if (!isset(self::$Available[$component]) || self::$Available[$component] == false) {
-				# If we're dealing with _sub-class_
+				# If we're dealing with sub-class_
 				if (!self::Guess($component)) {
 					trigger_error("Plug `{$component}` isn't enabled, can't continue.", E_USER_ERROR);
 					return false;
