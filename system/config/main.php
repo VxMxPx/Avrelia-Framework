@@ -32,10 +32,10 @@ $AvreliaConfig = array
 		# Full URL (domain name) (http://example.com)
 		'full_url'         => '',
 
-		# Is application offline?
+		# Is application off-line?
 		'offline'           => false,
 
-		# If application is offline, what kind of message do we want to send to our users?
+		# If application is off-line, what kind of message do we want to send to our users?
 		# This can be any string, or view:view_name, will be loaded from application/views folder.
 		'offline_message'   => 'view:offline',
 
@@ -49,11 +49,14 @@ $AvreliaConfig = array
 		# Turn debug on?
 		'debug'            => true,
 
-		# Allow redirects? Useful for debuging.
+		# Allow redirects? Useful for debugging.
 		'allow_redirects'  => true,
 
 		# The files / folder which we need to ignore when copying / removing multiple files...
 		'fs_ignore'   => array('.svn'),
+
+		# Convert manually written \n character in language file to <br />
+		'lang_n_to_br' => true,
 	),
 
 	# Cache settings.
@@ -77,7 +80,7 @@ $AvreliaConfig = array
 		# Which plugs do we want to use in our application.
 		'enabled'    => array(),
 
-		# Which plugs do we want to autoload at the begining.
+		# Which plugs do we want to auto-load at the beginning.
 		# Plug must be on enabled list, in order to be auto loaded.
 		'auto_load'  => array(),
 
@@ -107,13 +110,13 @@ $AvreliaConfig = array
 	'log' => array
 	(
 		# Is log enabled (writing to file)?
-		# Please before you enabled log, make sure your log folder is writeable.
+		# Please before you enabled log, make sure your log folder is writable.
 		'enabled' => false,
 
-		# Full log path (full path + filename) - where all log messages will be sabed.
+		# Full log path (full path + filename) - where all log messages will be saved.
 		'path'    => APPPATH . '/log/' . date('Y') . '/' . date('m') . '/' . date('d') . '.log',
 
-		# Log types. Select which type of messages should be saved. INF and OK isn't recomended to be saved.
+		# Log types. Select which type of messages should be saved. INF and OK isn't recommended to be saved.
 		'types'   => array
 		(
 			'ERR' => true,

@@ -165,6 +165,9 @@ class Language
 		$fileContents = $fileContents . "\n__#EOF#__";
 
 		$Contents = '';
+		if (Cfg::Get('system/lang_n_to_br')) {
+			$fileContents = str_replace('\n', '<br />', $fileContents);
+		}
 		preg_match_all('/^!([A-Z0-9_]+):(.*?)(?=^![A-Z0-9_]+:|^#|^__#EOF#__$)/sm', $fileContents, $Contents, PREG_SET_ORDER);
 
 		$Result = array();
