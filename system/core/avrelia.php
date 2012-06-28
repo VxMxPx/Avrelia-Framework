@@ -28,7 +28,7 @@ class Avrelia
 	private $Load = array(
 		'cfg', 'http', 'model', 'v_array', 'event', 'input', 'output',
 		'v_boolean', 'benchmark', 'file_system', 'language', 'plug', 'view',
-		'cache', 'log', 'util', 'v_string',
+		'log', 'util', 'v_string',
 	);
 
 
@@ -92,9 +92,6 @@ class Avrelia
 
 		# Error Handling
 		set_error_handler('avreliaErrorHandler');
-
-		# Init the cache
-		Cache::Init();
 
 		# Init the input
 		Input::Init();

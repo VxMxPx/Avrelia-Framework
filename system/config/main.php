@@ -59,21 +59,6 @@ $AvreliaConfig = array
 		'lang_n_to_br' => true,
 	),
 
-	# Cache settings.
-	'cache' => array
-	(
-		# Which type to use (file or php's apc)
-		# Options: file || apc
-		# To read more about apc, see: http://www.php.net/manual/en/ref.apc.php
-		'type'     => 'file',
-
-		# Where to store type:file cache
-		'location' => DATPATH . '/cache',
-
-		# Apc prefix (to avoid confict with other applications)
-		'apc_prefix' => 'avrelia_framework_',
-	),
-
 	# Plugs settings.
 	'plug' => array
 	(
