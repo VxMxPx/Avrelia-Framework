@@ -133,6 +133,40 @@ class Cache
 	//-
 
 	/**
+	 * Clear particular cache, or all cache (if key is false)
+	 * --
+	 * @param	mixed	$key	String key name or false to clear all cache
+	 * --
+	 * @return	boolean
+	 */
+	public static function Clear($key=false)
+	{
+		if ($key && !self::Has($key)) {
+			Log::Add("The cache key you're trying to remove doesn't exists anymore: `{$key}`.", 'INF');
+			return false;
+		}
+
+		if (self::$type === 'file') {
+			if (!$key) {
+				return (bool) FileSystem::Remove(ds(Cfg::Get('cache/location', DATPATH.'/cache')), '*.cache');
+			}
+			else {
+				$filename = self::FileFromKey($key);
+				return (bool) FileSystem::Remove($filename);
+			}
+		}
+		else {
+			if (!$key) {
+				return apc_clear_cache();
+			}
+			else {
+				return apc_delete($key);
+			}
+		}
+	}
+	//-
+
+	/**
 	 * Will create full cache filename from key.
 	 * Retutn string if successfull, and false if not.
 	 * --

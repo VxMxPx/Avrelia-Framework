@@ -274,6 +274,10 @@ class Plug
 		# Log the list of included files
 		Log::Add("The following config files were included: \n" . implode("\n", $included), 'INF');
 
+		# Append it to the global config
+		$Config['plugs'][$name] = $$variable;
+		Cfg::Append($Config);
+
 		return $$variable;
 	}
 	//-
