@@ -18,18 +18,16 @@
 class cDatabaseDriverSqlite extends cDatabaseDriverBase implements cDatabaseDriverInterface
 {
 	private $valid;
+	private $databasePath;
 
 	/**
 	 * Init the database driver, called initialy when connection is established.
-	 * ---
-	 * @param array $Config
-	 * ---
+	 * --
 	 * @return void
 	 */
-	public function __construct($Config)
+	public function __construct()
 	{
-		# Assign Config and check if base PDO is enabled.
-		parent::__construct($Config);
+		parent::__construct();
 
 		# Check If sqlitePDO Exists
 		if (!in_array('sqlite', PDO::getAvailableDrivers())) {
@@ -37,10 +35,10 @@ class cDatabaseDriverSqlite extends cDatabaseDriverBase implements cDatabaseDriv
 		}
 
 		# Since This Is SQLite database, we must define only path & database filename
-		$this->Config['databasePath'] = ds(DATPATH.'/'.$this->Config['sqlite']['filename']);
+		$this->databasePath = ds(DATPATH.'/'.Cfg::Get('plugs/database/sqlite/filename'));
 
 		# File was found?
-		if (!file_exists($this->Config['databasePath'])) {
+		if (!file_exists($this->databasePath)) {
 			$this->valid = false;
 		}
 		else {
@@ -59,7 +57,7 @@ class cDatabaseDriverSqlite extends cDatabaseDriverBase implements cDatabaseDriv
 		if ($this->valid) {
 			# Try to connect to database
 			try {
-				$this->PDO = new PDO('sqlite:'.$this->Config['databasePath']);
+				$this->PDO = new PDO('sqlite:'.$this->databasePath);
 				return true;
 			}
 			catch (PDOException $e) {
@@ -81,21 +79,21 @@ class cDatabaseDriverSqlite extends cDatabaseDriverBase implements cDatabaseDriv
 	public function _create()
 	{
 		# Create dummy file
-		FileSystem::Write('', $this->Config['databasePath']);
+		FileSystem::Write('', $this->databasePath);
 
 		if (IN_CLI) {
 			# Chmod it to full permission!
-			if (!chmod(ds($this->Config['databasePath']), 0777)) {
-				Log::Add('WAR', "Can't set aproprite chmod permissions on database file: `".$this->Config['databasePath'].'`.', __LINE__, __FILE__);
+			if (!chmod(ds($this->databasePath), 0777)) {
+				Log::Add('WAR', "Can't set aproprite chmod permissions on database file: `".$this->databasePath.'`.', __LINE__, __FILE__);
 			}
 		}
 
-		if (file_exists($this->Config['databasePath'])) {
+		if (file_exists($this->databasePath)) {
 			$this->valid = true;
 			return $this->connect() ? true : false;
 		}
 		else {
-			Log::Add('WAR', "It seems file wasn't created: `{$this->Config['databasePath']}`.", __LINE__, __FILE__);
+			Log::Add('WAR', "It seems file wasn't created: `{$this->databasePath}`.", __LINE__, __FILE__);
 			return false;
 		}
 	}
@@ -108,7 +106,7 @@ class cDatabaseDriverSqlite extends cDatabaseDriverBase implements cDatabaseDriv
 	 */
 	public function _destroy()
 	{
-		return FileSystem::Remove($this->Config['databasePath']);
+		return FileSystem::Remove($this->databasePath);
 	}
 	//-
 }

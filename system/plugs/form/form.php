@@ -25,7 +25,7 @@ class cForm
 	 * --
 	 * @return	boolean
 	 */
-	public static function _DoInit()
+	public static function _OnInit()
 	{
 		# Get language
 		Plug::GetLanguage(__FILE__);

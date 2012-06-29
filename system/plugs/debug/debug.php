@@ -18,7 +18,7 @@ class cDebug
 	/**
 	 * Initialize Debug plug
 	 */
-	public static function _DoInit()
+	public static function _OnInit()
 	{
 		# Need cJquery
 		if (!Plug::Has('jquery'))

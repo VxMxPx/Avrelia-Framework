@@ -18,20 +18,16 @@ interface cSessionDriverInterface
 	/**
 	 * Create all files / tables required by this plug to work
 	 * --
-	 * @param	array	$Config
-	 * --
 	 * @return	boolean
 	 */
-	static function _create($Config);
+	static function _create();
 
 	/**
 	 * Destroy all elements created by this plug
 	 * --
-	 * @param	array	$Config
-	 * --
 	 * @return	boolean
 	 */
-	static function _destroy($Config);
+	static function _destroy();
 
 	/**
 	 * Login the user

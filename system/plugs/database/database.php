@@ -26,9 +26,14 @@ class cDatabase
 	 * --
 	 * @return	boolean
 	 */
-	public static function _DoInit()
+	public static function _OnInit()
 	{
-		self::LoadDriver();
+		self::_LoadDriver();
+
+		# Load all other required libraries
+		if (!class_exists('cDatabaseQuery',     false)) { include(ds(dirname(__FILE__).'/database_query.php'));     }
+		if (!class_exists('cDatabaseResult',    false)) { include(ds(dirname(__FILE__).'/database_result.php'));    }
+		if (!class_exists('cDatabaseStatement', false)) { include(ds(dirname(__FILE__).'/database_statement.php')); }
 
 		if (!self::$Driver->connect()) {
 			Log::Add('ERR', "Can't connect to or create database.", __LINE__, __FILE__);
@@ -44,9 +49,9 @@ class cDatabase
 	 * --
 	 * @return	boolean
 	 */
-	public static function _DoEnable()
+	public static function _OnEnable()
 	{
-		self::LoadDriver();
+		self::_LoadDriver();
 		return self::$Driver->_create();
 	}
 	//-
@@ -56,85 +61,22 @@ class cDatabase
 	 * --
 	 * @return	boolean
 	 */
-	public static function _DoDisable()
+	public static function _OnDisable()
 	{
-		self::LoadDriver();
+		self::_LoadDriver();
 		return self::$Driver->_destroy();
 	}
 	//-
 
 	/**
-	 * Load database driver
+	 * Will load driver and config
 	 * --
-	 * @return	boolean
+	 * @return	void
 	 */
-	private static function LoadDriver()
+	private static function _LoadDriver()
 	{
-		if (self::$Driver) {
-			return true;
-		}
-
-		$Config = Plug::GetConfig(__FILE__);
-
-		# Get basepath
-		$path = dirname(__FILE__);
-
-		# Load Interface
-		if (!class_exists('cDatabaseDriverInterface', false))
-		{
-			$ifDatabasePath = ds($path . '/drivers/interface.php');
-			if (file_exists($ifDatabasePath)) {
-				include($ifDatabasePath);
-			}
-			else {
-				Log::Add('ERR', "Can't find file `/drivers/interface.php` file in: `{$ifDatabasePath}`.", __LINE__, __FILE__);
-				return false;
-			}
-		}
-
-		# Load Base class
-		if (!class_exists('cDatabaseDriverBase', false))
-		{
-			$baseDatabasePath = ds($path . '/drivers/base.php');
-			if (file_exists($baseDatabasePath)) {
-				include($baseDatabasePath);
-			}
-			else {
-				Log::Add('ERR', "Can't find file `/drivers/base.php` file in: `{$baseDatabasePath}`.", __LINE__, __FILE__);
-				return false;
-			}
-		}
-
-		# Get Driver
-		$driverClass = 'cDatabaseDriver' . ucfirst($Config['driver']);
-
-		if (!class_exists($driverClass, false))
-		{
-			$driverPath = ds($path . '/drivers/' . $Config['driver'] . '.php');
-
-			if (file_exists($driverPath)) {
-				include($driverPath);
-			}
-			else {
-				Log::Add('ERR', "Can't find driver file: `{$driverPath}`.", __LINE__, __FILE__);
-				return false;
-			}
-
-			if (!class_exists($driverClass, false)) {
-				Log::Add('ERR', "Database driver's class doesn't exists: `{$driverClass}`.", __LINE__, __FILE__);
-				return false;
-			}
-		}
-
-		Log::Add('INF', "Database driver was loaded: `{$driverClass}`", __LINE__, __FILE__);
-		self::$Driver = new $driverClass($Config);
-
-		# Finally load all other required libraries
-		if (!class_exists('cDatabaseQuery',     false)) { include(ds($path.'/database_query.php'));     }
-		if (!class_exists('cDatabaseResult',    false)) { include(ds($path.'/database_result.php'));    }
-		if (!class_exists('cDatabaseStatement', false)) { include(ds($path.'/database_statement.php')); }
-
-		return true;
+		Plug::GetConfig(__FILE__);
+		self::$Driver = Plug::GetDriver(__FILE__, Cfg::Get('plugs/database/driver'));
 	}
 	//-
 

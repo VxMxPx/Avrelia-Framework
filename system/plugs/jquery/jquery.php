@@ -24,7 +24,7 @@ class cJquery
 	 * --
 	 * @return	boolean
 	 */
-	public static function _DoInit()
+	public static function _OnInit()
 	{
 		self::$Config = Plug::GetConfig(__FILE__);
 

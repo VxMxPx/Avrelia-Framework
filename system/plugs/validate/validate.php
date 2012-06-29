@@ -26,7 +26,7 @@ class cValidate
 	 * --
 	 * @return	boolean
 	 */
-	public static function _DoInit()
+	public static function _OnInit()
 	{
 		# Get validate asssign
 		include ds(dirname(__FILE__) . '/validate_variable.php');

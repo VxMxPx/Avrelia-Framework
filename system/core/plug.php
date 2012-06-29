@@ -87,7 +87,7 @@ class Plug
 	//-
 
 	/**
-	 * Will enable particular plug. This will check for static method _DoEnable,
+	 * Will enable particular plug. This will check for static method _OnEnable,
 	 * if method can't be found, we'll return true (no need to enable it).
 	 * If method can be found, it will be called and result will be returned.
 	 * --
@@ -111,11 +111,11 @@ class Plug
 			return false;
 		}
 
-		if (method_exists($className, '_DoEnable')) {
-			$return = $className::_DoEnable();
+		if (method_exists($className, '_OnEnable')) {
+			$return = $className::_OnEnable();
 		}
 		else {
-			Log::Add('INF', "Method `_DoEnable` not found in `{$className}`.", __LINE__, __FILE__);
+			Log::Add('INF', "Method `_OnEnable` not found in `{$className}`.", __LINE__, __FILE__);
 			$return = true;
 		}
 
@@ -130,7 +130,7 @@ class Plug
 	//-
 
 	/**
-	 * Will disable particular plug. This will check for static method _DoDisable,
+	 * Will disable particular plug. This will check for static method _OnDisable,
 	 * if method can't be found, we'll return true (no need to do anything disable).
 	 * If method can be found, it will be called and result will be returned.
 	 * --
@@ -160,11 +160,11 @@ class Plug
 			return false;
 		}
 
-		if (method_exists($className, '_DoDisable')) {
-			return $className::_DoDisable();
+		if (method_exists($className, '_OnDisable')) {
+			return $className::_OnDisable();
 		}
 		else {
-			Log::Add('INF', "Method `_DoDisable` no found in `{$className}`.", __LINE__, __FILE__);
+			Log::Add('INF', "Method `_OnDisable` no found in `{$className}`.", __LINE__, __FILE__);
 			return true;
 		}
 	}
@@ -283,6 +283,95 @@ class Plug
 	//-
 
 	/**
+	 * Will load driver class for particular plug (+base, +interface if exists)
+	 * --
+	 * @param	string	$fullPath	Full path to plug (including filename for main static class __FILE__)
+	 * @param	string	$type		Which driver do we need
+	 * @param	boolean	$construct	If true, the driver will be constructed
+	 * @param	mixed	$prefix		In some cases we have more than one driver, and they're prefixed
+	 * --
+	 * @return	mixed	False if not loaded, object if construct is true, string (class name) if construct is false
+	 */
+	public static function GetDriver($fullPath, $type, $construct=true, $prefix=false)
+	{
+		# Get basepath
+		$path = dirname($fullPath);
+		$plugName = basename($path);
+
+		# Resolve prefix
+		if ($prefix) {
+			$type = $prefix . '_' . $type;
+		}
+
+		# Resolve filenames
+		# 1. interface
+		$interfaceClass  = 'c' . toCamelCase($plugName) . 'Driver';
+		$interfaceClass .= ($prefix) ? toCamelCase($prefix) : '';
+		$interfaceClass .= 'Interface';
+
+		$interfaceFile  = $path . '/drivers/';
+		$interfaceFile .= ($prefix) ? $prefix.'_' : '';
+		$interfaceFile .= 'interface.php';
+
+		# 2. base
+		$baseClass  = 'c' . toCamelCase($plugName) . 'Driver';
+		$baseClass .= ($prefix) ? toCamelCase($prefix) : '';
+		$baseClass .= 'Base';
+
+		$baseFile  = $path . '/drivers/';
+		$baseFile .= ($prefix) ? $prefix.'_' : '';
+		$baseFile .= 'base.php';
+
+		# 3. driver
+		$driverClass  = 'c' . toCamelCase($plugName) . 'Driver';
+		$driverClass .= ($prefix) ? toCamelCase($prefix) : '';
+		$driverClass .= toCamelCase($type);
+
+		$driverFile  = $path . '/drivers/';
+		$driverFile .= ($prefix) ? $prefix.'_' : '';
+		$driverFile .= $type.'.php';
+
+		# Load interface if exists
+		if (!interface_exists($interfaceClass, false)) {
+			if (file_exists($interfaceFile)) {
+				include($interfaceFile);
+			}
+		}
+
+		# Load base if exists
+		if (!class_exists($baseClass, false)) {
+			if (file_exists($baseFile)) {
+				include($baseFile);
+			}
+		}
+
+		# Get driver's class
+		if (!class_exists($driverClass, false)) {
+			if (file_exists($driverFile)) {
+				include($driverFile);
+			}
+			else {
+				Log::Add("Can't load driver: `{$driverClass}` from `{$driverFile}`, file not found.", 'WAR');
+				return false;
+			}
+		}
+
+		if (!class_exists($driverClass, false)) {
+			Log::Add("Class `{$driverClass}` not found in `{$driverFile}`.", 'WAR');
+			return false;
+		}
+
+		Log::Add("Driver was loaded: `{$driverClass}`.");
+		if ($construct) {
+			return new $driverClass();
+		}
+		else {
+			return $driverClass;
+		}
+	}
+	//-
+
+	/**
 	 * Will get language for particular plug
 	 * --
 	 * @param	string	$fullPath	Full path to plug (including filename for main static class __FILE__)
@@ -311,7 +400,7 @@ class Plug
 	 * @param	array	$Components		List of plugs to initialize
 	 * @param	boolean	$autoInit		By default all plugs will be auto-initialize,
 	 * 									set this to false, to avoid this behavior.
-	 * 									Plug need to have static public method "_DoInit".
+	 * 									Plug need to have static public method "_OnInit".
 	 * @param	boolean	$stopOnFailed	If one of the plugs, doesn't initialize, should we stop loading?
 	 * --
 	 * @return	mixed
@@ -374,10 +463,10 @@ class Plug
 					}
 				}
 
-				if (method_exists($className, '_DoInit'))
+				if (method_exists($className, '_OnInit'))
 				{
-					if (!$className::_DoInit()) {
-						Log::Add('WAR', "Method: `_DoInit` in `{$className}` failed!", __LINE__, __FILE__);
+					if (!$className::_OnInit()) {
+						Log::Add('WAR', "Method: `_OnInit` in `{$className}` failed!", __LINE__, __FILE__);
 					}
 				}
 			}
@@ -439,6 +528,19 @@ class Plug
 	public static function GetPublicPath($path=null)
 	{
 		return ds(PUBPATH . '/' . Cfg::Get('plug/public_dir', 'plugs') . '/' . $path);
+	}
+	//-
+
+	/**
+	 * Get full public url + additional
+	 * --
+	 * @param	string	$uri
+	 * --
+	 * @return	string
+	 */
+	public static function GetPublicUrl($uri=false)
+	{
+		return url(Cfg::Get('plug/public_dir', 'plugs') . '/' . $uri);
 	}
 	//-
 

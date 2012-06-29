@@ -15,26 +15,20 @@
  */
 class cDatabaseDriverBase
 {
-	protected $Config;	# array	Array of all configurations, set on construction
 	protected $PDO;		# PDO	Link to the PDO Connection
 
 
 	/**
 	 * Init the database driver, called initialy when connection is established.
 	 * --
-	 * @param	array	$Config
-	 * --
 	 * @return	void
 	 */
-	public function __construct($Config)
+	public function __construct()
 	{
 		# Check If is PDO enabled...
 		if (!class_exists('PDO')) {
 			trigger_error('PDO class doesn\'t exists. Please enable PDO extension.', E_USER_ERROR);
 		}
-
-		# Assign config
-		$this->Config = $Config;
 	}
 	//-
 

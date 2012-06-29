@@ -15,7 +15,6 @@
  */
 class cSessionDriverJson implements cSessionDriverInterface
 {
-	private $Config;			# array		All configurations for this plug
 	private $fnameUsers;		# string	Full path to the users file
 	private $fnameSessions;		# string	Full path to the sessions file
 	private $Users;				# array		All users
@@ -28,17 +27,13 @@ class cSessionDriverJson implements cSessionDriverInterface
 	/**
 	 * Initialize the session - setup everything, read the cookies, etc...
 	 * --
-	 * @param	array	$Config
-	 * --
 	 * @return	void
 	 */
-	public function __construct($Config)
+	public function __construct()
 	{
-		$this->Config = $Config;
-
 		# Set data filenames
-		$this->fnameUsers    = $this->Config['json']['users_filename'];
-		$this->fnameSessions = $this->Config['json']['sessions_filename'];
+		$this->fnameUsers    = Cfg::Get('plugs/session/json/users_filename');
+		$this->fnameSessions = Cfg::Get('plugs/session/json/sessions_filename');
 
 		# Load Users And Sessions
 		$this->usersFetch();
@@ -52,19 +47,19 @@ class cSessionDriverJson implements cSessionDriverInterface
 	/**
 	 * Create all files / tables required by this plug to work
 	 * --
-	 * @param	array	$Config
-	 * --
 	 * @return	boolean
 	 */
-	public static function _create($Config)
+	public static function _create()
 	{
-		FileSystem::Write(uJSON::Encode(array()), $Config['json']['users_filename'],    false, 0777);
-		FileSystem::Write(uJSON::Encode(array()), $Config['json']['sessions_filename'], false, 0777);
+		FileSystem::Write(uJSON::Encode(array()), Cfg::Get('plugs/session/json/users_filename'),    false, 0777);
+		FileSystem::Write(uJSON::Encode(array()), Cfg::Get('plugs/session/json/sessions_filename'), false, 0777);
 
 		# Default users
 		$Users = array();
 
-		foreach ($Config['defaults'] as $DefUser)
+		$Defaults = Cfg::Get('plugs/session/defaults');
+
+		foreach ($Defaults as $DefUser)
 		{
 			$User['id']       = self::unameToId($DefUser['uname']);
 			$User['uname']    = $DefUser['uname'];
@@ -74,21 +69,19 @@ class cSessionDriverJson implements cSessionDriverInterface
 			$Users[$User['id']] = $User;
 		}
 
-		return uJSON::EncodeFile($Config['json']['users_filename'], $Users);
+		return uJSON::EncodeFile(Cfg::Get('plugs/session/json/users_filename'), $Users);
 	}
 	//-
 
 	/**
 	 * Destroy all elements created by this plug
 	 * --
-	 * @param	array	$Config
-	 * --
 	 * @return	boolean
 	 */
-	public static function _destroy($Config)
+	public static function _destroy()
 	{
-		$r1 = FileSystem::Remove($Config['json']['users_filename']);
-		$r2 = FileSystem::Remove($Config['json']['sessions_filename']);
+		$r1 = FileSystem::Remove(Cfg::Get('plugs/session/json/users_filename'));
+		$r2 = FileSystem::Remove(Cfg::Get('plugs/session/json/sessions_filename'));
 
 		return $r1 && $r2;
 	}
@@ -335,7 +328,7 @@ class cSessionDriverJson implements cSessionDriverInterface
 	private function sessionDiscover()
 	{
 		# Check if we can find session id in cookies.
-		if ($sessionId = uCookie::Read($this->Config['cookie_name']))
+		if ($sessionId = uCookie::Read(Cfg::Get('plugs/session/cookie_name')))
 		{
 			# Okey we have something, check it...
 			if (isset($this->Sessions[$sessionId]))
@@ -359,7 +352,7 @@ class cSessionDriverJson implements cSessionDriverInterface
 				}
 
 				# Do we have to match IP address?
-				if ($this->Config['require_ip']) {
+				if (Cfg::Get('plugs/session/require_ip')) {
 					if ($ip !== $_SERVER['REMOTE_ADDR']) {
 						Log::Add('INF', "The IP from session file: `{$ip}`, doesn't match with actual IP: `{$_SERVER['REMOTE_ADDR']}`.", __LINE__, __FILE__);
 						$this->sessionDestroy($sessionId);
@@ -368,7 +361,7 @@ class cSessionDriverJson implements cSessionDriverInterface
 				}
 
 				# Do we have to match agent?
-				if ($this->Config['require_agent']) {
+				if (Cfg::Get('plugs/session/require_agent')) {
 					$currentAgent = self::cleanAgent($_SERVER['HTTP_USER_AGENT']);
 
 					if ($agent !== $currentAgent) {
@@ -412,7 +405,7 @@ class cSessionDriverJson implements cSessionDriverInterface
 			$expires = 0;
 		}
 		else {
-			$expires = (int) $this->Config['expires'];
+			$expires = (int) Cfg::Get('plugs/session/expires');
 			$expires = $expires > 0 ? $expires + time() : 0;
 		}
 
@@ -420,7 +413,7 @@ class cSessionDriverJson implements cSessionDriverInterface
 		$qId  = time() . '_' . vString::Random(20, 'aA1');
 
 		# Store cookie
-		uCookie::Create($this->Config['cookie_name'], $qId, $expires);
+		uCookie::Create(Cfg::Get('plugs/session/cookie_name'), $qId, $expires);
 
 		# Set session file
 		$this->Sessions[$qId] = array(
@@ -446,7 +439,7 @@ class cSessionDriverJson implements cSessionDriverInterface
 	private function sessionDestroy($sessionId)
 	{
 		# Remove cookies
-		uCookie::Remove($this->Config['cookie_name']);
+		uCookie::Remove(Cfg::Get('plugs/session/cookie_name'));
 
 		# Okay, deal with session file now...
 		if (isset($this->Sessions[$sessionId])) {

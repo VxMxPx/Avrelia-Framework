@@ -23,7 +23,7 @@ class cHTML
 	 * --
 	 * @return	boolean
 	 */
-	public static function _DoInit()
+	public static function _OnInit()
 	{
 		Plug::GetLanguage(__FILE__);
 		return true;

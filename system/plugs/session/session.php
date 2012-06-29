@@ -15,23 +15,20 @@
  */
 class cSession
 {
-	private static $Config;			# array						All Plug's Config
 	private static $Driver;			# cSessionDriverInterface	Session driver instance
-	private static $driverClass;	# string					Driver's class name
-
 
 	/**
 	 * Cload config and apropriate driver
 	 * --
 	 * @return	boolean
 	 */
-	public static function _DoInit()
+	public static function _OnInit()
 	{
-		self::LoadDriver();
-		$class = self::$driverClass;
+		Plug::GetConfig(__FILE__);
+		$class = Plug::GetDriver(__FILE__, Cfg::Get('plugs/session/driver'), false);
 
 		# Create new driver instance
-		self::$Driver = new $class(self::$Config);
+		self::$Driver = new $class();
 		return true;
 	}
 	//-
@@ -41,12 +38,12 @@ class cSession
 	 * --
 	 * @return	boolean
 	 */
-	public static function _DoEnable()
+	public static function _OnEnable()
 	{
-		self::LoadDriver();
-		$class = self::$driverClass;
+		Plug::GetConfig(__FILE__);
+		$class = Plug::GetDriver(__FILE__, Cfg::Get('plugs/session/driver'), false);
 
-		if (!$class::_create(self::$Config)) {
+		if (!$class::_create()) {
 			Log::Add('ERR', "Failed to enable session driver: `{$class}`.", __LINE__, __FILE__);
 			return false;
 		}
@@ -61,66 +58,18 @@ class cSession
 	 * --
 	 * @return	boolean
 	 */
-	public static function _DoDisable()
+	public static function _OnDisable()
 	{
-		self::LoadDriver();
-		$class = self::$driverClass;
+		Plug::GetConfig(__FILE__);
+		$class = Plug::GetDriver(__FILE__, Cfg::Get('plugs/session/driver'), false);
 
-		if (!$class::_destroy(self::$Config)) {
+		if (!$class::_destroy()) {
 			Log::Add('ERR', "Failed to disable session driver: `{$class}`.", __LINE__, __FILE__);
 			return false;
 		}
 		else {
 			return true;
 		}
-	}
-	//-
-
-	/**
-	 * Will load driver
-	 * --
-	 * @return	boolean
-	 */
-	private static function LoadDriver()
-	{
-		if (self::$Driver) {
-			return true;
-		}
-
-		# Get Config
-		$Config = Plug::GetConfig(__FILE__);
-
-		# Get driver if exists
-		$path   = dirname(__FILE__);
-		$driver = $Config['driver'];
-		$class  = 'cSessionDriver'.ucfirst($driver);
-
-		# Load interface first
-		if (!interface_exists('cSessionDriverInterface', false)) {
-			if (file_exists(ds($path."/drivers/interface.php"))) {
-				include(ds($path."/drivers/interface.php"));
-			}
-			else {
-				Log::Add('WAR', "Can't load interface driver: " . ds($path."/drivers/interface.php"), __LINE__, __FILE__);
-				return false;
-			}
-		}
-
-		if (!class_exists($class, false)) {
-			if (file_exists(ds($path . "/drivers/{$driver}.php"))) {
-				include(ds($path . "/drivers/{$driver}.php"));
-			}
-		}
-
-		# Do we have clas now?
-		if (!class_exists($class, false)) {
-			Log::Add('ERR', "Class can't be loaded: `{$class}`.", __LINE__, __FILE__);
-			return false;
-		}
-
-		self::$Config      = $Config;
-		self::$driverClass = $class;
-		return true;
 	}
 	//-
 
