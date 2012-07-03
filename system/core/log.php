@@ -111,6 +111,8 @@ class Log
 		# Add backtrace if error
 		if ($type === 'ERR') {
 			$message .= "\n";
+			unset($BT[0]); // We already know we're in log, no need to report it.
+			
 			foreach ($BT as $Trace) {
 				$trace  = '';
 				$trace .= isset($Trace['class']) ? $Trace['class'] : '';

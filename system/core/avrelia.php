@@ -151,8 +151,7 @@ class Avrelia
 				$found = true;
 			}
 		}
-		else
-		{
+		else {
 			# Loop to check for uri
 			$Routes = Cfg::Get('system/routes');
 			unset($Routes[0], $Routes[404], $Routes['before'], $Routes['after']);
@@ -168,7 +167,6 @@ class Avrelia
 					break;
 				}
 			}
-
 		}
 
 		# Call 404 if we have false
@@ -209,10 +207,10 @@ class Avrelia
 	{
 		# Safely Escape Route
 		$callName = str_replace(
-						array('/', '->', '(', ',', ')'),
-						array(' {#!<<PATH!#} ', ' {#!<<CONTROLLER!#} ', ' {#!<<METHOD!#} ', ' {#!<<PARAM!#} ', ''),
-						$callName
-					);
+			array('/', '->', '(', ',', ')'),
+			array(' {#!<<PATH!#} ', ' {#!<<CONTROLLER!#} ', ' {#!<<METHOD!#} ', ' {#!<<PARAM!#} ', ''),
+			$callName
+		);
 
 		# Set patterns
 		if ($Patterns && is_array($Patterns) && !empty($Patterns)) {

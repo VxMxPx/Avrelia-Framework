@@ -113,15 +113,17 @@ function dumpVar($variable, $die=true, $return=false)
 /**
  * Error handler
  * --
+ * @param	integer	$errno
+ * @param	string	$errmsg
+ * @param	string	$filename
+ * @param	integer	$linenum
+ * --
  * @return	void
  */
-function avreliaErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
+function avreliaErrorHandler($errno, $errmsg, $filename, $linenum)
 {
-	# define an assoc array of error string
-	# in reality the only entries we should
-	# consider are E_WARNING, E_NOTICE, E_USER_ERROR,
-	# E_USER_WARNING and E_USER_NOTICE
-	$ErrorType = array
+	# Error codes to plain English string.
+	$errorToTitle = array
 	(
 		E_ERROR              => 'Error',
 		E_WARNING            => 'Warning',
@@ -140,41 +142,27 @@ function avreliaErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
 		E_USER_DEPRECATED    => 'User-generated warning message',
 	);
 
-	$SimpleType = array
-	(
-		E_ERROR              => 'ERR',
-		E_WARNING            => 'WAR',
-		E_PARSE              => 'ERR',
-		E_NOTICE             => 'INF',
-		E_CORE_ERROR         => 'ERR',
-		E_CORE_WARNING       => 'WAR',
-		E_COMPILE_ERROR      => 'ERR',
-		E_COMPILE_WARNING    => 'WAR',
-		E_USER_ERROR         => 'ERR',
-		E_USER_WARNING       => 'WAR',
-		E_USER_NOTICE        => 'INF',
-		E_STRICT             => 'WAR',
-		E_RECOVERABLE_ERROR  => 'ERR',
-		E_DEPRECATED         => 'INF',
-		E_USER_DEPRECATED    => 'INF',
-	);
+	# Get error title
+	$title = isset($errorToTitle[$errno]) ? $errorToTitle[$errno] : 'Unknown';
+	$errmsg = $title . ":\n" . $errmsg;
 
-	Log::Add($errmsg, $SimpleType[$errno], $linenum, $filename);
+	# Get error simple type
+	$errorTypes = Cfg::Get('log/map');
+	$type = isset($errorTypes[$errno]) ? $errorTypes[$errno] : 'WAR';
+
+	# Add error
+	Log::Add($errmsg, $type, $linenum, $filename);
 
 	# Fatal error.
-	if ($SimpleType[$errno] == 'ERR')
+	if ($type === 'ERR')
 	{
-		# Write log (fatal)
+		# Write log to file (fatal)
 		if (Cfg::Get('log/enabled') && Cfg::Get('log/write_all_on_fatal')) {
 			Log::WriteAll(true);
 		}
 
-		# If in debug mode and not in cli, we'll output all messages on Error...
-		/*if (IN_CLI) {
-			fwrite(STDERR, Log::Get(1, array('WAR', 'ERR')));
-			exit(1);
-		}
-		else*/if (Cfg::Get('system/debug', false) && !IN_CLI) {
+		# Dump whole log on fatal error.
+		if (Cfg::Get('system/debug', false) && !IN_CLI) {
 			die('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Error</title></head><body> ' . Log::Get(2) . '</body></html>');
 		}
 	}

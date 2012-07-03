@@ -110,6 +110,30 @@ $AvreliaConfig = array
 			'OK'  => false,
 		),
 
+		# PHP system errors are handled by Avrelia Framework, 
+		# therefore we're simplifying them. 
+		# Framework has only three levels: WAR, INF, ERR, (OK) 
+		# and react differently when one of them is triggered.
+		# Note: ERR type will stop script execution.
+		'map'     => array
+		(
+			E_ERROR              => 'ERR',
+			E_WARNING            => 'WAR',
+			E_PARSE              => 'ERR',
+			E_NOTICE             => 'INF',
+			E_CORE_ERROR         => 'ERR',
+			E_CORE_WARNING       => 'WAR',
+			E_COMPILE_ERROR      => 'ERR',
+			E_COMPILE_WARNING    => 'WAR',
+			E_USER_ERROR         => 'ERR',
+			E_USER_WARNING       => 'WAR',
+			E_USER_NOTICE        => 'INF',
+			E_STRICT             => 'WAR',
+			E_RECOVERABLE_ERROR  => 'ERR',
+			E_DEPRECATED         => 'WAR',
+			E_USER_DEPRECATED    => 'WAR',
+		),
+
 		# If set to true, every log message will be saved individually -
 		# if set to false, all messages will be saved at the end of script execution.
 		'write_individual'   => true,
