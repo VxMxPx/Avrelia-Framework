@@ -40,7 +40,7 @@ class Model
 		$instance = self::NewInstance($class);
 
 		if (!$instance) {
-			Loader::GetModel($class);
+			Loader::GetMC($class, 'models');
 			$instance = self::NewInstance($class);
 
 			if (!$instance) {
