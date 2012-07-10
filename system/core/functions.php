@@ -26,45 +26,7 @@
  */
 function __autoload($className)
 {
-	# Check first if we need model
-	if (substr($className, -5) === 'Model') {
-		$name = substr($className, 0, -5);
-		return Model::Get($name);
-	}
-
-	# If we have "u" prefix, We Load Util's Class
-	# If we have "c" prefix, We Load Plug's Class
-	$classPrefix = substr($className, 0, 1);
-	$fileName    = toUnderline(substr($className, 1));
-
-	switch ($classPrefix) {
-		case 'c':
-			# We call the plug class to do dirty job for us!
-			Plug::Inc($fileName);
-			return true;
-			break;
-
-		case 'u':
-			$path = "util";
-			break;
-
-		default:
-			trigger_error("Autoload failed for: `{$className}`, invalid prefix: `{$classPrefix}` for `{$fileName}`.", E_USER_ERROR);
-	}
-
-	# Check APPLICATION folder...
-	if (file_exists(ds(APPPATH."/{$path}/{$fileName}.php"))) {
-		include ds(APPPATH."/{$path}/{$fileName}.php");
-		return true;
-	}
-
-	# Check SYSTEM folder...
-	if (file_exists(ds(SYSPATH."/{$path}/{$fileName}.php"))) {
-		include ds(SYSPATH."/{$path}/{$fileName}.php");
-		return true;
-	}
-
-    trigger_error("Autoload failed for: `{$className}`, class not found: `{$fileName}`, prefix `{$classPrefix}`.", E_USER_ERROR);
+	return Loader::Get($className);
 }
 //-
 

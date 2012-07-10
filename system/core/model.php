@@ -37,30 +37,38 @@ class Model
 			return self::$Cache[$class];
 		}
 
+		$instance = self::NewInstance($class);
+
+		if (!$instance) {
+			Loader::GetModel($class);
+			$instance = self::NewInstance($class);
+
+			if (!$instance) {
+				trigger_error("Can't load application's model: `{$class}`.", E_USER_ERROR);
+			}
+		}
+
+		return $instance;
+	}
+	//-
+
+	/**
+	 * Create new instance of a class, if exists
+	 * --
+	 * @param	string	$class
+	 * --
+	 * @return	mixed	object or false
+	 */
+	private static function NewInstance($class)
+	{
 		if (class_exists($class, false))
 		{
 			$instance = new $class();
 			self::$Cache[$class] = $instance;
 			return $instance;
 		}
-
-		$fullname = ds(APPPATH.'/models/'.strtolower($name).'.php');
-
-		if (file_exists($fullname)) {
-			include $fullname;
-		}
 		else {
-			trigger_error("Can't load model - file doesn't exits: `{$fullname}`.", E_USER_ERROR);
-		}
-
-		if (class_exists($class, false))
-		{
-			$instance = new $class();
-			self::$Cache[$class] = $instance;
-			return $instance;
-		}
-		else {
-			trigger_error("Can't load model - class doesn't exits: `{$class}`.", E_USER_ERROR);
+			return false;
 		}
 	}
 	//-

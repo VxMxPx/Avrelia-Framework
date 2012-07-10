@@ -27,7 +27,7 @@ class Avrelia
 	 */
 	private $Load = array(
 		'cfg', 'http', 'model', 'v_array', 'event', 'input', 'output',
-		'v_boolean', 'benchmark', 'file_system', 'language', 'plug', 'view',
+		'v_boolean', 'benchmark', 'file_system', 'language', 'loader', 'plug', 'view',
 		'log', 'util', 'v_string',
 	);
 
