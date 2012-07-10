@@ -28,8 +28,10 @@ class homeController
 	 */
 	public function greeting($last)
 	{
+		$Model = new homeModel();
+
 		View::Get('simple', array(
-			'data' => Model::Get('home')->sayHello($last),
+			'data' => $Model->sayHello($last),
 		));
 	}
 	//-

@@ -26,6 +26,12 @@
  */
 function __autoload($className)
 {
+	# Check first if we need model
+	if (substr($className, -5) === 'Model') {
+		$name = substr($className, 0, -5);
+		return Model::Get($name);
+	}
+
 	# If we have "u" prefix, We Load Util's Class
 	# If we have "c" prefix, We Load Plug's Class
 	$classPrefix = substr($className, 0, 1);
