@@ -27,8 +27,8 @@ class Loader
 	public static function Get($className)
 	{
 		# Try to understand what kind of a class do we have...
-		if (substr($className,  -10) === 'Controller') return self::GetController($className);
-		if (substr($className,   -5) === 'Model')      return self::GetModel($className);
+		if (substr($className,  -10) === 'Controller') return self::GetMC($className, 'controllers');
+		if (substr($className,   -5) === 'Model')      return self::GetMC($className, 'models');
 		if (substr($className, 0, 1) === 'u')          return self::GetUtil($className);
 		if (substr($className, 0, 1) === 'c')          return self::GetPlug($className);
 
@@ -80,50 +80,41 @@ class Loader
 	//-
 
 	/**
-	 * Will load application's controller
+	 * Will load application's model or controllers
 	 * --
 	 * @param	string	$className
 	 * --
 	 * @return	boolean
 	 */
-	public static function GetController($className)
+	public static function GetMC($className, $type)
 	{
-		$name = substr($className, 0, -10);
-		$name = toUnderline($name);
-		$fullname = ds(APPPATH.'/controllers/'.strtolower($name).'.php');
-
-		if (file_exists($fullname)) {
-			include $fullname;
-		}
-		else {
-			trigger_error("Can't load controller - file doesn't exits: `{$fullname}`.", E_USER_ERROR);
+		if (!in_array($type, array('controllers', 'models'))) {
+			trigger_error("Type must be either `controllers` or `models`.", E_USER_ERROR);
 		}
 
-		return true;
-	}
-	//-
-
-	/**
-	 * Will load application's model
-	 * --
-	 * @param	string	$className
-	 * --
-	 * @return	boolean
-	 */
-	public static function GetModel($className)
-	{
 		$name = substr($className, 0, -5);
-		$name = toUnderline($name);
-		$fullname = ds(APPPATH.'/models/'.strtolower($name).'.php');
+		$name = strtolower(toUnderline($name));
+		$nameSplit = explode('_', $name, 2);
 
-		if (file_exists($fullname)) {
-			include $fullname;
+		# Some possibilities
+		$files = array();
+		$files[] = ds(APPPATH.'/'.$type.'/'.$name.'.php');
+		if (isset($nameSplit[1])) {
+			$files[] = ds(APPPATH.'/'.$type.'/'.$nameSplit[0].'/'.$name.'.php');
+			$files[] = ds(APPPATH.'/'.$type.'/'.$nameSplit[0].'/'.$nameSplit[1].'.php');
 		}
 		else {
-			trigger_error("Can't load model - file doesn't exits: `{$fullname}`.", E_USER_ERROR);
+			$files[] = ds(APPPATH.'/'.$type.'/'.$nameSplit[0].'/'.$nameSplit[0].'.php');
 		}
 
-		return true;
+		foreach ($files as $file) {
+			if (file_exists($file)) {
+				include $file;
+				return true;
+			}
+		}
+
+		trigger_error("Can't load class `{$className}` - file not found: `{$fullname}`.", E_USER_ERROR);
 	}
 	//-
 }
