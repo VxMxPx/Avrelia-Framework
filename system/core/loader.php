@@ -12,7 +12,7 @@
  * @license    http://framework.avrelia.com/license
  * @link       http://framework.avrelia.com
  * @since      Version 0.80
- * @since      2011-11-19
+ * @since      2012-07-10
  */
 
 class Loader
@@ -92,7 +92,7 @@ class Loader
 			trigger_error("Type must be either `controllers` or `models`.", E_USER_ERROR);
 		}
 
-		$name = substr($className, 0, -5);
+		$name = substr($className, 0, -(strlen($type)-1));
 		$name = strtolower(toUnderline($name));
 		$nameSplit = explode('_', $name, 2);
 
@@ -114,7 +114,7 @@ class Loader
 			}
 		}
 
-		trigger_error("Can't load class `{$className}` - file not found: `{$fullname}`.", E_USER_ERROR);
+		trigger_error("Can't load class `{$className}`, tried:" . print_r($files, true), E_USER_ERROR);
 	}
 	//-
 }

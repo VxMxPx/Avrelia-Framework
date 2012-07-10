@@ -26,7 +26,7 @@ class homeController
 	/**
 	 * For Ajax Request...
 	 */
-	public function greeting($last)
+	public function greeting($last, $uname)
 	{
 		$Model = new homeModel();
 

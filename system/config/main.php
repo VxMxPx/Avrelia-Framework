@@ -46,6 +46,11 @@ $AvreliaConfig = array
 		# It's used with Input::Get();
 		'input_get_filter' => '/[^a-zA-Z0-9\/!=\-+_.,;?]/',
 
+		# If set to true, dispatcher will check controller's response
+		# If response will be === false, the 404 will be displayed
+		# (as if no route was not found!)
+		'dispatcher_check_response' => false,
+
 		# Turn debug on?
 		'debug'            => true,
 

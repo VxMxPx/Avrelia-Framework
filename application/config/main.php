@@ -14,7 +14,7 @@ $AvreliaConfig['system']['routes'] = array
 	# Match home/$method/$Parameters
 	# Controller and method can consist only of: a-z 0-9 _
 	# Parameter can be any length and contain (almost) any character.
-	'/([a-z0-9_-]*)\/?([a-zA-Z0-9\/!=\-+_.,;?]*)/' => 'home->%1(%2, :name)',
+	'/([a-z0-9_-]*)\/?([a-zA-Z0-9\/!=\-+_.,;?]*)/' => 'home->%1(%2)',
 
 	# Match $controller/$method/$Parametera
 	# Controller and method can consist only of: a-z 0-9 _

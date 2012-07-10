@@ -26,7 +26,7 @@ class Avrelia
 	 * @var	array	Items which needs to be autoloaded...
 	 */
 	private $Load = array(
-		'cfg', 'http', 'model', 'v_array', 'event', 'input', 'output',
+		'cfg', 'http', 'model', 'v_array', 'dispatcher', 'event', 'input', 'output',
 		'v_boolean', 'benchmark', 'file_system', 'language', 'loader', 'plug', 'view',
 		'log', 'util', 'v_string',
 	);
@@ -35,7 +35,7 @@ class Avrelia
 	/**
 	 * Will init the framework
 	 * --
-	 * @return	$this
+	 * @return	Dispatcher
 	 */
 	public function init()
 	{
@@ -110,171 +110,7 @@ class Avrelia
 		# Trigger event after framework initialization
 		Event::Trigger('avrelia.after.init');
 
-		return $this;
-	}
-	//-
-
-	/**
-	 * Will boot the system
-	 * --
-	 * @return	void
-	 */
-	public function boot()
-	{
-		# We will decide where to go from here...
-		Event::Trigger('avrelia.before.boot');
-
-		# Is application offline?
-		if (Cfg::Get('system/offline') === true) {
-			$message = Cfg::Get('system/offline_message');
-			if (substr($message,0,5) == 'view:') {
-				$message = View::Get(substr($message,5))->doReturn();
-			}
-			HTTP::Status503_ServiceUnavailable($message);
-		}
-
-		$requestUri = trim(Input::GetRequestUri(false), '/');
-		$routeCall  = '';
-		$found      = false;
-
-		# Do we have before?
-		if (Cfg::Get('system/routes/before', false)) {
-			if (!$this->routeCall(Cfg::Get('system/routes/before'))) {
-				Log::Add('Before is set in config, but can\'t find method: `'.Cfg::Get('system/routes/before', false).'`.', 'WAR');
-			}
-		}
-
-		# In case we have no uri
-		if (empty($requestUri)) {
-			if (Cfg::Get('system/routes/0')) {
-				$this->routeCall(Cfg::Get('system/routes/0'));
-				$found = true;
-			}
-		}
-		else {
-			# Loop to check for uri
-			$Routes = Cfg::Get('system/routes');
-			unset($Routes[0], $Routes[404], $Routes['before'], $Routes['after']);
-
-			foreach($Routes as $routeRegEx => $routeCall) {
-				$patterns = '';
-				if (preg_match_all($routeRegEx, $requestUri, $patterns, PREG_SET_ORDER)) {
-					$Patterns = $patterns[0];
-					unset($Patterns[0]);
-
-					# Call route...
-					$found = $this->routeCall($routeCall, $Patterns);
-					break;
-				}
-			}
-		}
-
-		# Call 404 if we have false
-		if (!$found) {
-			HTTP::Status404_NotFound();
-			Log::Add("We have 404 on `{$requestUri}`.", 'INF');
-
-			if (Cfg::Get('system/routes/404')) {
-				$found = $this->routeCall(Cfg::Get('system/routes/404'));
-			}
-
-			# Still not found?
-			if (!$found) {
-				echo '404: ' . $requestUri;
-			}
-		}
-
-		# Do we have after?
-		if (Cfg::Get('system/routes/after', false)) {
-			if (!$this->routeCall(Cfg::Get('system/routes/after'))) {
-				Log::Add('After is set in config, but can\'t find method: `'.Cfg::Get('system/routes/after', false).'`.', 'WAR');
-			}
-		}
-
-		Event::Trigger('avrelia.after.boot');
-	}
-	//-
-
-	/**
-	 * This will resolve route call (example: /controller->method(params))
-	 * --
-	 * @param	string	$callName
-	 * @param	array	$Patterns
-	 * --
-	 * @return	boolean
-	 */
-	private function routeCall($callName, $Patterns=false)
-	{
-		# Safely Escape Route
-		$callName = str_replace(
-			array('/', '->', '(', ',', ')'),
-			array(' {#!<<PATH!#} ', ' {#!<<CONTROLLER!#} ', ' {#!<<METHOD!#} ', ' {#!<<PARAM!#} ', ''),
-			$callName
-		);
-
-		# Set patterns
-		if ($Patterns && is_array($Patterns) && !empty($Patterns)) {
-			foreach($Patterns as $key => $pat) {
-				$callName = str_replace('%'.$key, $pat, $callName);
-			}
-		}
-		else {
-			$Patterns = false;
-		}
-
-		# Get Path
-		$Params   = array_reverse(explode(' {#!<<PATH!#} ', $callName, 2), false);
-		$path     = isset($Params[1]) ? vString::Clean(strtolower($Params[1]), 100, 'a 1 c', '_') : '';
-		//$path     = str_replace('-', '_', $path);
-		$callName = $Params[0];
-
-		# Get Controller
-		$Params      = array_reverse(explode(' {#!<<CONTROLLER!#} ', $callName, 2), false);
-		$controller  = isset($Params[1]) ? vString::Clean(strtolower($Params[1]), 100, 'a 1 c', '_') : '';
-		//$controller  = str_replace('-', '_', $controller);
-		$callName    = $Params[0];
-
-		# Method
-		$Params   = array_reverse(explode(' {#!<<METHOD!#} ', $callName, 2), false);
-		$method   = isset($Params[1]) ? vString::Clean($Params[1], 100, 'a A 1 c', '_-') : false;
-		$method   = str_replace('-', '_', $method);
-		$callName = $Params[0];
-
-		# Params
-		$Params   = explode(' {#!<<PARAM!#} ', $callName);
-		vArray::Trim($Params);
-
-		# Do we have any params...
-		if (!$Patterns) {
-			$Params = array();
-		}
-		else {
-			$Params = array_slice($Params, 0, count($Patterns));
-		}
-
-		if (!class_exists($controller.'Controller', false)) {
-			$includePath = ds(APPPATH.'/controllers/'.str_replace('.', '', $path).'/'.str_replace('.', '', $controller).'.php');
-			if (file_exists($includePath)) {
-				include($includePath);
-			}
-		}
-
-		if (!class_exists($controller.'Controller', false)) {
-			return false;
-		}
-
-		# Create new controller
-		$controller = $controller . 'Controller';
-		$Controller = new $controller();
-
-		# Call the function if exists
-		if (method_exists($Controller, $method)) {
-			call_user_func_array(array($Controller, $method), $Params);
-			return true;
-		}
-		else {
-			return false;
-		}
+		return new Dispatcher();
 	}
 	//-
 

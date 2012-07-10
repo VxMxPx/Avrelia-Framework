@@ -522,5 +522,141 @@ class vString
 		return isset($Return[$piece]) ? $Return[$piece] : false;
 	}
 	//-
+	
+	/**
+	 * Will encode region, for example "region here" => ENC_base64_ENC
+	 * --
+	 * @param	mixed	$input		String or array of string, which will be processed
+	 * @param	array	$markers	Define series of markers which we wanna encode, for example:
+	 * 						array('"', '"') => "this will be encoded"
+	 * 						array('<', '>') => <this will be encoded>
+	 * 						array(array('#', '#'), array('%', '%')) =>
+	 * 							#this will be encoded# AND %this will be encoded%
+	 * 			Your markers should have at least one of following characters:
+	 * 				' " < > ? ! # $ % & _ - [ ] { } ( ) = . : ; , | + *
+	 * 			You markers can't have following characters:
+	 * 				\
+	 * --
+	 * @return 	mixed	same as your input was!
+	 */
+	public static function EncodeRegion($input, $markers)
+	{
+		# If we got array
+		if (is_array($input)) {
+			foreach ($input as $k => $string) {
+				$input[$k] = self::EncodeRegion($string, $markers);
+			}
+
+			return $input;
+		}
+
+		# Do we have array in markers?
+		if (is_array($markers[0])) {
+			foreach ($markers as $marker) {
+				$input = self::EncodeRegion($input, $marker);
+			}
+
+			return $input;
+		}
+
+		# Characters which we should have, at least one
+		$needToHave = array("'",'"', '<', '>', '?'. '!', '#', '$', 
+							'%', '&', '_', '-', '[', ']', '{', '}', 
+							'(', ')', '=', '.', ':', ';', ',', '|', '+', '*');
+
+		# Character which we shouldn't have
+		$cantHave = '\\';
+
+		# Points
+		$points = 0;
+
+		# Check if we have what we shouldn't have
+		if (strpos($markers[0], $cantHave) !== false || strpos($markers[1], $cantHave) !== false) {
+			trigger_error("You have in your marker character (\) which isn't allowed!", E_USER_ERROR);
+		}
+
+		# Check if we have what we need
+		foreach ($needToHave as $char) {
+			if (strpos($markers[0], $char) !== false) {
+				$points++;
+				break;
+			}
+		}
+
+		# Check if we have what we need
+		foreach ($needToHave as $char) {
+			if (strpos($markers[1], $char) !== false) {
+				$points++;
+				break;
+			}
+		}
+
+		if ($points !== 2) {
+			trigger_error(
+				'You need to have one of the following characters in your markers: 
+				\' " < > ? ! # $ % & _ - [ ] { } ( ) = . : ; , | + *',
+				E_USER_ERROR);
+		}
+
+		# Alright now we should be clear to do what we need
+		# First find all escaped characters
+		if (strlen($markers[1]) === 1) {
+			$input = preg_replace_callback(
+				'/[\\\]('.preg_quote($markers[1]).')/', 
+				create_function(
+					'$matches',
+					'return "ESCAPEREGIONESCCREE".base64_encode($matches[1])."EEESCAPEREGIONESCCR";'), 
+				$input);
+		}
+
+		# Encode the region characters now
+		$input = preg_replace_callback(
+			'/('.preg_quote($markers[0]).'.*?'.preg_quote($markers[1]).')/', 
+			create_function(
+				'$matches',
+				'return "ESCAPEREGIONCNTHEREEEEE".base64_encode($matches[1])."EEEEESCAPEREGIONCNTHERE";'),
+			$input);
+
+		return $input;
+	}
+	//-
+
+/**
+	 * Will decode region, for example ENC_base64_ENC => "region here"
+	 * --
+	 * @param	mixed	$input		String or array of string, which will be processed
+	 * --
+	 * @return 	mixed	same as your input was!
+	 */
+	public static function DecodeRegion($input)
+	{
+		# If we got array
+		if (is_array($input)) {
+			foreach ($input as $k => $string) {
+				$input[$k] = self::DecodeRegion($string);
+			}
+
+			return $input;
+		}
+
+		# Decode the region characters now
+		$input = preg_replace_callback(
+			'/ESCAPEREGIONCNTHEREEEEE(.*?)EEEEESCAPEREGIONCNTHERE/', 
+			create_function(
+				'$matches',
+				'return base64_decode($matches[1]);'),
+			$input);
+
+		# Find all escaped characters
+		$input = preg_replace_callback(
+			'/ESCAPEREGIONESCCREE(.*?)EEESCAPEREGIONESCCR/', 
+			create_function(
+				'$matches',
+				'return base64_decode($matches[1]);'),
+			$input);
+
+		return $input;
+	}
+	//-
 }
 //--
