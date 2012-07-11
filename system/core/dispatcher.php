@@ -63,11 +63,11 @@ class Dispatcher
 	 */
 	protected function beforeDispatch()
 	{
-		if (Cfg::Get('system/routes/before', false)) {
-			if (!$this->resolveUri(Cfg::Get('system/routes/before'))) {
+		if (Cfg::Get('system/routes/<before>', false)) {
+			if (!$this->resolveUri(Cfg::Get('system/routes/<before>'))) {
 				Log::Add(
 					'Before is set in config, but can\'t find method: `'.
-					Cfg::Get('system/routes/before', false).'`.', 
+					Cfg::Get('system/routes/<before>', false).'`.', 
 					'WAR');
 			}
 		}
@@ -83,12 +83,30 @@ class Dispatcher
 	protected function afterDispatch()
 	{
 		# Do we have after?
-		if (Cfg::Get('system/routes/after', false)) {
-			if (!$this->resolveUri(Cfg::Get('system/routes/after'))) {
+		if (Cfg::Get('system/routes/<after>', false)) {
+			if (!$this->resolveUri(Cfg::Get('system/routes/<after>'))) {
 				Log::Add(
 					'After is set in config, but can\'t find method: `'.
-					Cfg::Get('system/routes/after', false).'`.', 
+					Cfg::Get('system/routes/<after>', false).'`.', 
 					'WAR');
+			}
+		}
+	}
+	//-
+
+	/**
+	 * Trigger 404 error
+	 * --
+	 * @return	void
+	 */
+	protected function do404()
+	{
+		HTTP::Status404_NotFound();
+		Log::Add("We have 404 on `{$this->requestUri}`.", 'INF');
+
+		if (Cfg::Get('system/routes/<404>')) {
+			if (!$this->resolveUri(Cfg::Get('system/routes/<404>'))) {
+				echo '404: ' . Cfg::Get('system/routes/<404>');
 			}
 		}
 	}
@@ -103,8 +121,8 @@ class Dispatcher
 	{
 		# In case we have no uri
 		if (empty($this->requestUri)) {
-			if (Cfg::Get('system/routes/0')) {
-				return $this->resolveUri(Cfg::Get('system/routes/0'));
+			if (Cfg::Get('system/routes/<index>')) {
+				return $this->resolveUri(Cfg::Get('system/routes/<index>'));
 			}
 			else {
 				return false;
@@ -115,10 +133,16 @@ class Dispatcher
 		$Routes = Cfg::Get('system/routes');
 
 		# Unser all system routes
-		unset($Routes[0], $Routes[404], $Routes['before'], $Routes['after']);
+		unset($Routes['<index>'], $Routes['<404>'], $Routes['<before>'], $Routes['<after>']);
 
-		foreach($Routes as $routeRegEx => $routeCall) {
-			$patterns = '';
+		foreach($Routes as $routeRegEx => $routeCall)
+		{
+			# Set patterns to empty
+			$patterns = null;
+
+			# Resolve route regular expression
+			$routeRegEx = $this->resolveRoute($routeRegEx);
+
 			# If route match our current url, then we'll dispatch it
 			if (preg_match_all($routeRegEx, $this->requestUri, $patterns, PREG_SET_ORDER)) {
 				$Patterns = $patterns[0];
@@ -128,6 +152,123 @@ class Dispatcher
 				return $this->resolveUri($routeCall, $Patterns);
 			}
 		}
+	}
+	//-
+
+	/**
+	 * Resolve the route, if it's not the regular expression format yet,
+	 * convert it now.
+	 * --
+	 * @param	string	$route
+	 * --
+	 * @return	string
+	 */
+	protected function resolveRoute($route)
+	{
+		# It means we're having regular expression already
+		if (substr($route, 0, 1) === '/') {
+			return $route;
+		}
+
+		# Split route to pieces
+		$route = explode('/', $route);
+
+		# Loop through
+		$optional = false; // Which particle is optional?
+
+		foreach ($route as $i => $routeSegment) {
+			# Set the particle to be optional
+			if (substr($routeSegment, 0, 1) === '?') {
+				if ($optional !== false) {
+					# It seems we already set one particle to be optional, 
+					# so all that follows should be too...
+					Log::Add(
+						"Segment `{$optional}` was already set to be optional.\n".
+						"All segments following that one will be also optional.\n".
+						"Setting to optional another (latter) segment `{$i}` is unnecessary.", 'WAR');
+				}
+				else {
+					$optional = $i;
+				}
+
+				$routeSegment = substr($routeSegment, 1);
+			}
+
+			# Check if we have simple copy pattern
+			if (preg_match('/^\<([1-9])\>$/', $routeSegment, $match)) {
+				$k = (int) $match[1] - 1;
+				if ($k >= $i) {
+					trigger_error("Referencing route particle which wasn't set yet: `{$k}` from `{$i}`.", E_USER_ERROR);
+				}
+				$route[$i] = $route[$k];
+				continue;
+			}
+
+			# Match all our home-cooked patterns :)
+			$routeSegment = preg_replace_callback('/\<(.*?)\>/', array($this, 'resolveRouteHelper'), $routeSegment);
+			$route[$i] = $routeSegment;
+		}
+
+		$finalPattern = '/^';
+		foreach ($route as $i => $routeSegment) 
+		{
+			if ($optional !== false && $optional <= $i) {
+				$finalPattern .= '(?:';
+			}
+			
+			if ($i > 0) {
+				$finalPattern .= '\/';
+			}
+			
+			$finalPattern .= '(' . $routeSegment . ')';
+
+			if ($optional !== false && $optional <= $i) {
+				$finalPattern .= ')?';
+			}
+		}
+
+		$finalPattern .= '$/';
+
+		return $finalPattern;
+	}
+	//-
+
+	/**
+	 * Help resolve tags in route <az> etc..
+	 * --
+	 * @param	array	$match
+	 * --
+	 * @return	string
+	 */
+	protected function resolveRouteHelper($match)
+	{
+		$match = $match[1];
+
+		# If we have [] then just return it
+		if (substr($match, 0, 1) === '[') {
+			return $match;
+		}
+
+		# If we have *
+		if ($match === '*') {
+			$match = Cfg::Get('system/route_all_tag');
+		}
+		else {
+			# Escape it
+			$match = preg_quote($match);
+
+			# First resolve all small all bit letters
+			$match = str_replace('aZ', 'a-zA-Z', $match);
+
+			# Resolve numeric ranges
+			$match = preg_replace('/(([0-9])([0-9]))/', '$2-$3', $match);
+			# Small letters
+			$match = preg_replace('/(([a-z])([a-z]))/', '$2-$3', $match);
+			# Big letters
+			$match = preg_replace('/(([A-Z])([A-Z]))/', '$2-$3', $match);
+		}
+
+		return '['.$match.']*';
 	}
 	//-
 
@@ -346,24 +487,6 @@ class Dispatcher
 		}
 		
 		return $this->Controllers[$className];
-	}
-	//-
-
-	/**
-	 * Trigger 404 error
-	 * --
-	 * @return	void
-	 */
-	protected function do404()
-	{
-		HTTP::Status404_NotFound();
-		Log::Add("We have 404 on `{$this->requestUri}`.", 'INF');
-
-		if (Cfg::Get('system/routes/404')) {
-			if (!$this->resolveUri(Cfg::Get('system/routes/404'))) {
-				echo '404: ' . Cfg::Get('system/routes/404');
-			}
-		}
 	}
 	//-
 

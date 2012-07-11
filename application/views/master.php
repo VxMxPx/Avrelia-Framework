@@ -31,17 +31,16 @@
 	<?php cHTML::GetFooters(); ?>
 	<script>
 		$(document).ready(function() {
-
-			var lastGreeting = '',
-				h1 = $("h1");
+			var h1 = $('h1'),
+				intro = '<span class="fade">Avrelia Framework:</span> ',
+				headTitle = $('head title');
 
 			$("#newGreeting").click(function(e) {
-				$.get('<?php echo url('/greeting/'); ?>'+lastGreeting, function(data) {
-					h1.fadeOut('fast', function() {
-						lastGreeting = data;
-						h1.html(data);
-						$("head title").html("AvreliaFramework: " + data);
-						h1.fadeIn('fast');
+				$.get('<?php echo url('/greeting'); ?>', function(data) {
+					h1.fadeOut('normal', function() {
+						h1.html(intro + data);
+						headTitle.html("AvreliaFramework: " + data);
+						h1.fadeIn('normal');
 					});
 				});
 				e.preventDefault();

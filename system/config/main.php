@@ -15,10 +15,12 @@ $AvreliaConfig = array
 	'system' => array
 	(
 		# Set regex routing; first match from top to bottom get called, examples:
-		#	index			0			=> 'home->index()',
-		#	not found		404			=> 'home->not_found()',
-		#	before route	'before'	=> 'home->before()',
-		#	after route		'after'		=> 'home->after()',
+		#	index			'<index>'   => 'home->index()',
+		#	not found		'<404>'     => 'home->not_found()',
+		#	before route	'<before>'  => 'home->before()',
+		#	after route		'<after>'   => 'home->after()',
+		#   simple          'hi/world'  => 'home->hi()',
+		#   simple #2       '<az>/hi'   => 'home->%2(%1)'
 		#	regular 		'/([a-z0-9_-]*)\/?([a-zA-Z0-9\/!=\-+_.,;?]*)/' => 'home->%1(%2)',
 		'routes' => array(),
 
@@ -45,6 +47,9 @@ $AvreliaConfig = array
 		# While URI cleanup (this isn't used in routes, as they have their own filter)
 		# It's used with Input::Get();
 		'input_get_filter' => '/[^a-zA-Z0-9\/!=\-+_.,;?]/',
+
+		# When we set <*> what should be matched?
+		'route_all_tag'    => 'a-zA-Z0-9!=\-+_.,;?',
 
 		# If set to true, dispatcher will check controller's response
 		# If response will be === false, the 404 will be displayed

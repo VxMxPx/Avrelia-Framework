@@ -15,7 +15,7 @@
  */
 class Avrelia
 {
-	const VERSION   = '0.80';
+	const VERSION   = '1.00';
 	const NAME      = 'Avrelia Framework';
 	const AUTHOR    = 'Avrelia';
 	const FOUNDER   = 'Marko Gajšt';
