@@ -26,12 +26,12 @@ class homeController
 	/**
 	 * For Ajax Request...
 	 */
-	public function greeting($last, $uname)
+	public function greeting()
 	{
 		$Model = new homeModel();
 
 		View::Get('simple', array(
-			'data' => $Model->sayHello($last),
+			'data' => $Model->sayHello(),
 		));
 	}
 	//-
@@ -41,7 +41,7 @@ class homeController
 	 */
 	public function not_found_404()
 	{
-		HTTP::Status404_NotFound('<h1>404: File not found!</h1>');
+		HTTP::Status404_NotFound('<h1>404: Not found!</h1>');
 	}
 	//-
 }

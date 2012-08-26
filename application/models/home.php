@@ -31,13 +31,9 @@ class homeModel
 	 * --
 	 * @return	string
 	 */
-	public function sayHello($last)
+	public function sayHello()
 	{
-		do {
-			$greeting = $this->GreetingsList[rand(0,count($this->GreetingsList)-1)];
-		} while($greeting == $last);
-
-		return $greeting;
+		return $this->GreetingsList[rand(0,count($this->GreetingsList)-1)];
 	}
 	//-
 
