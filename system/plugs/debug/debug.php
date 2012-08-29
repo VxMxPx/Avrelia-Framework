@@ -15,44 +15,45 @@
  */
 class cDebug
 {
-	/**
-	 * Initialize Debug plug
-	 */
-	public static function _OnInit()
-	{
-		# Need cJquery
-		if (!Plug::Has('jquery'))
-		{
-			Log::Add('WAR', "Plug `debug` need `jquery` plug to be enabled function.", __LINE__, __FILE__);
-			return false;
-		}
+    /**
+     * Initialize Debug plug
+     */
+    public static function _OnInit()
+    {
+        # Need cJquery
+        if (!Plug::Has('jquery'))
+        {
+            Log::war("Plug `debug` need `jquery` plug to be enabled.");
+            return false;
+        }
 
-		# Need cHTML (if we have jQuery then HTML is almost for sure available too, but just to be sure)
-		if (!Plug::Has('html')) {
-			Log::Add('WAR', "Plug `debug` need `html` plug to be enabled function.", __LINE__, __FILE__);
-			return false;
-		}
+        # Need cHTML (if we have jQuery then HTML is almost for sure available too, but just to be sure)
+        if (!Plug::Has('html')) {
+            Log::war("Plug `debug` need `html` plug to be enabled.");
+            return false;
+        }
 
-		# Add jQuery
-		cJquery::Add();
-		cHTML::AddHeader('<style>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.css')).'</style>', 'cdebug_css');
+        # Add jQuery
+        cJquery::Add();
+        cHTML::AddHeader('<style>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.css')).'</style>', 'cdebug_css');
 
-		Event::Watch('chtml.before.getfooters', array('cDebug', 'AddPanel'));
+        Event::Watch('chtml.before.getfooters', array('cDebug', 'AddPanel'));
 
-		return true;
-	}
-	//-
+        return true;
+    }
+    //-
 
-	/**
-	 * Will add footers
-	 * --
-	 * @return	void
-	 */
-	public static function AddPanel()
-	{
-		cHTML::AddFooter(View::Get(ds(dirname(__FILE__).'/views/panel.php'))->doReturn(), 'cdebugPanel');
-		cHTML::AddFooter('<script>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.js')).'</script>', 'cdebug_js');
-	}
-	//-
+    /**
+     * Will add footers
+     * --
+     * @return  void
+     */
+    public static function AddPanel()
+    {
+        Log::add_benchmarks();
+        cHTML::AddFooter(View::get(ds(dirname(__FILE__).'/views/panel.php'))->do_return(), 'cdebugPanel');
+        cHTML::AddFooter('<script>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.js')).'</script>', 'cdebug_js');
+    }
+    //-
 }
 //--

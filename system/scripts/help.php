@@ -17,37 +17,37 @@
 class cliHelp
 {
 
-	/**
-	 * Print out the help..
-	 */
-	public static function _empty()
-	{
-		AvreliaCli::Say('INF', "Available commands:");
+    /**
+     * Print out the help..
+     */
+    public static function _empty()
+    {
+        Dot::inf("Available commands:");
 
-		if (is_dir(ds(SYSPATH.'/scripts'))) {
-			$ListSys = scandir(ds(SYSPATH.'/scripts'));
-		}
-		else {
-			$ListSys = array();
-		}
+        if (is_dir(ds(SYSPATH.'/scripts'))) {
+            $ListSys = scandir(ds(SYSPATH.'/scripts'));
+        }
+        else {
+            $ListSys = array();
+        }
 
-		if (is_dir(ds(APPPATH.'/scripts'))) {
-			$ListApp = scandir(ds(APPPATH.'/scripts'));
-		}
-		else {
-			$ListApp = array();
-		}
+        if (is_dir(ds(APPPATH.'/scripts'))) {
+            $ListApp = scandir(ds(APPPATH.'/scripts'));
+        }
+        else {
+            $ListApp = array();
+        }
 
-		$ListAll = array_merge($ListSys, $ListApp);
+        $ListAll = array_merge($ListSys, $ListApp);
 
-		if (!empty($ListAll)) {
-			foreach ($ListAll as $comm) {
-				if (substr($comm, -4, 4) != '.php') continue;
-				AvreliaCli::Say('INF', "  " . substr($comm, 0, -4));
-			}
-		}
-	}
-	//-
+        if (!empty($ListAll)) {
+            foreach ($ListAll as $comm) {
+                if (substr($comm, -4, 4) != '.php') continue;
+                Dot::inf("  " . substr($comm, 0, -4));
+            }
+        }
+    }
+    //-
 
 }
 //--

@@ -2,39 +2,97 @@
 <?php
 
 /**
- * Avrelia
+ * DOT, Command Line Interface
+ * -----------------------------------------------------------------------------
+ * System File
  * ----
- * CLI Communication!
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
- * @copyright  Copyright (c) 2009, Avrelia.com
- * @license    http://avrelia.com/license
- * @link       http://avrelia.com
- * @since      Version 0.80
- * @since      Wed Mar 23 20:22:43 2011
+ * @author     Avrelia.com (Marko Gajst)
+ * @copyright  Copyright (c) 2010, Avrelia.com
+ * @license    http://framework.avrelia.com/license
  */
 
-# Define Avrelia (needed to prevent direct calls to files)
+
+/* -----------------------------------------------------------------------------
+ * This file must be executed from command line
+ */
+if (PHP_SAPI !== 'cli') {
+    trigger_error("Must be run from console.", E_USER_ERROR);
+}
+
+
+/* -----------------------------------------------------------------------------
+ * Define AVRELIA constant; all system files requires this to be set, to prevent
+ * unwanted, direct inclusions of file.
+ */
 define('AVRELIA', true);
-define('IN_CLI',  true);
 
-# Turn Error Reporting ON for All ++ Set Error Displaying
+
+/* -----------------------------------------------------------------------------
+ * Just in case something goes wrong on this phase we wanna show it. Latter on,
+ * error displaying and reporting will be reconfigured according to your setup.
+ */
 error_reporting(E_ALL);
-ini_set('display_errors', true);
 
-# Try to include paths file (change this in case of problems!)
-$configPath = realpath(dirname(__FILE__).'/config/define.php');
-if (file_exists($configPath)) {
-	include($configPath);
+
+/* -----------------------------------------------------------------------------
+ * This is the application path, where your config, plugs, models, views, and
+ * controllers are stored. By default we're looking for this path one level
+ * bellow (current) public path.
+ * We'll also define system path, just in case it wasn't defined as constant.
+ */
+$app_path = realpath(dirname(__FILE__));
+
+
+/* -----------------------------------------------------------------------------
+ * The define file contains constants like: APPPATH, SYSPATH, PUBPATH, DATPATH,
+ * change this file if you were changing the paths.
+ * Additionally you can add any of your own costume constants to it.
+ */
+if (file_exists($app_path.'/config/define.local.php')) {
+    include($app_path.'/config/define.local.php');
 }
+
+if (file_exists($app_path.'/config/define.php')) {
+    include($app_path.'/config/define.php');
+}
+
+if (defined('SYSPATH')) { $sys_path = SYSPATH; }
+else { $sys_path = realpath(dirname(__FILE__).'/../../system'); }
+
+if (file_exists($sys_path.'/config/define.php')) {
+    include($sys_path.'/config/define.php');
+}
+
+
+/* -----------------------------------------------------------------------------
+ * If we have debug turned on, we'll display errors
+ */
+ini_set('display_errors', DEBUG);
+
+
+/* -----------------------------------------------------------------------------
+ * Avrelia is core class, which initialize the framework, and if successful 
+ * return dispatcher.
+ */
+if (file_exists(SYSPATH . '/core/avrelia.php')) {
+    include(SYSPATH . '/core/avrelia.php');
+} 
 else {
-	echo "Application folder can't be found.\n",
-	exit(0);
+    trigger_error("Can't load `avrelia.php` file.", E_USER_ERROR);
 }
 
-# Load Functions
-include(realpath(SYSPATH . '/core/functions.php'));
 
-# Init CLI!
-initCli();
+/* -----------------------------------------------------------------------------
+ * First we initialize the core framework, this will return dispatcher,
+ * which we can use if we wanna boot the system (check routes, use MVC).
+ * In this case we don't wanna boot the system.
+ */
+$avrelia_framework = new Avrelia();
+$avrelia_framework->initialize();
+
+
+/* -----------------------------------------------------------------------------
+ * Finally create new dot object and execute it!
+ */
+$dot = new Dot($_SERVER['argv']);
+$dot->execute();

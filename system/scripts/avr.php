@@ -16,33 +16,33 @@
 
 class cliAvr
 {
-	/**
-	 * Print the console!
-	 */
-	public static function _empty()
-	{
-		# Main loop...
-		do {
-			if (function_exists('readline')) {
-				$stdin = readline('avrelia> ');
-				readline_add_history($stdin);
-			}
-			else {
-				echo "avrelia> ";
-				$stdin = fread(STDIN, 8192);
-			}
-			$stdin    = trim($stdin);
-			$continue = ($stdin == 'exit' || $stdin == '\q') ? false : true;
+    /**
+     * Print the console!
+     */
+    public static function _empty()
+    {
+        # Main loop...
+        do {
+            if (function_exists('readline')) {
+                $stdin = readline('avrelia> ');
+                readline_add_history($stdin);
+            }
+            else {
+                echo "avrelia> ";
+                $stdin = fread(STDIN, 8192);
+            }
+            $stdin    = trim($stdin);
+            $continue = ($stdin == 'exit' || $stdin == '\q') ? false : true;
 
-			if ($continue) {
-				eval('$val = ' . (substr($stdin,-1,1) == ';' ? $stdin : $stdin . ';') . ' echo dumpVar($val, false, true);');
-				echo "\n";
-			}
-		} while($continue == true);
+            if ($continue) {
+                eval('$val = ' . (substr($stdin,-1,1) == ';' ? $stdin : $stdin . ';') . ' echo dump($val, false, true);');
+                echo "\n";
+            }
+        } while($continue == true);
 
-		# At the end...
-		echo "See you!\n";
-	}
-	//-
+        # At the end...
+        echo "See you!\n";
+    }
+    //-
 }
 //--

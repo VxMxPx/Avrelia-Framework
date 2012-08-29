@@ -15,77 +15,78 @@
  */
 class cDatabaseDriverBase
 {
-	protected $PDO;		# PDO	Link to the PDO Connection
+    protected $PDO;     # PDO   Link to the PDO Connection
 
 
-	/**
-	 * Init the database driver, called initialy when connection is established.
-	 * --
-	 * @return	void
-	 */
-	public function __construct()
-	{
-		# Check If is PDO enabled...
-		if (!class_exists('PDO')) {
-			trigger_error('PDO class doesn\'t exists. Please enable PDO extension.', E_USER_ERROR);
-		}
-	}
-	//-
+    /**
+     * Init the database driver, called initialy when connection is established.
+     * --
+     * @return  void
+     */
+    public function __construct()
+    {
+        # Check If is PDO enabled...
+        if (!class_exists('PDO')) {
+            trigger_error('PDO class doesn\'t exists. Please enable PDO extension.', E_USER_ERROR);
+        }
+    }
+    //-
 
-	/**
-	 * Bind values and execute particular statement.
-	 * --
-	 * @param	string	$statement
-	 * @param	array	$bind
-	 * --
-	 * @return	PDOStatement
-	 */
-	public function prepare($statement, $bind=false)
-	{
-		Log::Add('INF', "Will prepare following statement: `{$statement}` with params: " . print_r($bind, true), __LINE__, __FILE__);
+    /**
+     * Bind values and execute particular statement.
+     * --
+     * @param   string  $statement
+     * @param   array   $bind
+     * --
+     * @return  PDOStatement
+     */
+    public function prepare($statement, $bind=false)
+    {
+        Log::inf("Will prepare following statement: `{$statement}` with params: ". 
+                    print_r($bind, true));
 
-		$link = $this->PDO->prepare($statement);
+        $link = $this->PDO->prepare($statement);
 
-		if (is_object($link))
-		{
-			# Bind all values
-			if ($bind) {
-				foreach ($bind as $key => $value) {
-					# Value type
-					if (is_integer($value)) {
-						$type = PDO::PARAM_INT;
-					}
-					elseif (is_bool($value)) {
-						$type = PDO::PARAM_BOOL;
-					}
-					elseif (is_null($value)) {
-						$type = PDO::PARAM_NULL;
-					}
-					else {
-						$type = PDO::PARAM_STR;
-					}
+        if (is_object($link))
+        {
+            # Bind all values
+            if ($bind) {
+                foreach ($bind as $key => $value) {
+                    # Value type
+                    if (is_integer($value)) {
+                        $type = PDO::PARAM_INT;
+                    }
+                    elseif (is_bool($value)) {
+                        $type = PDO::PARAM_BOOL;
+                    }
+                    elseif (is_null($value)) {
+                        $type = PDO::PARAM_NULL;
+                    }
+                    else {
+                        $type = PDO::PARAM_STR;
+                    }
 
-					$link->bindValue(':'.$key, $value, $type);
-				}
-			}
-		}
-		else {
-			trigger_error("Failed to prepare: `" . print_r($this->PDO->errorInfo(), true) . '`.', E_USER_WARNING);
-		}
+                    $link->bindValue(':'.$key, $value, $type);
+                }
+            }
+        }
+        else {
+            trigger_error("Failed to prepare: `" . print_r($this->PDO->errorInfo(), true) . '`.', E_USER_WARNING);
+        }
 
-		return new cDatabaseResult($link);
-	}
-	//-
+        return new cDatabaseResult($link);
+    }
+    //-
 
-	/**
-	 * Will get -raw- PDO class.
-	 * --
-	 * @return	PDO
-	 */
-	public function getPDO()
-	{
-		return $this->PDO;
-	}
-	//-
+    /**
+     * Will get -raw- PDO class.
+     * --
+     * @return  PDO
+     */
+    public function getPDO()
+    {
+        return $this->PDO;
+    }
+    //-
 }
 //--

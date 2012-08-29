@@ -17,25 +17,25 @@
 
 class homeModel
 {
-	# List Of Greetings
-	private $GreetingsList = array(
-	'Ahoy!', 'G\'day!', 'Greetings!', 'Hello!', 'Hello there!',
-	'Hey!', 'Hi!', 'Hi there!', 'How are you?', 'How are you doing?',
-	'How\'s it going?', 'Howdy!', 'Salutations!', 'What\'s up?', 'Yo!',
-	);
+    # List Of Greetings
+    private $GreetingsList = array(
+    'Ahoy!', 'G\'day!', 'Greetings!', 'Hello!', 'Hello there!',
+    'Hey!', 'Hi!', 'Hi there!', 'How are you?', 'How are you doing?',
+    'How\'s it going?', 'Howdy!', 'Salutations!', 'What\'s up?', 'Yo!',
+    );
 
-	/**
-	 * Say Hello - Sample Function...
-	 * --
-	 * @param	string	$last
-	 * --
-	 * @return	string
-	 */
-	public function sayHello()
-	{
-		return $this->GreetingsList[rand(0,count($this->GreetingsList)-1)];
-	}
-	//-
+    /**
+     * Say Hello - Sample Function...
+     * --
+     * @param   string  $last
+     * --
+     * @return  string
+     */
+    public function sayHello()
+    {
+        return $this->GreetingsList[rand(0,count($this->GreetingsList)-1)];
+    }
+    //-
 
 }
 //--

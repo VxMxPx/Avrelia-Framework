@@ -15,48 +15,48 @@
  */
 interface cDatabaseDriverInterface
 {
-	/**
-	 * Make the connection.
-	 * ---
-	 * @return PDO
-	 */
-	function connect();
-	//-
+    /**
+     * Make the connection.
+     * ---
+     * @return PDO
+     */
+    function connect();
+    //-
 
-	/**
-	 * Prepare statement, bind values, return PDOStatement, which is ready to be
-	 * executed.
-	 * ---
-	 * @param string $statement
-	 * @param array $bind
-	 * ---
-	 * @return PDOStatement
-	 */
-	function prepare($statement, $bind=false);
-	//-
+    /**
+     * Prepare statement, bind values, return PDOStatement, which is ready to be
+     * executed.
+     * ---
+     * @param string $statement
+     * @param array $bind
+     * ---
+     * @return PDOStatement
+     */
+    function prepare($statement, $bind=false);
+    //-
 
-	/**
-	 * Return -raw- PDO object.
-	 * ---
-	 * @return PDO
-	 */
-	function getPDO();
-	//-
+    /**
+     * Return -raw- PDO object.
+     * ---
+     * @return PDO
+     */
+    function getPDO();
+    //-
 
-	/**
-	 * Create the database file (in case of SQLite)
-	 * ---
-	 * @return boolean
-	 */
-	function _create();
-	//-
+    /**
+     * Create the database file (in case of SQLite)
+     * ---
+     * @return boolean
+     */
+    function _create();
+    //-
 
-	/**
-	 * Destroy the database file (in case of SQLite)
-	 * ---
-	 * @return boolean
-	 */
-	function _destroy();
-	//-
+    /**
+     * Destroy the database file (in case of SQLite)
+     * ---
+     * @return boolean
+     */
+    function _destroy();
+    //-
 }
 //--

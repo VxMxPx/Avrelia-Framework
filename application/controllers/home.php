@@ -2,47 +2,49 @@
 
 class homeController
 {
-	/**
-	 * Default Action
-	 * --
-	 * @return	void
-	 */
-	public function index()
-	{
-		# Add jQuery
-		cJquery::Add();
+    /**
+     * Default Action
+     * --
+     * @return  void
+     */
+    public function index()
+    {
+        # Add jQuery
+        cJquery::Add();
 
-		# Set variable
-		View::AddVar('greeting', '<span class="fade">Hello from</span> Avrelia Framework');
+        # Set variable
+        View::assign(
+            'greeting', 
+            '<span class="fade">Hello from</span> Avrelia Framework');
 
-		# Get Master template
-		View::Get('master')->asMaster();
+        # Get Master template
+        View::get('master')->as_master();
 
-		# Get master's region
-		View::Get('home')->asRegion('main');
-	}
-	//-
+        # Get master's region
+        View::get('home')->as_region('main');
+    }
+    //-
 
-	/**
-	 * For Ajax Request...
-	 */
-	public function greeting()
-	{
-		$Model = new homeModel();
+    /**
+     * For Ajax Request...
+     */
+    public function greeting()
+    {
+        $Model = new homeModel();
 
-		View::Get('simple', array(
-			'data' => $Model->sayHello(),
-		));
-	}
-	//-
+        View::get('simple', array(
+            'data' => $Model->sayHello(),
+        ));
+    }
+    //-
 
-	/**
-	 * Not found!
-	 */
-	public function not_found_404()
-	{
-		HTTP::Status404_NotFound('<h1>404: Not found!</h1>');
-	}
-	//-
+    /**
+     * Not found!
+     */
+    public function not_found_404()
+    {
+        HTTP::Status404_NotFound('<h1>404: Not found!</h1>');
+    }
+    //-
 }
 //--
