@@ -7,12 +7,12 @@
         *       { padding: 0; margin: 0; line-height: 1.5em; }
         ::selection      { background-color: #acf; color: #006; }
         ::-moz-selection { background-color: #acf; color: #006; }
-        body    { background-color: #123; font-size: 14px; font-family: sans-serif; }
-        h1, h2  { font-family: serif; font-weight: bold; }
+        body    { background-color: #123; font-size: 14px; font-family: "Sans", sans-serif; }
+        h1, h2  { font-family: "Serif", serif; font-weight: bold; }
         h2      { padding-top: 20px; }
         a       { color: #4477cc; padding: 2px; }
         a:hover { background-color: #4477cc; color: #fff; text-decoration: none; border-radius: 4px; }
-        code    { font-family: monospace; background-color: #eee; outline: 1px solid #e0e0e0; color: #444; }
+        code    { font-family: "Monospace", monospace; background-color: #eee; outline: 1px solid #e0e0e0; color: #444; }
         .fade   { color: #666; font-style: italic; }
         #page   { width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border: 2px solid #ddd; }
         #page   { box-shadow: 0 0 6px 0 #000; border-radius: 4px; }

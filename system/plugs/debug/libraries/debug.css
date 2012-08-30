@@ -14,7 +14,7 @@
 
 #cdebugToggle,
 #cdebugPanel {
-    font-family: sans-serif;
+    font-family: Sans, sans-serif;
 }
 
 #cdebugToggle {
@@ -68,7 +68,7 @@
 
 #cdebugPanel .navigation a {
     color: #000000;
-    padding: 6px 10px;
+    padding: 6px 10px 7px 10px;
     text-decoration: none;
 }
 
@@ -81,6 +81,7 @@
     border-radius: 4px 4px 0 0;
     color: white;
     font-weight: bold;
+    outline: none;
 }
 
 #cdebugPanel div.content {
@@ -96,4 +97,8 @@
 
 #cdebugPanel div.content .spacer {
     padding: 10px;
+}
+
+#cdebugPanel div.content pre {
+    font-family: "Monospace", monospace;
 }
