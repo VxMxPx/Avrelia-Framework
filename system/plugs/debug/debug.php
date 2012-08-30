@@ -37,7 +37,7 @@ class cDebug
         cJquery::Add();
         cHTML::AddHeader('<style>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.css')).'</style>', 'cdebug_css');
 
-        Event::Watch('chtml.before.getfooters', array('cDebug', 'AddPanel'));
+        Event::watch('chtml.before.getfooters', array('cDebug', 'AddPanel'));
 
         return true;
     }

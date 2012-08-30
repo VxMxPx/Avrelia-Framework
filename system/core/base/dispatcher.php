@@ -1,59 +1,51 @@
 <?php if (!defined('AVRELIA')) { die('Access is denied!'); }
 
 /**
- * Avrelia
- * ----
- * Dispatcher
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * Dispatcher Class
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-07-10
  */
 class Dispatcher_Base
 {
     # Full raw requested URI
-    protected $requestUri;
+    protected $request_uri;
 
     # Controllers cache
-    protected $Controllers;
-
+    protected $controllers;
 
     /**
      * Set request URI
      */
     public function __construct()
     {
-        $this->requestUri = trim(Input::get_request_uri(false), '/');
+        $this->request_uri = trim(Input::get_request_uri(false), '/');
     }
-    //-
 
     /**
      * Resolve routes and call appropriate controller
      * --
-     * @return  void
+     * @return void
      */
     public function boot()
     {
-        Event::Trigger('avrelia.before.boot');
+        Event::trigger('avrelia.before.boot');
+
+        # Is application offline?
+        if ($this->_is_offline()) { $this->trigger_offline(); }
 
         # Do we have any action before regular route is called?
-        $this->beforeDispatch();
+        $this->_before_dispatch();
 
-        # Dispatch
-        if (!$this->findUri()) {
-            $this->do404();
-        }
+        # If we don't dind URL, we just off-line
+        if (!$this->_find_uri()) { $this->trigger_404(); }
 
         # After dispatch
-        $this->afterDispatch();
+        $this->_after_dispatch();
 
-        Event::Trigger('avrelia.after.boot');
+        Event::trigger('avrelia.after.boot');
     }
-    //-
 
     /**
      * Check if there's any action which should be executed
@@ -61,16 +53,17 @@ class Dispatcher_Base
      * --
      * @return  void
      */
-    protected function beforeDispatch()
+    protected function _before_dispatch()
     {
         if (Cfg::get('system/routes/<before>', false)) {
-            if (!$this->resolveUri(Cfg::get('system/routes/<before>'))) {
-                Log::war('Before is set in config, but can\'t find method: `'.
-                            Cfg::get('system/routes/<before>', false).'`.');
+            if (!$this->_resolve_uri(Cfg::get('system/routes/<before>'))) {
+                Log::war(
+                    'Before is set in config, but can\'t find method: `'.
+                    Cfg::get('system/routes/<before>', false).'`.'
+                );
             }
         }
     }
-    //-
 
     /**
      * Check if there's any action which should be executed
@@ -78,93 +71,75 @@ class Dispatcher_Base
      * --
      * @return  void
      */
-    protected function afterDispatch()
+    protected function _after_dispatch()
     {
         # Do we have after?
         if (Cfg::get('system/routes/<after>', false)) {
-            if (!$this->resolveUri(Cfg::get('system/routes/<after>'))) {
-                Log::war('After is set in config, but can\'t find method: `'.
-                            Cfg::get('system/routes/<after>', false).'`.');
+            if (!$this->_resolve_uri(Cfg::get('system/routes/<after>'))) {
+                Log::war(
+                    'After is set in config, but can\'t find method: `'.
+                    Cfg::get('system/routes/<after>', false).'`.'
+                );
             }
         }
     }
-    //-
-
-    /**
-     * Trigger 404 error
-     * --
-     * @return  void
-     */
-    protected function do404()
-    {
-        HTTP::Status404_NotFound();
-        Log::inf("We have 404 on `{$this->requestUri}`.");
-
-        if (Cfg::get('system/routes/<404>')) {
-            if (!$this->resolveUri(Cfg::get('system/routes/<404>'))) {
-                echo '404: ' . Cfg::get('system/routes/<404>');
-            }
-        }
-    }
-    //-
 
     /**
      * Will check current URI
      * --
      * @return  boolean
      */
-    protected function findUri()
+    protected function _find_uri()
     {
         # In case we have no uri
-        if (empty($this->requestUri)) {
-            if (Cfg::get('system/routes/<index>')) {
-                return $this->resolveUri(Cfg::get('system/routes/<index>'));
-            }
-            else {
-                return false;
-            }
+        if (empty($this->request_uri)) {
+            if (Cfg::get('system/routes/<index>')) 
+                { return $this->_resolve_uri(Cfg::get('system/routes/<index>')); }
+            else
+                { return false; }
         }
 
         # Loop to check for uri
-        $Routes = Cfg::get('system/routes');
+        $routes = Cfg::get('system/routes');
 
         # Unser all system routes
-        unset($Routes['<index>'], $Routes['<404>'], $Routes['<before>'], $Routes['<after>']);
+        unset(
+            $routes['<index>'], 
+            $routes['<404>'], 
+            $routes['<before>'], 
+            $routes['<after>']
+        );
 
-        foreach($Routes as $routeRegEx => $routeCall)
+        foreach($routes as $route_regex => $route_call)
         {
-            # Set patterns to empty
-            $patterns = null;
+            # Set matched to empty
+            $matched = null;
 
             # Resolve route regular expression
-            $routeRegEx = $this->resolveRoute($routeRegEx);
+            $route_regex = $this->_resolve_route($route_regex);
 
             # If route match our current url, then we'll dispatch it
-            if (preg_match_all($routeRegEx, $this->requestUri, $patterns, PREG_SET_ORDER)) {
-                $Patterns = $patterns[0];
-                unset($Patterns[0]);
+            if (preg_match_all($route_regex, $this->request_uri, $matched, PREG_SET_ORDER)) {
+                $patterns = $matched[0];
+                unset($patterns[0]);
 
                 # Call route...
-                return $this->resolveUri($routeCall, $Patterns);
+                return $this->_resolve_uri($route_call, $patterns);
             }
         }
     }
-    //-
 
     /**
      * Resolve the route, if it's not the regular expression format yet,
      * convert it now.
      * --
      * @param   string  $route
-     * --
      * @return  string
      */
-    protected function resolveRoute($route)
+    protected function _resolve_route($route)
     {
         # It means we're having regular expression already
-        if (substr($route, 0, 1) === '/') {
-            return $route;
-        }
+        if (substr($route, 0, 1) === '/') { return $route; }
 
         # Split route to pieces
         $route = explode('/', $route);
@@ -172,78 +147,78 @@ class Dispatcher_Base
         # Loop through
         $optional = false; // Which particle is optional?
 
-        foreach ($route as $i => $routeSegment) {
+        foreach ($route as $i => $route_segment) {
             # Set the particle to be optional
-            if (substr($routeSegment, 0, 1) === '?') {
+            if (substr($route_segment, 0, 1) === '?') {
                 if ($optional !== false) {
                     # It seems we already set one particle to be optional, 
                     # so all that follows should be too...
                     Log::war(
                         "Segment `{$optional}` was already set to be optional.\n".
                         "All segments following that one will be also optional.\n".
-                        "Setting to optional another (latter) segment `{$i}` is unnecessary.");
+                        "Setting to optional another (latter) segment `{$i}` is unnecessary." );
                 }
-                else {
-                    $optional = $i;
-                }
+                else { $optional = $i; }
 
-                $routeSegment = substr($routeSegment, 1);
+                $route_segment = substr($route_segment, 1);
             }
 
             # Check if we have simple copy pattern
-            if (preg_match('/^\<([1-9])\>$/', $routeSegment, $match)) {
+            if (preg_match('/^\<([1-9])\>$/', $route_segment, $match)) {
                 $k = (int) $match[1] - 1;
                 if ($k >= $i) {
-                    trigger_error("Referencing route particle which wasn't set yet: `{$k}` from `{$i}`.", E_USER_ERROR);
+                    trigger_error(
+                        "Referencing route particle which wasn't set yet: ".
+                        "`{$k}` from `{$i}`.", E_USER_ERROR);
                 }
                 $route[$i] = $route[$k];
                 continue;
             }
 
             # Match all our home-cooked patterns :)
-            $routeSegment = preg_replace_callback('/\<(.*?)\>/', array($this, 'resolveRouteHelper'), $routeSegment);
-            $route[$i] = $routeSegment;
+            $route_segment = preg_replace_callback(
+                                '/\<(.*?)\>/', 
+                                array($this, '_resolve_route_helper'), 
+                                $route_segment);
+
+            $route[$i] = $route_segment;
         }
 
-        $finalPattern = '/^';
-        foreach ($route as $i => $routeSegment) 
+        $final_pattern = '/^';
+        foreach ($route as $i => $route_segment) 
         {
             if ($optional !== false && $optional <= $i) {
-                $finalPattern .= '(?:';
+                $final_pattern .= '(?:';
             }
             
             if ($i > 0) {
-                $finalPattern .= '\/';
+                $final_pattern .= '\/';
             }
             
-            $finalPattern .= '(' . $routeSegment . ')';
+            $final_pattern .= '(' . $route_segment . ')';
 
             if ($optional !== false && $optional <= $i) {
-                $finalPattern .= ')?';
+                $final_pattern .= ')?';
             }
         }
 
-        $finalPattern .= '$/';
+        $final_pattern .= '$/';
 
-        return $finalPattern;
+        return $final_pattern;
     }
-    //-
 
     /**
      * Help resolve tags in route <az> etc..
      * --
      * @param   array   $match
-     * --
      * @return  string
      */
-    protected function resolveRouteHelper($match)
+    protected function _resolve_route_helper($match)
     {
         $match = $match[1];
 
         # If we have [] then just return it
-        if (substr($match, 0, 1) === '[') {
-            return $match;
-        }
+        if (substr($match, 0, 1) === '[') { return $match; }
 
         # If we have *
         if ($match === '*') {
@@ -266,43 +241,41 @@ class Dispatcher_Base
 
         return '['.$match.']*';
     }
-    //-
 
     /**
      * Will resolve particular route (URI)
      * --
      * @param   string  $route
-     * @param   array   $uriCapture
-     * --
+     * @param   array   $uri_capture
      * @return  boolean
      */
-    protected function resolveUri($route, $uriCapture=array())
+    protected function _resolve_uri($route, $uri_capture=array())
     {
         # _POST + URI segments
-        if (!is_array($uriCapture)) { $uriCapture = array(); }
-        if (!is_array($_POST))      { $_POST      = array(); }
-        $variables = vArray::Merge($uriCapture, $_POST);
+        if (!is_array($uri_capture)) { $uri_capture = array(); }
+        if (!is_array($_POST))       { $_POST       = array(); }
+        $variables = vArray::Merge($uri_capture, $_POST);
 
         Log::inf("Route: {$route}, variables: " . print_r($variables, true));
 
         # Get controller
-        $routeHelper = vString::ExplodeTrim('->', $route, 2);
-        $controller  = $routeHelper[0];
+        $route_helper = vString::ExplodeTrim('->', $route, 2);
+        $controller   = $route_helper[0];
         if (in_array(substr($controller, 0, 1), array(':', '%'))) {
-            $controller = $this->resolveParams($controller, $variables);
+            $controller = $this->_resolve_params($controller, $variables);
             $controller = $controller[0];
         }
 
         # Get method
-        $routeHelper = vString::ExplodeTrim('(', $routeHelper[1], 2);
-        $method      = $routeHelper[0];
+        $route_helper = vString::ExplodeTrim('(', $route_helper[1], 2);
+        $method       = $route_helper[0];
         if (in_array(substr($method, 0, 1), array(':', '%'))) {
-            $method = $this->resolveParams($method, $variables);
+            $method = $this->_resolve_params($method, $variables);
             $method = $method[0];
         }
 
         # Get parameters
-        $parameters = substr($routeHelper[1], 0, -1);
+        $parameters = substr($route_helper[1], 0, -1);
         # Encode strings
         $parameters = vString::EncodeRegion($parameters, array('"', '"'));
         $parameters = vString::ExplodeTrim(',', $parameters);
@@ -310,13 +283,12 @@ class Dispatcher_Base
 
         # Set parameters
         if (!empty($parameters)) {
-            $parameters = $this->resolveParams($parameters, $variables);
+            $parameters = $this->_resolve_params($parameters, $variables);
         }
 
         # Dispatch now!
-        return $this->dispatch($controller, $method, $parameters);
+        return $this->_dispatch($controller, $method, $parameters);
     }
-    //-
 
     /**
      * Will resolve route parameters
@@ -326,10 +298,10 @@ class Dispatcher_Base
      * --
      * @return  array
      */
-    protected function resolveParams($parameters, $variables)
+    protected function _resolve_params($parameters, $variables)
     {
         # Set empty params-values
-        $paramsValues = array();
+        $params_values = array();
 
         # If not array
         if (!is_array($parameters)) {
@@ -355,7 +327,7 @@ class Dispatcher_Base
                 $param = explode('|', $param, 2);
                 $default = trim($param[1]);
                 $param = trim($param[0]);
-                $defaultIsSet = true;
+                $is_default_set = true;
 
                 if (substr($default, 0, 1) === '"') {
                     # Default is string
@@ -375,7 +347,7 @@ class Dispatcher_Base
                 }
             }
             else {
-                $defaultIsSet = false;
+                $is_default_set = false;
             }
 
             # Check if we need date from _POST or URI
@@ -387,13 +359,13 @@ class Dispatcher_Base
             }
 
             # Get actual key
-            $currentVal    = false;
+            $current_val = false;
             if (isset($variables[$param])) {
-                $currentVar = $variables[$param];
+                $current_val = $variables[$param];
             }
             else {
-                if ($defaultIsSet) {
-                    $currentVar = $default;
+                if ($is_default_set) {
+                    $current_val = $default;
                 }
                 else {
                     continue;
@@ -404,27 +376,26 @@ class Dispatcher_Base
             if ($convert) {
                 switch ($convert) {
                     case 'string':
-                        $currentVar = (string) $currentVar;
+                        $current_val = (string) $current_val;
                         break;
                     case 'integer':
-                        $currentVar = (int) $currentVar;
+                        $current_val = (int) $current_val;
                         break;
                     case 'boolean':
-                        $currentVar = vBoolean::Parse($currentVar);
+                        $current_val = vBoolean::Parse($current_val);
                         break;
                     case 'float':
-                        $currentVar = (float) $currentVar;
+                        $current_val = (float) $current_val;
                         break;
                 }
             }
 
-            $paramsValues[] = $currentVar;
+            $params_values[] = $current_val;
         }
 
         # Return params-values
-        return $paramsValues;
+        return $params_values;
     }
-    //-
 
     /**
      * Call appropriate controller
@@ -435,13 +406,15 @@ class Dispatcher_Base
      * --
      * @return  boolean
      */
-    protected function dispatch($controller, $method, $params=array())
+    protected function _dispatch($controller, $method, $params=array())
     {
         # Just an informational log entry
-        Log::inf("Dispatch: {$controller}->{$method}(), variables: " . print_r($params, true));
+        Log::inf(
+            "Dispatch: {$controller}->{$method}(), variables: " . 
+            print_r($params, true));
 
         # Get object
-        $controller = $this->getController($controller.'Controller');
+        $controller = $this->_get_controller($controller.'Controller');
 
         if (!$controller) {
             return false;
@@ -461,46 +434,66 @@ class Dispatcher_Base
             return false;
         }
     }
-    //-
 
     /**
      * Get appropriate controller
      * --
-     * @param   string  $className
-     * --
+     * @param   string  $class_name
      * @return  object  or false
      */
-    protected function getController($className)
+    protected function _get_controller($class_name)
     {
-        if (!$this->Controllers[$className]) {
-            if (!class_exists($className, false)) {
-                if (!Loader::GetMC($className, 'controllers')) {
-                    $this->Controllers[$className] = false;
+        if (!$this->controllers[$class_name]) {
+            if (!class_exists($class_name, false)) {
+                if (!Loader::GetMC($class_name, 'controllers')) {
+                    $this->controllers[$class_name] = false;
                 }
             }
             
-            $this->Controllers[$className] = new $className();
+            $this->controllers[$class_name] = new $class_name();
         }
         
-        return $this->Controllers[$className];
+        return $this->controllers[$class_name];
     }
-    //-
 
     /**
      * Check if application is off-line
      * --
      * @return  void
      */
-    protected function isOffline()
+    protected function _is_offline()
     {
-        if (Cfg::get('system/offline') === true) {
-            $message = Cfg::get('system/offline_message');
-            if (substr($message,0,5) == 'view:') {
-                $message = View::get(substr($message,5))->doReturn();
+        return Cfg::get('system/offline');
+    }
+
+    /**
+     * Set offline message, and send out apropriate response.
+     * --
+     * @return void
+     */
+    public function trigger_offline()
+    {
+        $message = Cfg::get('system/offline_message');
+        if (substr($message,0,5) === 'view:') {
+            $message = View::get(substr($message, 5))->do_return();
+        }
+        Http::status_503_service_unavailable($message);
+    }
+
+    /**
+     * Trigger 404 error
+     * --
+     * @return  void
+     */
+    protected function trigger_404()
+    {
+        Http::status_404_not_found();
+        Log::inf("We have 404 on `{$this->request_uri}`.");
+
+        if (Cfg::get('system/routes/<404>')) {
+            if (!$this->_resolve_uri(Cfg::get('system/routes/<404>'))) {
+                exit('404: ' . Cfg::get('system/routes/<404>'));
             }
-            HTTP::Status503_ServiceUnavailable($message);
         }
     }
-    //-
 }
-//--

@@ -62,7 +62,7 @@ class Output_Base
     public static function get($particular=false, $as_array=false)
     {
         # Before get
-        Event::Trigger('output.before.get', self::$output_cache);
+        Event::trigger('output.before.get', self::$output_cache);
 
         if ($particular) {
             if (isset(self::$output_cache[$particular])) 
@@ -72,7 +72,7 @@ class Output_Base
         }
         else {
             # Before get all
-            Event::Trigger('output.before.getall', self::$output_cache);
+            Event::trigger('output.before.getall', self::$output_cache);
 
             if ($as_array)
                 { return self::$output_cache; }

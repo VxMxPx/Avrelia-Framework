@@ -1,19 +1,12 @@
 <?php if (!defined('AVRELIA')) { die('Access is denied!'); }
 
 /**
- * Avrelia
- * ----
- * File System
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
- * @copyright  Copyright (c) 2009, Avrelia.com
- * @license    http://avrelia.com/license
- * @link       http://avrelia.com
- * @since      Version 0.80
- * @since      Fri Apr 01 16:29:40 2011
+ * File System Class
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
+ * @copyright  Copyright (c) 2010, Avrelia.com
+ * @license    http://framework.avrelia.com/license
  */
-
 class FileSystem_Base
 {
 

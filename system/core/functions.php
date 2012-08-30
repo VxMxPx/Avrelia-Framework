@@ -204,9 +204,9 @@ function url_be($uri, $update_current=true) { echo urlB($uri, $update_current); 
  * @param  array   $params
  * @return string
  */
-function l($string, $params=array(), $language_key='general')
+function l($string, $params=array())
 { 
-    return Language::Translate($string, $params, $language_key); 
+    return Language::translate($string, $params); 
 }
 
 /**

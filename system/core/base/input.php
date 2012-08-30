@@ -10,13 +10,13 @@
 class Input_Base
 {
     # List Of All URI segments (segment0/segment1) ('segment0', 'segment1')
-    private static $uri_segments = array();
+    protected static $uri_segments = array();
 
     # List Of All Actions (action=value)
-    private static $uri_actions  = array();
+    protected static $uri_actions  = array();
 
     # Build uri segements
-    private static $build_uri    = array();
+    protected static $build_uri    = array();
 
     /**
      * Get Rid Of Globals & Set Uri Segment

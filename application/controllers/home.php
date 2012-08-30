@@ -43,7 +43,7 @@ class homeController
      */
     public function not_found_404()
     {
-        HTTP::Status404_NotFound('<h1>404: Not found!</h1>');
+        Http::status_404_not_found('<h1>404: Not found!</h1>');
     }
     //-
 }

@@ -1,70 +1,60 @@
 <?php if (!defined('AVRELIA')) { die('Access is denied!'); }
 
 /**
- * Avrelia
- * ----
- * Event Handler
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
- * @copyright  Copyright (c) 2009, Avrelia.com
+ * Event Class
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
+ * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      Date 2010-04-06
  */
 class Event_Base
 {
-    /**
-     * @var array   List of events to be executed
-     */
-    private static $Waiting = array();
+    # List of events to be executed
+    protected static $waiting = array();
 
     /**
      * Wait for paticular event to happened - then call the assigned function / method.
      * --
      * @param   string  $event      Name of the event you're waiting for
      * @param   mixed   $call       Can be name of the function, or array('className', 'methodName')
-     * @param   boolean $inFront    Should be event added to the front of the list?
-     * --
+     * @param   boolean $in_front   Should be event added to the front of the list?
      * @return  void
      */
-    public static function Watch($event, $call, $inFront=false)
+    public static function watch($event, $call, $in_front=false)
     {
-        if (!isset(self::$Waiting[$event]) || !is_array(self::$Waiting[$event])) {
-            self::$Waiting[$event] = array();
+        if (!isset(self::$waiting[$event]) || !is_array(self::$waiting[$event])) {
+            self::$waiting[$event] = array();
         }
 
-        if ($inFront) {
-            array_unshift(self::$Waiting[$event], $call);
+        if ($in_front) {
+            array_unshift(self::$waiting[$event], $call);
         }
         else {
-            self::$Waiting[$event][] = $call;
+            self::$waiting[$event][] = $call;
         }
     }
-    //-
 
     /**
      * Trigger the event.
      * --
      * @param   string  $event  Which event?
-     * @param   mixed   $Params Shall we provide any params?
-     * --
+     * @param   mixed   $params Shall we provide any params?
      * @return  integer Number of called functions - function count only if "true" was returned.
      */
-    public static function Trigger($event, &$Params=null)
+    public static function trigger($event, &$params=null)
     {
         $num = 0;
 
-        if (isset(self::$Waiting[$event]) && is_array(self::$Waiting[$event]) && !empty(self::$Waiting[$event])) {
-            foreach (self::$Waiting[$event] as $call) {
-                # $num = $num + (call_user_func($call, &$Params) ? 1 : 0);
-                $num = $num + (call_user_func_array($call, array(&$Params)) ? 1 : 0);
+        if (
+            isset(self::$waiting[$event]) && 
+            is_array(self::$waiting[$event]) && 
+            !empty(self::$waiting[$event])
+        ) {
+            foreach (self::$waiting[$event] as $call) {
+                $num = $num + (call_user_func_array($call, array(&$params)) ? 1 : 0);
             }
         }
 
         return $num;
     }
-    //-
 }
-//--

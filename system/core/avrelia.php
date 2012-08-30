@@ -74,9 +74,6 @@ class Avrelia
         # Error Handling
         set_error_handler('avrelia_error_handler');
 
-        # Set default language
-        Language::SetDefaults(Cfg::get('system/languages'));
-
         # MUST be called before we can use Plugs.
         Plug::Init(Cfg::get('plug/enabled'));
 
@@ -86,7 +83,7 @@ class Avrelia
         }
 
         # Trigger event after framework initialization
-        Event::Trigger('avrelia.after.init');
+        Event::trigger('avrelia.after.init');
 
         return new Dispatcher();
     }
@@ -99,7 +96,7 @@ class Avrelia
     public function __destruct()
     {
         # Final event
-        Event::Trigger('avrelia.before.destruct');
+        Event::trigger('avrelia.before.destruct');
 
         # Write final log
         if (Cfg::get('log/enabled') && Cfg::get('log/write_individual') === false) {

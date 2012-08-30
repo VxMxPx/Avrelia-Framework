@@ -388,8 +388,8 @@ class Plug_Base
         $cLang    = ds("{$path}/languages/{$name}.{$language}.lng");
         $aLang    = ds(APPPATH . "/languages/plugs/{$name}.{$language}.lng");
 
-        Language::Load($cLang, $getDefault);
-        Language::Load($aLang, $getDefault);
+        Language::load($cLang, $getDefault);
+        Language::load($aLang, $getDefault);
     }
     //-
 
