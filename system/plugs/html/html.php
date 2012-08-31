@@ -65,7 +65,7 @@ class cHTML
      */
     public static function GetHeaders($echo=true)
     {
-        Event::trigger('chtml.before.getheaders', self::$Headers);
+        Event::trigger('/plug/html/get_headers', self::$Headers);
 
         $return = '';
 
@@ -119,7 +119,7 @@ class cHTML
      */
     public static function GetFooters($echo=true)
     {
-        Event::trigger('chtml.before.getfooters', self::$Footers);
+        Event::trigger('/plug/html/get_footers', self::$Footers);
 
         $return = '';
 

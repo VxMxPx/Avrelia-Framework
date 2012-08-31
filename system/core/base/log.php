@@ -91,8 +91,8 @@ class Log_Base
 
         # Auto assign line and file
         $BT   = debug_backtrace();
-        $line = $BT[0]['line'];
-        $file = $BT[0]['file'];
+        $line = $BT[1]['line'];
+        $file = $BT[1]['file'];
 
         # Write this message into file?
         self::_write_line($type, $message, $line, $file);

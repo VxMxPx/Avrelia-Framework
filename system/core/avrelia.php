@@ -83,7 +83,7 @@ class Avrelia
         }
 
         # Trigger event after framework initialization
-        Event::trigger('avrelia.after.init');
+        Event::trigger('/core/avrelia/initialize');
 
         return new Dispatcher();
     }
@@ -96,7 +96,7 @@ class Avrelia
     public function __destruct()
     {
         # Final event
-        Event::trigger('avrelia.before.destruct');
+        Event::trigger('/core/avrelia/destruct');
 
         # Write final log
         if (Cfg::get('log/enabled') && Cfg::get('log/write_individual') === false) {

@@ -66,6 +66,10 @@ $avrelia_config = array
         # multiple files...
         'fs_ignore'   => array('.svn'),
 
+        # Default permission mode, when creating new directories,
+        # Must be octal number, leading zero!
+        'fs_default_mode' => 0755,
+
         # Convert manually written \n character in language file to <br />
         'lang_n_to_br' => true,
     ),

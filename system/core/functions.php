@@ -300,6 +300,49 @@ function lh()
 
 
 /**
+ * The same as substr for string, only that work with paths. 
+ * Note, the path returned is without end slash.
+ * Examples:
+ *     $path = /home/user/data/book.odt
+ *         ($path, 0, 2) => /home/user
+ *         ($path, -1) => book.odt
+ *         ($path, 2) => data/book.odt
+ *         ($path, -3, 1) => user
+ *         ($path, 0, -1) => /home/user/data
+ * @param  string  $path
+ * @param  integer $start
+ * @param  integer $length
+ * @return string
+ */
+function get_path_segment($path, $start, $length=null)
+{
+    if (!$path) { return false; }
+
+    $ds = DIRECTORY_SEPARATOR;
+    $path = rtrim(ds($path), $ds);
+    $path_particles = explode($ds, $path);
+    $particles_count = count($path_particles) - 1;
+
+    if (empty($path_particles[0])) { unset($path_particles[0]); }
+
+    $fixed_particles = array_slice($path_particles, $start, $length);
+    $final_path = implode($ds, $fixed_particles);
+
+    # Calculate if we've got first particle
+    if ($start < 0) {
+        if (($particles_count + $start) < 1) {
+            $start = 0;
+        }
+    }
+
+    if ($start === 0 && substr($path, 0, 1) === $ds) {
+        $final_path = $ds . $final_path;
+    }
+
+    return $final_path;
+}
+
+/**
  * Replace the last occurrence of a string.
  * --
  * @param  string  $search

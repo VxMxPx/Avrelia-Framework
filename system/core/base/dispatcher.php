@@ -30,7 +30,7 @@ class Dispatcher_Base
      */
     public function boot()
     {
-        Event::trigger('avrelia.before.boot');
+        Event::trigger('/core/dispatcher/boot/before');
 
         # Is application offline?
         if ($this->_is_offline()) { $this->trigger_offline(); }
@@ -44,7 +44,7 @@ class Dispatcher_Base
         # After dispatch
         $this->_after_dispatch();
 
-        Event::trigger('avrelia.after.boot');
+        Event::trigger('/core/dispatcher/boot/after');
     }
 
     /**
@@ -256,7 +256,12 @@ class Dispatcher_Base
         if (!is_array($_POST))       { $_POST       = array(); }
         $variables = vArray::Merge($uri_capture, $_POST);
 
-        Log::inf("Route: {$route}, variables: " . print_r($variables, true));
+        Log::inf(
+            "Route: {$route}" .
+            (empty($variables) 
+                ? null 
+                : ', variables, '.print_r($variables, true))
+        );
 
         # Get controller
         $route_helper = vString::ExplodeTrim('->', $route, 2);
@@ -408,10 +413,12 @@ class Dispatcher_Base
      */
     protected function _dispatch($controller, $method, $params=array())
     {
-        # Just an informational log entry
         Log::inf(
-            "Dispatch: {$controller}->{$method}(), variables: " . 
-            print_r($params, true));
+            "Dispatch: {$controller}->{$method}()" .
+            (empty($params) 
+                ? null 
+                : ', params, '.print_r($params, true))
+        );
 
         # Get object
         $controller = $this->_get_controller($controller.'Controller');

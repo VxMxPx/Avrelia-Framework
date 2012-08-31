@@ -21,7 +21,7 @@ class Http_Base
         if (!self::_is_allowed($url)) { return false; }
 
         # Trigger Event Before Redirect
-        Event::trigger('http.before.redirect', $url);
+        Event::trigger('/core/http/redirect', $url);
 
         if (headers_sent($file, $line)) {
             trigger_error(
