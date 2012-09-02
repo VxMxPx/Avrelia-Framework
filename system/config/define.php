@@ -21,6 +21,13 @@ if (!defined('DATPATH')) define('DATPATH', realpath(APPPATH.'/database'));
 if (!defined('DEBUG')) define('DEBUG', false);
 
 /* -----------------------------------------------------------------------------
+ * Testing environment variables.
+ * Test initializer will set TESTING to true, and this will be skipped.
+ */
+if (!defined('TESTING'))  define('TESTING', false);
+if (!defined('TESTPATH')) define('TESTPATH', realpath(SYSPATH.'/../tests'));
+
+/* -----------------------------------------------------------------------------
  * Reserved constants for common use.
  */
 !defined('FILE_DUPLICATE_REWRITE')
@@ -37,4 +44,4 @@ if (!defined('DEBUG')) define('DEBUG', false);
 
 !defined('FILE_DUPLICATE_SILENT')
 	? define('FILE_DUPLICATE_SILENT', 4)
-	: trigger_error('Use of reserved constant: `FILE_DUPLICATE_SILENT`.');	
+	: trigger_error('Use of reserved constant: `FILE_DUPLICATE_SILENT`.');

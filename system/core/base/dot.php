@@ -110,6 +110,13 @@ class Dot_Base
      */
     public static function out($type, $message, $new_line=true)
     {
+        # If we're in testing, we need plain messages...
+        if (TESTING) {
+            echo $message, ($new_line ? "\n" : '');
+            flush();
+            return;
+        }
+
         switch (strtolower($type))
         {
             case 'err':

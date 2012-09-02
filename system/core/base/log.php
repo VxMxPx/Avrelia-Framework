@@ -126,7 +126,12 @@ class Log_Base
             'file'      => $file
         );
 
-        if (is_cli() && in_array($type, array('war', 'err')) && class_exists('Dot', false)) {
+
+        if (
+            is_cli() 
+            && in_array($type, array('war', 'err')) 
+            && class_exists('Dot', false)
+        ) {
             Dot::out($type, $message);
             Dot::out($type, $file . " " . $line);
             Dot::out($type, str_repeat('-', 40));
