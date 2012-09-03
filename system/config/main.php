@@ -72,6 +72,9 @@ $avrelia_config = array
 
         # Convert manually written \n character in language file to <br />
         'lang_n_to_br' => true,
+
+        # Which editor do you wanna use when edit tests
+        'tests_editor' => 'sublime-text %s &',
     ),
 
     # Plugs settings.

@@ -24,12 +24,16 @@ class Dot_Base
     {
         $params = $this->params;
 
-        if (!isset($params[1])) { 
-            self::war("Plase enter the command. Type `help` for list of commands.");
-            return; 
+        # Parameter one must be set for sure
+        if (!isset($params[1])) {
+            return
+                self::war(
+                    "Plase enter the command.".
+                    "Type `help` for list of commands.");
         }
 
-        $class = 'cli'.to_camelcase($params[1]);
+        # Class in a format command_Cli
+        $class = $params[1] . '_Cli';
         $file  = strtolower(str_replace('.', '', $params[1]));
 
         if (!class_exists($class, false))
@@ -54,28 +58,20 @@ class Dot_Base
             }
             else
             {
-                self::war("Invalid command.");
+                self::war("Invalid command. Type `help` for list of commands.");
                 return;
             }
         }
 
-        $params[2] = (isset($params[2])) ? $params[2] : '_empty';
+        # Construct object and try to run the action, if possible...
+        $cli_class = new $class($params);
+        $params[2] = (isset($params[2])) ? $params[2] : false;
 
-        if (method_exists($class, $params[2]))
-        {
-            $commands = array_slice($params, 3);
-            return call_user_func_array(array($class, $params[2]), $commands);
+        if (method_exists($cli_class, $params[2])) {
+            call_user_func(array($cli_class, $params[2]));
         }
-        elseif (method_exists($class, '_empty'))
-        {
-            $commands = array_slice($params, 2);
-            return call_user_func_array(array($class, '_empty'), $commands);
-        }
-        else
-        {
-            self::war("Undefined action `{$params[2]}`!");
-            return;
-        }
+
+        return;
     }
 
     /**
