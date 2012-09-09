@@ -39,7 +39,7 @@ class cSessionDriverDb implements cSessionDriverInterface
     public static function _create()
     {
         # Create users table (if doesn't exists)
-        if (Plug::Has('database')) {
+        if (Plug::has('database')) {
             cDatabase::Execute(Cfg::get('plugs/session/db/Tables/users_table'));
             cDatabase::Execute(Cfg::get('plugs/session/db/Tables/sessions_table'));
         }
@@ -83,7 +83,7 @@ class cSessionDriverDb implements cSessionDriverInterface
      */
     private static function cleanAgent($agent)
     {
-        return vString::Clean(str_replace(' ', '_', $agent), 200, 'aA1c', '_');
+        return Str::clean(str_replace(' ', '_', $agent), 'aA1', '_');
     }
     //-
 
@@ -267,7 +267,7 @@ class cSessionDriverDb implements cSessionDriverInterface
             # Look for session
             $SessionDetails = cDatabase::Find(
                                     Cfg::get('plugs/session/db/sessions_table'),
-                                    array('id' => vString::Clean($sessionId, 400, 'aA1c', '_'))
+                                    array('id' => Str::clean($sessionId, 'aA1', '_', 400))
                                 );
 
             # Okey we have something, check it...
@@ -345,7 +345,7 @@ class cSessionDriverDb implements cSessionDriverInterface
         }
 
         # Create unique id
-        $qId  = time() . '_' . vString::Random(20, 'aA1');
+        $qId  = time() . '_' . Str::random(20, 'aA1');
 
         # Store cookie
         uCookie::Create(Cfg::get('plugs/session/cookie_name'), $qId, $expires);

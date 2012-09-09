@@ -18,4 +18,7 @@ if (!class_exists('AvreliaException', false))
 
 # When: creating, deleting, moving, copying, reading file...
 if (!class_exists('FileSystem_AvreliaException', false)) 
-	{ class File_AvreliaException extends Exception {} }
+	{ class FileSystem_AvreliaException extends AvreliaException {} }
+
+if (!class_exists('ValueError_AvreliaException', false))
+	{ class ValueError_AvreliaException extends AvreliaException {} }

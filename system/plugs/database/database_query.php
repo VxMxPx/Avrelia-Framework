@@ -111,7 +111,7 @@ class cDatabaseQuery
         }
 
         $this->type   = 'INSERT';
-        $this->values = is_array($this->values) ? vArray::Merge($this->values, $key) : $key;
+        $this->values = is_array($this->values) ? Arr::merge($this->values, $key) : $key;
 
         return $this;
     }
@@ -314,7 +314,7 @@ class cDatabaseQuery
             $values = $key;
         }
 
-        $this->values = is_array($this->values) ? vArray::Merge($this->values, $values) : $values;
+        $this->values = is_array($this->values) ? Arr::merge($this->values, $values) : $values;
 
         return $this;
     }
@@ -499,7 +499,7 @@ class cDatabaseQuery
                 # Build insert statement
                 $Values = $this->prepareBind($this->values, 'v_');
                 $sql = 'INSERT INTO ' . $this->table .
-                        ' (' . vArray::ImplodeKeys(', ', $Values) .  ') VALUES (' . implode(', ', $Values) . ')';
+                        ' (' . Arr::implode_keys(', ', $Values) .  ') VALUES (' . implode(', ', $Values) . ')';
                 break;
 
             case 'UPDATE':
@@ -581,7 +581,7 @@ class cDatabaseQuery
         foreach ($Values as $key => $val)
         {
             $keyBind = str_replace(array('AND ', 'OR ', 'LIKE'), '', $key);
-            $keyBind = $prefix . vString::Clean($keyBind, 200, 'aA1c', '_');
+            $keyBind = $prefix . Str::clean($keyBind, 'aA1', '_');
 
             # Duplicated?
             $nKeyBind = $keyBind;

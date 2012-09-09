@@ -45,3 +45,31 @@ if (!defined('TESTPATH')) define('TESTPATH', realpath(SYSPATH.'/../tests'));
 !defined('FILE_DUPLICATE_SILENT')
 	? define('FILE_DUPLICATE_SILENT', 4)
 	: trigger_error('Use of reserved constant: `FILE_DUPLICATE_SILENT`.');
+
+!defined('STRING_UNDERSCORE')
+	? define('STRING_UNDERSCORE', 1)
+	: trigger_error('Use of reserved constant: `STRING_UNDERSCORE`.');
+
+!defined('STRING_CAMELCASE')
+	? define('STRING_CAMELCASE', 2)
+	: trigger_error('Use of reserved constant: `STRING_CAMELCASE`.');
+
+!defined('CHAR_APOSTROPHE')
+	? define('CHAR_APOSTROPHE', "'")
+	: trigger_error('Use of reserved constant: `CHAR_APOSTROPHE`.');
+
+!defined('CHAR_QUOTE')
+	? define('CHAR_QUOTE', '"')
+	: trigger_error('Use of reserved constant: `CHAR_QUOTE`.');
+
+!defined('CHAR_SPACE')
+	? define('CHAR_SPACE', ' ')
+	: trigger_error('Use of reserved constant: `CHAR_SPACE`.');
+
+!defined('CHAR_SLASH')
+	? define('CHAR_SLASH', '/')
+	: trigger_error('Use of reserved constant: `CHAR_SLASH`.');
+
+!defined('CHAR_BACKSLASH')
+	? define('CHAR_BACKSLASH', '\\')
+	: trigger_error('Use of reserved constant: `CHAR_BACKSLASH`.');

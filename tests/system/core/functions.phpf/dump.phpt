@@ -1,5 +1,5 @@
 --TEST--
-system/core/functions.php
+system/core/functions
 --FILE--
 <?php
 include('../../../init.php');

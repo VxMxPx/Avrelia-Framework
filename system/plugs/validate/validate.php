@@ -32,7 +32,7 @@ class cValidate
         include ds(dirname(__FILE__) . '/validate_variable.php');
 
         # Get language
-        Plug::GetLanguage(__FILE__);
+        Plug::get_language(__FILE__);
 
         return true;
     }

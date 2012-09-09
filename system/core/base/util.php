@@ -1,49 +1,35 @@
 <?php if (!defined('AVRELIA')) { die('Access is denied!'); }
 
 /**
- * Avrelia
- * ----
- * Get util
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * Util Class
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2011-12-20
  */
-
 class Util_Base
 {
-    /**
-     * @var array   List of loaded files
-     */
-    private static $Loaded = array();
-
+    # List of loaded files
+    private static $loaded = array();
 
     /**
      * Will load util file
      * --
      * @param   string  $name
-     * --
      * @return  void
      */
-    public static function Get($name)
+    public static function get($name)
     {
-        if (in_array($name, self::$Loaded)) {
-            return false;
-        }
+        if (in_array($name, self::$loaded)) { return false; }
 
-        $utilName = ds(APPPATH.'/util/'.strtolower($name).'.php');
-        if (file_exists($utilName)) {
-            include($utilName);
-            self::$Loaded[] = $name;
+        $util_name = app_path('util/'.strtolower($name).'.php');
+
+        if (file_exists($util_name)) {
+            include($util_name);
+            self::$loaded[] = $name;
         }
         else {
-            Log::err("Can't load util: `{$utilName}`, file not found.");
+            Log::err("Can't load util: `{$util_name}`, file not found.");
         }
     }
-    //-
 }
-//--

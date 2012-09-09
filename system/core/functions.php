@@ -11,18 +11,6 @@
  */
 
 /**
- * Function which is automatically called in case you are trying to use 
- * a class/interface which hasn't been defined yet. 
- * By calling this function the scripting engine is given a last chance to load 
- * the class before PHP fails with an error.
- * In our case all hard work is preformed by Loader.
- * --
- * @param  string $className
- * @return void
- */
-function __autoload($className) { return Loader::Get($className); }
-
-/**
  * Determine if this is command line interface.
  * --
  * @return boolean
@@ -373,9 +361,27 @@ function str_lreplace($search, $replace, $subject)
  */
 function to_camelcase($string, $uc_first=true)
 {
-    $string = str_replace('_', ' ', $string);
-    $string = ucwords($string);
-    $string = str_replace(' ', '', $string);
+
+    # Convert _
+    if (strpos($string, '_') !== false) {
+        $string = str_replace('_', ' ', $string);
+        $string = ucwords($string);
+        $string = str_replace(' ', '', $string);
+    }
+
+    # Convert backslashes
+    if (strpos($string, CHAR_BACKSLASH) !== false) {
+        $string = str_replace(CHAR_BACKSLASH, ' ', $string);
+        $string = ucwords($string);
+        $string = str_replace(' ', CHAR_BACKSLASH, $string);
+    }
+
+    # Convert slashes
+    if (strpos($string, CHAR_SLASH) !== false) {
+        $string = str_replace(CHAR_SLASH, ' ', $string);
+        $string = ucwords($string);
+        $string = str_replace(' ', CHAR_SLASH, $string);
+    }
 
     if (!$uc_first) {
         $string = lcfirst($string);
@@ -385,12 +391,12 @@ function to_camelcase($string, $uc_first=true)
 }
 
 /**
- * Convert camel case to underlines
+ * Convert camel case to underscores
  * --
  * @param  string  $string
  * @return string
  */
-function to_underline($string)
+function to_underscore($string)
 {
     preg_match_all('/[A-Z]*[^A-Z]*/', $string, $result);
     return trim(strtolower(implode('_', $result[0])), '_');

@@ -24,8 +24,8 @@ $session_config = array
     # JSON driver configuration
     'json'          => array
     (
-        'users_filename'    => Plug::GetDatabasePath('session/users.json'),
-        'sessions_filename' => Plug::GetDatabasePath('session/sessions.json'),
+        'users_filename'    => Plug::get_database_path('session/users.json'),
+        'sessions_filename' => Plug::get_database_path('session/sessions.json'),
     ),
 
     # Database driver configuration

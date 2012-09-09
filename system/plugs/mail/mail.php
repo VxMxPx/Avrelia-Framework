@@ -55,7 +55,7 @@ class cMail
      */
     public function __construct()
     {
-        $this->Config = Plug::GetConfig(__FILE__);
+        $this->Config = Plug::get_config(__FILE__);
 
         $this->smtpAuth = ($this->Config['SMTP']['user'] && $this->Config['SMTP']['pass']);
         $this->safeMode = ((boolean)ini_get('safe_mode') === false) ? false : true;

@@ -28,7 +28,7 @@ class cForm
     public static function _OnInit()
     {
         # Get language
-        Plug::GetLanguage(__FILE__);
+        Plug::get_language(__FILE__);
 
         # Return true!
         return true;
@@ -250,7 +250,7 @@ class cForm
     public function checkbox($name, $Options, $selected=null)
     {
         $fields            = '';
-        $Selected          = vString::ExplodeTrim(',', $selected);
+        $Selected          = Str::explode_trim(',', $selected);
         $DefaultAttributes = $this->FormData['attributes'];
         $DefaultAttributes['name'] = $name.'[]';
         $DefaultAttributes['type'] = 'checkbox';
@@ -341,7 +341,7 @@ class cForm
     public function select($name, $Options, $label=null, $selected=null, $multi=false)
     {
         $fields            = '';
-        $Selected          = vString::ExplodeTrim(',', $selected);
+        $Selected          = Str::explode_trim(',', $selected);
         $this->FormData['attributes']['name'] = $name . ($multi ? '[]' : '');
         $this->FormData['attributes']['type'] = 'select';
         if ($multi) {
@@ -352,7 +352,7 @@ class cForm
         if (isset($this->Defaults[$name])) {
             $selected = $this->Defaults[$name];
             if ($multi && strpos($selected,',')!==false) {
-                $selected = vString::ExplodeTrim(',',$selected);
+                $selected = Str::explode_trim(',',$selected);
             }
         }
 

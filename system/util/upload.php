@@ -209,7 +209,7 @@ class uUpload
             }
         }
         elseif ($filename === true) {
-            $filename = vString::Clean(basename($File['filename']), 200, 'a A 1 c', '_-') . '.' . $ext;
+            $filename = Str::clean(basename($File['filename']), 'aA1', '_-') . '.' . $ext;
         }
 
         if (move_uploaded_file($File['fullpath'], ds($destination.'/'.$filename))) {

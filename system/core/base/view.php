@@ -1,8 +1,9 @@
 <?php if (!defined('AVRELIA')) { die('Access is denied!'); }
 
 /**
- * View Class
+ * View Class and ViewAssign
  * -----------------------------------------------------------------------------
+ * This is sub-class for view, returned when we call "View::get"
  * Handle loading of classes.
  * ----
  * @author     Avrelia.com (Marko Gajst)
@@ -126,11 +127,8 @@ class View_Base
     }
 }
 
-
 /**
- * View Assign Class
- * -----------------------------------------------------------------------------
- * This is sub-class for view, returned when we call "View::get"
+ * ViewAssign
  */
 class ViewAssign_Base
 {

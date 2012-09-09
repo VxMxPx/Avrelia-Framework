@@ -1,5 +1,5 @@
 --TEST--
-system/core/cfg.php
+system/core/cfg
 --FILE--
 <?php
 include('../../../init.php');

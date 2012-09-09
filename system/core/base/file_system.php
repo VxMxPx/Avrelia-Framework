@@ -568,7 +568,7 @@ class FileSystem_Base
 
         # Get Just Base Filename, without extention!
         $file_base = basename($file);
-        $file_base = vString::Clean($file_base, 100, 'a A 1');
+        $file_base = Str::clean($file_base, 'aA1', false, 100);
 
         # Get All Directories as array, and select the one,
         # in which is file
@@ -576,12 +576,12 @@ class FileSystem_Base
         $File = explode(DIRECTORY_SEPARATOR, $file);
         if (is_array($File)) {
             $dir_before = $File[count($File)-2];
-            $dir_before = vString::Clean($dir_before, 100, 'a A 1');
+            $dir_before = Str::clean($dir_before, 'aA1', false, 100);
         }
 
         # Create New Filename
         $newFilename = $file_sha . '_' . $dir_before . '_' . $file_base;
-        $newFilename = vString::Clean($newFilename, 0, 'a A 1 c', '_');
+        $newFilename = Str::clean($newFilename, 'aA1', '_', false);
 
         return $newFilename;
     }

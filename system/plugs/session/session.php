@@ -24,8 +24,8 @@ class cSession
      */
     public static function _OnInit()
     {
-        Plug::GetConfig(__FILE__);
-        $class = Plug::GetDriver(__FILE__, Cfg::get('plugs/session/driver'), false);
+        Plug::get_config(__FILE__);
+        $class = Plug::get_driver(__FILE__, Cfg::get('plugs/session/driver'), false);
 
         # Create new driver instance
         self::$Driver = new $class();
@@ -40,8 +40,8 @@ class cSession
      */
     public static function _OnEnable()
     {
-        Plug::GetConfig(__FILE__);
-        $class = Plug::GetDriver(__FILE__, Cfg::get('plugs/session/driver'), false);
+        Plug::get_config(__FILE__);
+        $class = Plug::get_driver(__FILE__, Cfg::get('plugs/session/driver'), false);
 
         if (!$class::_create()) {
             Log::err("Failed to enable session driver: `{$class}`.");
@@ -60,8 +60,8 @@ class cSession
      */
     public static function _OnDisable()
     {
-        Plug::GetConfig(__FILE__);
-        $class = Plug::GetDriver(__FILE__, Cfg::get('plugs/session/driver'), false);
+        Plug::get_config(__FILE__);
+        $class = Plug::get_driver(__FILE__, Cfg::get('plugs/session/driver'), false);
 
         if (!$class::_destroy()) {
             Log::err("Failed to disable session driver: `{$class}`.");

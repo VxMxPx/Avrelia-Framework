@@ -155,7 +155,7 @@ class cCacheDriverFile implements cCacheDriverInterface
      */
     private function fileFromKey($key)
     {
-        $key = vString::Clean($key, 200, 'a A 1 c', '_-');
+        $key = Str::clean($key, 'aA1', '_-');
         return ds(Cfg::get('cache/location', DATPATH.'/cache').'/'.$key.'.cache');
     }
     //-

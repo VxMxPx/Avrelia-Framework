@@ -25,7 +25,7 @@ class cHTML
      */
     public static function _OnInit()
     {
-        Plug::GetLanguage(__FILE__);
+        Plug::get_language(__FILE__);
         return true;
     }
     //-

@@ -91,8 +91,8 @@ class Log_Base
 
         # Auto assign line and file
         $BT   = debug_backtrace();
-        $line = $BT[1]['line'];
-        $file = $BT[1]['file'];
+        $line = isset($BT[1]['line']) ? $BT[1]['line'] : null;
+        $file = isset($BT[1]['file']) ? $BT[1]['file'] : null;
 
         # Write this message into file?
         self::_write_line($type, $message, $line, $file);
@@ -333,7 +333,6 @@ class Log_Base
             return false;
         }
     }
-    //-
 
     /**
      * Write Log Message To File
@@ -364,7 +363,6 @@ class Log_Base
 
         return $return;
     }
-    //-
 
     /**
      * Will Check If Log Can Be Written

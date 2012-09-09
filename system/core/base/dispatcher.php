@@ -19,9 +19,7 @@ class Dispatcher_Base
      * Set request URI
      */
     public function __construct()
-    {
-        $this->request_uri = trim(Input::get_request_uri(false), '/');
-    }
+        { $this->request_uri = trim(Input::get_request_uri(false), '/'); }
 
     /**
      * Resolve routes and call appropriate controller
@@ -254,7 +252,7 @@ class Dispatcher_Base
         # _POST + URI segments
         if (!is_array($uri_capture)) { $uri_capture = array(); }
         if (!is_array($_POST))       { $_POST       = array(); }
-        $variables = vArray::Merge($uri_capture, $_POST);
+        $variables = Arr::merge($uri_capture, $_POST);
 
         Log::inf(
             "Route: {$route}" .
@@ -264,7 +262,7 @@ class Dispatcher_Base
         );
 
         # Get controller
-        $route_helper = vString::ExplodeTrim('->', $route, 2);
+        $route_helper = Str::explode_trim('->', $route, 2);
         $controller   = $route_helper[0];
         if (in_array(substr($controller, 0, 1), array(':', '%'))) {
             $controller = $this->_resolve_params($controller, $variables);
@@ -272,7 +270,7 @@ class Dispatcher_Base
         }
 
         # Get method
-        $route_helper = vString::ExplodeTrim('(', $route_helper[1], 2);
+        $route_helper = Str::explode_trim('(', $route_helper[1], 2);
         $method       = $route_helper[0];
         if (in_array(substr($method, 0, 1), array(':', '%'))) {
             $method = $this->_resolve_params($method, $variables);
@@ -281,10 +279,7 @@ class Dispatcher_Base
 
         # Get parameters
         $parameters = substr($route_helper[1], 0, -1);
-        # Encode strings
-        $parameters = vString::EncodeRegion($parameters, array('"', '"'));
-        $parameters = vString::ExplodeTrim(',', $parameters);
-        $parameters = vString::DecodeRegion($parameters);
+        $parameters = Str::tokenize($parameters, ',', '"');
 
         # Set parameters
         if (!empty($parameters)) {
@@ -387,7 +382,7 @@ class Dispatcher_Base
                         $current_val = (int) $current_val;
                         break;
                     case 'boolean':
-                        $current_val = vBoolean::Parse($current_val);
+                        $current_val = Bool::parse($current_val);
                         break;
                     case 'float':
                         $current_val = (float) $current_val;
@@ -419,6 +414,10 @@ class Dispatcher_Base
                 ? null 
                 : ', params, '.print_r($params, true))
         );
+
+        # Call user func needs array as params
+        if (!$params)
+            { $params = array(); }
 
         # Get object
         $controller = $this->_get_controller($controller.'Controller');
@@ -452,7 +451,7 @@ class Dispatcher_Base
     {
         if (!$this->controllers[$class_name]) {
             if (!class_exists($class_name, false)) {
-                if (!Loader::GetMC($class_name, 'controllers')) {
+                if (!Loader::get_controller($class_name)) {
                     $this->controllers[$class_name] = false;
                 }
             }
@@ -498,9 +497,10 @@ class Dispatcher_Base
         Log::inf("We have 404 on `{$this->request_uri}`.");
 
         if (Cfg::get('system/routes/<404>')) {
-            if (!$this->_resolve_uri(Cfg::get('system/routes/<404>'))) {
-                exit('404: ' . Cfg::get('system/routes/<404>'));
-            }
+            if ($this->_resolve_uri(Cfg::get('system/routes/<404>'))) 
+                { return true; }
         }
+
+        exit('404: ' . Cfg::get('system/routes/<404>'));
     }
 }

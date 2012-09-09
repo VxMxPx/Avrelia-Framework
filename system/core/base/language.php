@@ -148,7 +148,7 @@ class Language_Base
     protected static function _process($filename)
     {
         $file_contents = FileSystem::Read($filename);
-        $file_contents = vString::StandardizeLineEndings($file_contents);
+        $file_contents = Str::standardize_line_endings($file_contents);
 
         # Remove comments
         $file_contents = preg_replace('/^#.*$/m', '', $file_contents);

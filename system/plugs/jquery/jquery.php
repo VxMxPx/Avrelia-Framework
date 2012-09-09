@@ -26,11 +26,11 @@ class cJquery
      */
     public static function _OnInit()
     {
-        self::$Config = Plug::GetConfig(__FILE__);
+        self::$Config = Plug::get_config(__FILE__);
 
         if (self::$Config['local']) {
             # We have some public material
-            Plug::SetPublic(__FILE__);
+            Plug::set_public(__FILE__);
 
             # Link
             self::$link = url(Cfg::get('plug/public_dir', 'plugs').'/jquery/jquery-'.self::$Config['version'].'.min.js');

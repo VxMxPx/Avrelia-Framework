@@ -58,9 +58,20 @@ class Avrelia
             or include(realpath(SYSPATH . '/core/functions.php'));
 
         /* ---------------------------------------------------------------------
+         * Load exceptions
+         */
+        file_exists(app_path('core/exceptions.php'))
+            and include(app_path('core/exceptions.php'));
+
+        include(sys_path('core/exceptions.php'));
+
+        /* ---------------------------------------------------------------------
          * Load initializer
          */
         include(sys_path('core/initializer.php'));
+
+        # Register autoloader
+        spl_autoload_register('Loader::get');
 
         # Default timezone
         date_default_timezone_set(Cfg::get('system/timezone', 'GMT'));
@@ -74,13 +85,9 @@ class Avrelia
         # Error Handling
         set_error_handler('avrelia_error_handler');
 
-        # MUST be called before we can use Plugs.
-        Plug::Init(Cfg::get('plug/enabled'));
-
         # Now scan and autoload plugs
-        if (Cfg::get('plug/enabled')) {
-            Plug::Inc(Cfg::get('plug/auto_load'));
-        }
+        if (Cfg::get('plug/enabled')) 
+            { Plug::load(Cfg::get('plug/auto_load')); }
 
         # Trigger event after framework initialization
         Event::trigger('/core/avrelia/initialize');

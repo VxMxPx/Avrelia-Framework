@@ -59,13 +59,21 @@ if (!_inc_core_app_class_('loader'))
     { class Loader extends Loader_Base {} }
 _call_include_method_('Loader');
 
-if (!_inc_core_app_class_('v_array'))
-    { class vArray extends vArray_Base {} }
-_call_include_method_('vArray');
+if (!_inc_core_app_class_('arr'))
+    { class Arr extends Arr_Base {} }
+_call_include_method_('Arr');
 
-if (!_inc_core_app_class_('v_boolean'))
-    { class vBoolean extends vBoolean_Base {} }
-_call_include_method_('vBoolean');
+if (!_inc_core_app_class_('str'))
+    { class Str extends Str_Base {} }
+_call_include_method_('Str');
+
+if (!_inc_core_app_class_('bool'))
+    { class Bool extends Bool_Base {} }
+_call_include_method_('Bool');
+
+if (!_inc_core_app_class_('json'))
+    { class Json extends Json_Base {} }
+_call_include_method_('Json');
 
 if (!_inc_core_app_class_('v_string'))
     { class vString extends vString_Base {} }

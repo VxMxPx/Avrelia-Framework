@@ -51,8 +51,8 @@ class cSessionDriverJson implements cSessionDriverInterface
      */
     public static function _create()
     {
-        FileSystem::Write(uJSON::Encode(array()), Cfg::get('plugs/session/json/users_filename'),    false, 0777);
-        FileSystem::Write(uJSON::Encode(array()), Cfg::get('plugs/session/json/sessions_filename'), false, 0777);
+        FileSystem::Write(Json::encode(array()), Cfg::get('plugs/session/json/users_filename'),    false, 0777);
+        FileSystem::Write(Json::encode(array()), Cfg::get('plugs/session/json/sessions_filename'), false, 0777);
 
         # Default users
         $Users = array();
@@ -69,7 +69,7 @@ class cSessionDriverJson implements cSessionDriverInterface
             $Users[$User['id']] = $User;
         }
 
-        return uJSON::EncodeFile(Cfg::get('plugs/session/json/users_filename'), $Users);
+        return Json::encode_file(Cfg::get('plugs/session/json/users_filename'), $Users);
     }
     //-
 
@@ -96,7 +96,10 @@ class cSessionDriverJson implements cSessionDriverInterface
      */
     private static function unameToId($username)
     {
-        return vString::Clean(vString::SymbolsToWords($username), 200, 'aA1');
+        return Str::clean(
+                    Str::symbols_to_words($username), 
+                    'aA1'
+                );
     }
     //-
 
@@ -109,7 +112,11 @@ class cSessionDriverJson implements cSessionDriverInterface
      */
     private static function cleanAgent($agent)
     {
-        return vString::Clean(str_replace(' ', '_', $agent), 200, 'aA1c', '_');
+        return Str::clean(
+                    str_replace(' ', '_', $agent), 
+                    'aA1', 
+                    '_'
+                );
     }
     //-
 
@@ -293,7 +300,7 @@ class cSessionDriverJson implements cSessionDriverInterface
     private function usersFetch()
     {
         if (file_exists($this->fnameUsers)) {
-            $this->Users = uJSON::DecodeFile($this->fnameUsers, true);
+            $this->Users = Json::decode_file($this->fnameUsers, true);
             if (is_array($this->Users) && !empty($this->Users)) {
                 return true;
             }
@@ -310,7 +317,7 @@ class cSessionDriverJson implements cSessionDriverInterface
      */
     private function usersWrite()
     {
-        return uJSON::EncodeFile($this->fnameUsers, $this->Users);
+        return Json::encode_file($this->fnameUsers, $this->Users);
     }
     //-
 
@@ -410,7 +417,7 @@ class cSessionDriverJson implements cSessionDriverInterface
         }
 
         # Create unique id
-        $qId  = time() . '_' . vString::Random(20, 'aA1');
+        $qId  = time() . '_' . Str::random(20, 'aA1');
 
         # Store cookie
         uCookie::Create(Cfg::get('plugs/session/cookie_name'), $qId, $expires);
@@ -488,7 +495,7 @@ class cSessionDriverJson implements cSessionDriverInterface
     private function sessionsFetch()
     {
         if (file_exists($this->fnameSessions)) {
-            $this->Sessions = uJSON::DecodeFile($this->fnameSessions, true);
+            $this->Sessions = Json::decode_file($this->fnameSessions, true);
             if (is_array($this->Sessions) && !empty($this->Sessions)) {
                 return true;
             }
@@ -505,7 +512,7 @@ class cSessionDriverJson implements cSessionDriverInterface
      */
     private function sessionsWrite()
     {
-        return uJSON::EncodeFile($this->fnameSessions, $this->Sessions);
+        return Json::encode_file($this->fnameSessions, $this->Sessions);
     }
     //-
 

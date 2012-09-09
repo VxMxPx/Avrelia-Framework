@@ -46,7 +46,7 @@ class Cfg_Base
         //self::$configs = array_merge(self::$configs, $config);
 
         # Works perfectly
-        self::$configs = vArray::Merge(self::$configs, $config);
+        self::$configs = Arr::merge(self::$configs, $config);
     }
 
     /**
@@ -110,7 +110,7 @@ class Cfg_Base
     public static function get($key, $default=null)
     {
         if (!isset(self::$cache[$key])) {
-            self::$cache[$key] = vArray::GetByPath($key, self::$configs, $default);
+            self::$cache[$key] = Arr::get_by_path($key, self::$configs, $default);
         }
 
         return self::$cache[$key];
@@ -129,6 +129,6 @@ class Cfg_Base
         # Clear cache to avoid conflicts
         self::$cache = array();
 
-        vArray::SetByPath($path, $value, self::$configs);
+        Arr::set_by_path($path, $value, self::$configs);
     }
 }

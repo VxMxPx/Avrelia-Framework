@@ -21,14 +21,14 @@ class cDebug
     public static function _OnInit()
     {
         # Need cJquery
-        if (!Plug::Has('jquery'))
+        if (!Plug::has('jquery'))
         {
             Log::war("Plug `debug` need `jquery` plug to be enabled.");
             return false;
         }
 
         # Need cHTML (if we have jQuery then HTML is almost for sure available too, but just to be sure)
-        if (!Plug::Has('html')) {
+        if (!Plug::has('html')) {
             Log::war("Plug `debug` need `html` plug to be enabled.");
             return false;
         }

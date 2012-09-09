@@ -75,8 +75,8 @@ class cDatabase
      */
     private static function _LoadDriver()
     {
-        Plug::GetConfig(__FILE__);
-        self::$Driver = Plug::GetDriver(__FILE__, Cfg::get('plugs/database/driver'));
+        Plug::get_config(__FILE__);
+        self::$Driver = Plug::get_driver(__FILE__, Cfg::get('plugs/database/driver'));
     }
     //-
 
@@ -122,7 +122,7 @@ class cDatabase
     public static function Create($Values, $table)
     {
         # Create statement
-        $sql = "INSERT INTO {$table} (" . vArray::ImplodeKeys(', ', $Values) . ')' .
+        $sql = "INSERT INTO {$table} (" . Arr::implode_keys(', ', $Values) . ')' .
                 ' VALUES (';
 
         foreach ($Values as $k => $v) {
@@ -284,7 +284,7 @@ class cDatabase
 
             foreach ($condition as $k => $v) {
                 $divider = strpos(str_replace(array('AND ', 'OR '), '', $k), ' ') !== false ? ' ' : ' = ';
-                $kclean  = vString::Clean($k, 100, 'aA1c', '_');
+                $kclean  = Str::clean($k, 'aA1', '_', 100);
                 $newCondition .= "{$k}{$divider}:{$kclean} AND ";
                 $bind[$kclean] = $v;
             }

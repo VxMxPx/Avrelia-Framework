@@ -56,7 +56,7 @@ class Input_Base
 
         # Set Get Actions And Segments
         $uri = self::server('REQUEST_URI');
-        $uri = vString::RegExClean($uri, Cfg::get('system/input_get_filter', '/[^a-z0-9_]/'));
+        $uri = Str::clean_regex($uri, Cfg::get('system/input_get_filter', '/[^a-z0-9_]/'));
 
         # Shouldn't Be Empty
         if ($uri == '') { return false; }

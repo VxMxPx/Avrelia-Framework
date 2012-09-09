@@ -172,7 +172,7 @@ class cValidateVariable
      */
     public function isRegex($mask)
     {
-        $cleaned = vString::RegExClean($this->value, $mask);
+        $cleaned = Str::clean_regex($this->value, $mask);
 
         if ($cleaned != $this->value) {
             if ($this->addMessage) {

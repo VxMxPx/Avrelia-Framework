@@ -24,8 +24,8 @@ class cCache
      */
     public static function _OnInit()
     {
-        Plug::GetConfig(__FILE__);
-        self::$Driver = $class = Plug::GetDriver(__FILE__, Cfg::get('plugs/session/driver'));
+        Plug::get_config(__FILE__);
+        self::$Driver = $class = Plug::get_driver(__FILE__, Cfg::get('plugs/session/driver'));
 
         # Do we have driver?
         return self::$Driver ? true : false;

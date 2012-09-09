@@ -30,7 +30,7 @@ class test_Cli
             $continue = ($stdin === 'exit' || $stdin === '\q') ? false : true;
 
             if ($continue) {
-                $commands = vString::ExplodeTrim(' ', $stdin, 2);
+                $commands = Str::explode_trim(' ', $stdin, 2);
                 $command = $commands[0];
                 $param   = isset($commands[1]) ? trim($commands[1]) : false;
 
