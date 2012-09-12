@@ -12,10 +12,10 @@
 class Str_Base
 {
     # Cache, set by method: symbols_to_words
-    protected $symbols_list = null;
+    protected static $symbols_list = null;
 
     # Cache, set by method: normalize
-    protected $char_list = null;
+    protected static $char_list = null;
 
     /**
      * Limit characters repetition.

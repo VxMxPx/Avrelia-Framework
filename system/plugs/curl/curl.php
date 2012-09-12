@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php
 
 /**
  * Curl Class
@@ -7,18 +7,42 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class cCURL
+class cCurl
 {
     # CURL handler
-    private $handler = false;
+    protected $handler = false;
+
+    # User's agent
+    protected $user_agent = null;
+
+    # Default timeout used in ::get and ::post
+    protected static $timeout = 0;
+
+    # Cookies location used in ::get and ::post
+    protected static $cookie_file = null;
+
+
+    /**
+     * Set default timeout
+     * @return boolean
+     */
+    public static function _OnInit()
+    {
+        Plug::get_config(__FILE__);
+        self::$timeout = Cfg::get('plugs/curl/timeout');
+        self::$cookie_file = Cfg::get('plugs/curl/cookie_file');
+
+        return true;
+    }
 
     /**
      * Init curl
      * @param string $url
      */
-    public function __construct($url=null)
+    public function __construct($url)
     {
-        $this->handler = curl_init($url);
+        $this->handler    = curl_init($url);
+        $this->user_agent = Cfg::get('plugs/curl/user_agent');
     }
 
     /**
@@ -27,62 +51,68 @@ class cCURL
      * http://www.php.net/manual/en/ref.curl.php#93163
      * 
      * @param  string   $url
-     * @param  integer  $js_loop
-     * @param  integer  $timeout
      * @return array[0] content
      *         array[1] array of response headers
      */
-    public function get($url=false, $js_loop=0, $timeout=5)
+    public static function get($url)
+    {
+        $url    = str_replace('&amp;', '&', urldecode(trim($url)));
+        $curl   = new cCURL($url);
+
+        $curl->set_opt(CURLOPT_USERAGENT,      $curl->user_agent);
+        $curl->set_opt(CURLOPT_COOKIEJAR,      self::$cookie_file);
+        $curl->set_opt(CURLOPT_COOKIEFILE,     self::$cookie_file);
+        $curl->set_opt(CURLOPT_FOLLOWLOCATION, true);
+        $curl->set_opt(CURLOPT_RETURNTRANSFER, true);
+        $curl->set_opt(CURLOPT_AUTOREFERER,    true);
+        $curl->set_opt(CURLOPT_SSL_VERIFYPEER, false); # Required for https urls
+        $curl->set_opt(CURLOPT_CONNECTTIMEOUT, self::$timeout);
+        $curl->set_opt(CURLOPT_TIMEOUT,        self::$timeout);
+        $curl->set_opt(CURLOPT_MAXREDIRS,      10);
+
+        $content  = $curl->exec();
+        $response = $curl->get_info();
+
+        unset($curl);
+        return array(
+            $content,
+            $response
+        );
+    }
+
+
+    /**
+     * Post to url, get content and reposnse headers.
+     * @param  string $url
+     * @param  array $post
+     * @return array[0] content
+     *         array[1] array of response headers
+     */
+    public static function post($url, $post)
     {
         $url = str_replace('&amp;', '&', urldecode(trim($url)));
 
-        $cookie = tempnam('/tmp', 'CURLCOOKIE');
-        curl_setopt(
-            $this->handler, 
-            CURLOPT_USERAGENT, 
-            'Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1');
-        
-        if ($url) 
-            { curl_setopt($this->handler, CURLOPT_URL, $url); }
+        $curl = new cCURL($url);
+        $curl->set_opt(CURLOPT_COOKIEJAR,      self::$cookie_file);
+        $curl->set_opt(CURLOPT_COOKIEFILE,     self::$cookie_file);
+        $curl->set_opt(CURLOPT_RETURNTRANSFER, true);
+        $curl->set_opt(CURLOPT_POST,           true);
+        $curl->set_opt(CURLOPT_POSTFIELDS,     $post);
 
-        curl_setopt($this->handler, CURLOPT_COOKIEJAR, $cookie);
-        curl_setopt($this->handler, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($this->handler, CURLOPT_ENCODING, '');
-        curl_setopt($this->handler, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($this->handler, CURLOPT_AUTOREFERER, true );
-        curl_setopt($this->handler, CURLOPT_SSL_VERIFYPEER, false); # required for https urls
-        curl_setopt($this->handler, CURLOPT_CONNECTTIMEOUT, $timeout);
-        curl_setopt($this->handler, CURLOPT_TIMEOUT, $timeout);
-        curl_setopt($this->handler, CURLOPT_MAXREDIRS, 10);
+        $curl->set_opt(CURLOPT_USERAGENT,      $curl->user_agent);
+        $curl->set_opt(CURLOPT_ENCODING,       '');
+        $curl->set_opt(CURLOPT_AUTOREFERER,    true);
+        $curl->set_opt(CURLOPT_SSL_VERIFYPEER, false); # required for https urls
+        $curl->set_opt(CURLOPT_CONNECTTIMEOUT, self::$timeout);
+        $curl->set_opt(CURLOPT_TIMEOUT,        self::$timeout);
 
-        $content  = $this->exec();
-        $response = $this->get_info();
+        $return = array(
+            $curl->exec(),
+            $curl->get_info()
+        );
+        unset($curl);
 
-        if ($response['http_code'] == 301 || $response['http_code'] == 302) {
-            ini_set(
-                "user_agent", 
-                'Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) '.
-                'Gecko/20041001 Firefox/0.10.1');
-
-            if ($headers = get_headers($response['url'])) {
-                foreach($headers as $value) {
-                    if (substr(strtolower($value), 0, 9) == "location:") {
-                        return $this->get(trim(substr($value, 9, strlen($value))));
-                    }
-                }
-            }
-        }
-
-        if (
-            (preg_match("/>[[:space:]]+window\.location\.replace\('(.*)'\)/i", $content, $value) 
-                || preg_match("/>[[:space:]]+window\.location\=\"(.*)\"/i", $content, $value)) 
-            && $js_loop < 5
-        ) {
-            return $this->get($value[1], $js_loop+1);
-        }
-        else {
-            return array($content, $response);
-        }
+        return $return;
     }
 
     /**
