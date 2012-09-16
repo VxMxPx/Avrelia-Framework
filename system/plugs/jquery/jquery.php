@@ -43,7 +43,7 @@ class cJquery
         self::$tag = '<script src="'.self::$link.'"></script>';
 
         # Add footer tag
-        cHTML::AddFooter(self::$tag, 'cjquery');
+        cHtml::add_footer(self::$tag, 'cjquery');
 
         return true;
     }
@@ -56,7 +56,7 @@ class cJquery
      */
     public static function Add()
     {
-        cHTML::AddFooter(self::$tag, 'cjquery');
+        cHtml::add_footer(self::$tag, 'cjquery');
     }
     //-
 
@@ -67,7 +67,7 @@ class cJquery
      */
     public static function Remove()
     {
-        cHTML::AddFooter(false, 'cjquery');
+        cHtml::add_footer(false, 'cjquery');
     }
     //-
 

@@ -35,7 +35,7 @@ class cDebug
 
         # Add jQuery
         cJquery::Add();
-        cHTML::AddHeader('<style>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.css')).'</style>', 'cdebug_css');
+        cHtml::add_header('<style>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.css')).'</style>', 'cdebug_css');
 
         Event::watch('/plug/html/get_footers', array('cDebug', 'AddPanel'));
 
@@ -51,8 +51,8 @@ class cDebug
     public static function AddPanel()
     {
         Log::add_benchmarks();
-        cHTML::AddFooter(View::get(ds(dirname(__FILE__).'/views/panel.php'))->do_return(), 'cdebugPanel');
-        cHTML::AddFooter('<script>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.js')).'</script>', 'cdebug_js');
+        cHtml::add_footer(View::get(ds(dirname(__FILE__).'/views/panel.php'))->do_return(), 'cdebugPanel');
+        cHtml::add_footer('<script>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.js')).'</script>', 'cdebug_js');
     }
     //-
 }
