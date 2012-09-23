@@ -311,7 +311,6 @@ function lh()
 function get_path_segment($path, $start, $length=null)
 {
     if (!$path) { return false; }
-
     $ds = DIRECTORY_SEPARATOR;
     $path = rtrim(ds($path), $ds);
     $path_particles = explode($ds, $path);

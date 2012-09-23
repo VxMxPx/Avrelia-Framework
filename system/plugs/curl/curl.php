@@ -2,6 +2,7 @@
 
 use Avrelia\Core\Plug as Plug;
 use Avrelia\Core\Cfg  as Cfg;
+use Avrelia\Core\FileSystem as FileSystem;
 
 /**
  * Curl Class
@@ -33,6 +34,32 @@ class Curl
         Plug::get_config(__FILE__);
         self::$timeout = Cfg::get('plugs/curl/timeout');
         self::$cookie_file = Cfg::get('plugs/curl/cookie_file');
+
+        return true;
+    }
+
+    public static function _on_enable_()
+    {
+        Plug::get_config(__FILE__);
+        $path = self::$cookie_file = Cfg::get('plugs/curl/cookie_file');
+        $path = get_path_segment($path, 0, -1);
+
+        if (!is_dir($path)) {
+            return !!FileSystem::MakeDir($path, true, 0777);
+        }
+
+        return true;
+    }
+
+    public static function _on_disable_()
+    {
+        Plug::get_config(__FILE__);
+        self::$cookie_file = Cfg::get('plugs/curl/cookie_file');
+        $path = get_path_segment(0, -1);
+
+        if (is_dir($path)) {
+            return !!FileSystem::Remove($path);
+        }
 
         return true;
     }

@@ -26,14 +26,15 @@ class Loader
         if (substr($class_name,   -6) === '_Model')
             { return self::get_model($class_name); }
 
-        if (substr($class_name, 0, 1) === 'u')
+        if (   substr($class_name, 0, 5) === 'Util\\'
+            || substr($class_name,   -5) === '_Util')
             { return self::get_util($class_name); }
 
-        if (strpos($class_name, '\\Plug\\') !== false)
-            { return self::get_plug($class_name); }
-
-        # Nothing of above rules?
-        trigger_error("Autoload failed for: `{$class_name}`.", E_USER_ERROR);
+        # Nothing of above, it must be plug or it doesn't exists...
+        if (!self::get_plug($class_name)) {
+            trigger_error(
+                "Autoload failed for: `{$class_name}`.", E_USER_ERROR);
+        }
     }
 
     /**
@@ -43,7 +44,7 @@ class Loader
      * @return  boolean
      */
     public static function get_plug($class_name)
-    {
+    {        
         return Plug::load($class_name);
     }
 
@@ -56,7 +57,14 @@ class Loader
     public static function get_util($class_name)
     {
         $path = 'util';
-        $file_name = to_underscore(substr($class_name, 1));
+
+        # Get filename
+        if (substr($class_name, 0, 5) === 'Util\\') {
+            $file_name = to_underscore(substr($class_name, 5));
+        }
+        else {
+            $file_name = to_underscore(substr($class_name, 0, -5));
+        }
 
         # Check APPLICATION folder...
         if (file_exists(app_path("{$path}/{$file_name}.php"))) {
@@ -72,7 +80,7 @@ class Loader
 
         trigger_error(
             "Autoload failed for: `{$class_name}`, class not found: ".
-            "`{$fileName}`, prefix `{$classPrefix}`.", E_USER_ERROR);
+            "`{$file_name}`, prefix `{$classPrefix}`.", E_USER_ERROR);
     }
 
     /**

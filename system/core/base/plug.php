@@ -108,7 +108,10 @@ class Plug
         }
 
         # Add it to the list
-        self::$available[$plug] = time();
+        self::$available[$plug] = array(
+            'time'  => time(),
+            'alias' => self::_get_class_alias($plug)
+        );
         self::_save_list();
 
         # We Included Class, So We Need to Init it now.
@@ -409,6 +412,11 @@ class Plug
 
         foreach ($components as $component)
         {
+            # If doesn't have \Plug in the name, try to get it
+            if (strpos($component, '\\Plug\\') === false) {
+                $component = self::_get_class_by_alias($component);
+            }
+
             if (isset(self::$included[$component])) 
                 { continue; }
             else 
@@ -474,17 +482,43 @@ class Plug
     }
 
     /**
+     * Get full class name (with namespace) by alias
+     * @param  string $class
+     * @return string
+     */
+    protected static function _get_class_by_alias($class)
+    {
+        if (is_array(self::$available)) {
+            foreach (self::$available as $class_name => $data) {
+                if ($data['alias'] === $class) {
+                    return $class_name;
+                }
+            }
+        }
+
+        return $class;
+    }
+
+    /**
+     * Get class alias, from namespaced name
+     * @param  string $class_name
+     * @return string
+     */
+    protected static function _get_class_alias($class_name)
+    {
+        # Conver it to path
+        $path  = ds($class_name);
+        return get_path_segment($path, -1);
+    }
+
+    /**
      * Convert namespaced plug to flat class name
      * @param  string $class_name
      * @return void
      */
     protected static function map_class($class_name)
     {
-        # Conver it to path
-        $path  = ds($class_name);
-        $alias = get_path_segment($path, -1);
-
-        class_alias($class_name, $alias);
+        class_alias($class_name, self::_get_class_alias($class_name));
     }
 
     /**
