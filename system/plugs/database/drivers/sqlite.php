@@ -1,4 +1,7 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
+
+use Avrelia\Core\Cfg as Cfg;
+use Avrelia\Core\FileSystem as FileSystem;
 
 /**
  * Avrelia
@@ -15,7 +18,9 @@
  * ---
  * @param boolean $valid Was construct successful?
  */
-class cDatabaseDriverSqlite extends cDatabaseDriverBase implements cDatabaseDriverInterface
+class DatabaseDriverSqlite 
+    extends DatabaseDriverBase 
+    implements DatabaseDriverInterface
 {
     private $valid;
     private $databasePath;
@@ -30,7 +35,7 @@ class cDatabaseDriverSqlite extends cDatabaseDriverBase implements cDatabaseDriv
         parent::__construct();
 
         # Check If sqlitePDO Exists
-        if (!in_array('sqlite', PDO::getAvailableDrivers())) {
+        if (!in_array('sqlite', \PDO::getAvailableDrivers())) {
             trigger_error("PDO sqlite extension is not enabled!", E_USER_ERROR);
         }
 
@@ -57,10 +62,10 @@ class cDatabaseDriverSqlite extends cDatabaseDriverBase implements cDatabaseDriv
         if ($this->valid) {
             # Try to connect to database
             try {
-                $this->PDO = new PDO('sqlite:'.$this->databasePath);
+                $this->PDO = new \PDO('sqlite:'.$this->databasePath);
                 return true;
             }
-            catch (PDOException $e) {
+            catch (\PDOException $e) {
                 trigger_error("Can't create PDO object: `" . $e->getMessage() . '`.', E_USER_WARNING);
                 return false;
             }

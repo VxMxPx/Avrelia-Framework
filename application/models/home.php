@@ -15,7 +15,7 @@
  */
 
 
-class homeModel
+class Home_Model
 {
     # List Of Greetings
     private $GreetingsList = array(

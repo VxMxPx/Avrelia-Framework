@@ -22,13 +22,13 @@
         #log > div > div:first-child { border-radius: 4px 4px 0 0; }
         #log > div > div:last-child { border-radius: 0 0 4px 4px; }
     </style>
-    <?php cHtml::get_headers(); ?>
+    <?php HTML::get_headers(); ?>
 </head>
 <body>
     <div id="page">
         <?php View::region('main'); ?>
     </div> <!-- end: page -->
-    <?php cHtml::get_footers(); ?>
+    <?php HTML::get_footers(); ?>
     <script>
         $(document).ready(function() {
             var h1 = $('h1'),

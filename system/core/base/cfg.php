@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Core; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Base Cfg Class
@@ -9,7 +9,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class Cfg_Base
+class Cfg
 {
     # All configurations values
     private static $configs = array();

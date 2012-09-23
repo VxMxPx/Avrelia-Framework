@@ -1,4 +1,4 @@
-<?php
+<?php namespace Avrelia\Core; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Dir Base Class
@@ -7,7 +7,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class Dir_Base
+class Dir
 {
     # Default mode when creating new directory
     protected $mode = null;
@@ -54,21 +54,19 @@ class Dir_Base
 
         # We obviously need to have parent directory
         if (!is_dir($in_path)) {
-            throw new FileSystem_AvreliaException(
-                "Parent directory not found!", 10);
+            throw new \Avrelia\Exception\FileSystem("Parent directory not found!", 10);
         }
 
         # Need to be writeable
         if (!self::is_writable($in_path)) {
-            throw new FileSystem_AvreliaException(
-                "Parent directory is not writeable.", 11);
+            throw new \Avrelia\Exception\FileSystem("Parent directory is not writeable.", 11);
         }
 
         # If we came so far, lets try to create this thing now
         try {
             return self::create_tree($dir, $on_exists);
         }
-        catch (FileSystem_AvreliaException $e) {
+        catch (\Avrelia\Exception\FileSystem $e) {
             throw $e;
         }
     }
@@ -91,7 +89,7 @@ class Dir_Base
                 try {
                     $collection[] = self::create_tree($dir, $on_exists);
                 }
-                catch (FileSystem_AvreliaException $e) {
+                catch (\Avrelia\Exception\FileSystem $e) {
                     $collection[] = $e;
                 }
             }
@@ -118,7 +116,7 @@ class Dir_Base
                     try {
                         self::delete($dir);
                     }
-                    catch (FileSystem_AvreliaException $e) {
+                    catch (\Avrelia\Exception\FileSystem $e) {
                         throw $e;
                     }
                 }
@@ -128,7 +126,7 @@ class Dir_Base
                 }
                 elseif ($on_exists === FILE_DUPLICATE_EXCEPTION) {
                     Log::inf("...throwing an exception.");
-                    throw new FileSystem_AvreliaException(
+                    throw new \Avrelia\Exception\FileSystem(
                         "Directory already exists.", 12);
                 }
             }
@@ -140,7 +138,7 @@ class Dir_Base
                 return new DirSelected($dir);
             }
             else {
-                throw new FileSystem_AvreliaException(
+                throw new \Avrelia\Exception\FileSystem(
                     "Failed to create directory!", 30);
             }
         }
@@ -159,7 +157,7 @@ class Dir_Base
 
         # Check If Provided Path Is Valid
         if (!is_dir($path)) {
-            throw new FileSystem_AvreliaException(
+            throw new \Avrelia\Exception\FileSystem(
                 "Not a valid directory: `{$path}`.", 20);
         }
 
@@ -277,7 +275,7 @@ class DirSelected_Base
     public function __construct($path)
     {
         if (!is_dir($path)) {
-            throw new FileSystem_AvreliaException(
+            throw new \Avrelia\Exception\FileSystem(
                 "The directory `{$path}` doesn't exists!", 10);
         }
 

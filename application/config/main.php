@@ -22,8 +22,26 @@ $avrelia_config['system']['routes'] = array
     '<az09_->/?<1>/<*>' => '%1->%2(%3)',
 );
 
-# List of enabled plugs
-$avrelia_config['plug']['auto_load'] = array('debug');
-$avrelia_config['plug']['enabled']   = array('html', 'jquery', 'debug');
+# List of enabled plugs + map
+$avrelia_config['plug']['enabled']   = array(
+    'Avrelia\\Plug\\Cookie',
+    'Avrelia\\Plug\\Cache',
+    'Avrelia\\Plug\\Database',
+    'Avrelia\\Plug\\Form',
+    'Avrelia\\Plug\\Image',
+    'Avrelia\\Plug\\Mailer',
+    'Avrelia\\Plug\\Session',
+    'Avrelia\\Plug\\Validate',
+    'Avrelia\\Plug\\HTML',
+    'Avrelia\\Plug\\JQuery',
+    'Avrelia\\Plug\\Debug'
+);
+
+# List of plugs which will be auto-loaded
+$avrelia_config['plug']['auto_load'] = array(
+    'Avrelia\\Plug\\Cache',
+    'Avrelia\\Plug\\Session',
+    'Avrelia\\Plug\\Debug'
+);
 
 # For more configurations see system/config/main.php

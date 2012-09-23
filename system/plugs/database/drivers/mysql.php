@@ -1,4 +1,7 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
+
+use Avrelia\Core\Cfg as Cfg;
+use Avrelia\Core\FileSystem as FileSystem;
 
 /**
  * Avrelia
@@ -13,7 +16,7 @@
  * @since      Version 0.80
  * @since      2012-03-22
  */
-class cDatabaseDriverMysql extends cDatabaseDriverBase implements cDatabaseDriverInterface
+class DatabaseDriverMysql extends DatabaseDriverBase implements DatabaseDriverInterface
 {
     /**
      * Init the database driver, called initialy when connection is established.
@@ -25,7 +28,7 @@ class cDatabaseDriverMysql extends cDatabaseDriverBase implements cDatabaseDrive
         parent::__construct();
 
         # Check If MySQL Exists
-        if (!in_array('mysql', PDO::getAvailableDrivers())) {
+        if (!in_array('mysql', \PDO::getAvailableDrivers())) {
             trigger_error("PDO mysql extension is not enabled!", E_USER_ERROR);
         }
     }
@@ -45,12 +48,12 @@ class cDatabaseDriverMysql extends cDatabaseDriverBase implements cDatabaseDrive
 
         # Try to connect to database
         try {
-            $Connection = new PDO('mysql:host='.$hostname.';dbname='.$database, $username, $password);
+            $Connection = new \PDO('mysql:host='.$hostname.';dbname='.$database, $username, $password);
             $Connection->query('SET NAMES utf8');
             $this->PDO = $Connection;
             return true;
         }
-        catch ( PDOException $e ) {
+        catch ( \PDOException $e ) {
             trigger_error("Can't create PDO object: `" . $e->getMessage() . '`.', E_USER_WARNING);
             return false;
         }

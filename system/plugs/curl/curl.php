@@ -1,4 +1,7 @@
-<?php
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
+
+use Avrelia\Core\Plug as Plug;
+use Avrelia\Core\Cfg  as Cfg;
 
 /**
  * Curl Class
@@ -7,7 +10,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class cCurl
+class Curl
 {
     # CURL handler
     protected $handler = false;
@@ -21,12 +24,11 @@ class cCurl
     # Cookies location used in ::get and ::post
     protected static $cookie_file = null;
 
-
     /**
      * Set default timeout
      * @return boolean
      */
-    public static function _OnInit()
+    public static function _on_include_()
     {
         Plug::get_config(__FILE__);
         self::$timeout = Cfg::get('plugs/curl/timeout');
@@ -57,7 +59,7 @@ class cCurl
     public static function get($url)
     {
         $url    = str_replace('&amp;', '&', urldecode(trim($url)));
-        $curl   = new cCURL($url);
+        $curl   = new Curl($url);
 
         $curl->set_opt(CURLOPT_USERAGENT,      $curl->user_agent);
         $curl->set_opt(CURLOPT_COOKIEJAR,      self::$cookie_file);
@@ -80,7 +82,6 @@ class cCurl
         );
     }
 
-
     /**
      * Post to url, get content and reposnse headers.
      * @param  string $url
@@ -92,7 +93,7 @@ class cCurl
     {
         $url = str_replace('&amp;', '&', urldecode(trim($url)));
 
-        $curl = new cCURL($url);
+        $curl = new Curl($url);
         $curl->set_opt(CURLOPT_COOKIEJAR,      self::$cookie_file);
         $curl->set_opt(CURLOPT_COOKIEFILE,     self::$cookie_file);
         $curl->set_opt(CURLOPT_RETURNTRANSFER, true);
@@ -124,9 +125,7 @@ class cCurl
      * @return mixed
      */
     public function exec()
-    {
-        return curl_exec($this->handler);
-    }
+        { return curl_exec($this->handler); }
 
     /**
      * Get information regarding a specific transfer
@@ -137,9 +136,7 @@ class cCurl
      * @return mixed  String or Array
      */
     public function get_info($opt=0)
-    {
-        return curl_getinfo($this->handler, $opt);
-    }
+        { return curl_getinfo($this->handler, $opt); }
 
     /**
      * Set an option for a cURL transfer.
@@ -150,9 +147,7 @@ class cCurl
      * @return boolean
      */
     public function set_opt($opt, $value)
-    {
-        return curl_setopt($this->handler, $opt, $value);
-    }
+        { return curl_setopt($this->handler, $opt, $value); }
 
     /**
      * Will close curl
@@ -160,7 +155,5 @@ class cCurl
      * @return void
      */
     public function __destruct()
-    {
-        curl_close($this->handler);
-    }
+        { curl_close($this->handler); }
 }

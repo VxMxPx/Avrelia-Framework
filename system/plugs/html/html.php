@@ -1,4 +1,7 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
+
+use Avrelia\Core\Plug  as Plug;
+use Avrelia\Core\Event as Event;
 
 /**
  * Html Class
@@ -7,7 +10,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class cHtml
+class HTML
 {
     private static $headers = array();  # array
     private static $footers = array();  # array
@@ -17,7 +20,7 @@ class cHtml
      * 
      * @return boolean
      */
-    public static function _OnInit()
+    public static function _on_include_()
     {
         Plug::get_language(__FILE__);
         return true;
@@ -254,7 +257,7 @@ class cHtml
 
         # Per Page
         if (!$per_page || $per_page < 1) 
-            { throw new ValueError_AvreliaException("Per page must be more than zero!"); }
+            { throw new \Avrelia\Exception\ValueError("Per page must be more than zero!"); }
 
         # All Avilable
         if ($all && $all > $per_page) {

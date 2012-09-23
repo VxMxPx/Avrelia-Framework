@@ -1,4 +1,6 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
+
+use Avrelia\Core\Plug as Plug;
 
 /**
  * Avrelia
@@ -13,7 +15,7 @@
  * @since      Version 0.80
  * @since      2011-11-19
  */
-class cValidate
+class Validate
 {
     /**
      * @var array   List of fields to be validated
@@ -26,7 +28,7 @@ class cValidate
      * --
      * @return  boolean
      */
-    public static function _OnInit()
+    public static function _on_include_()
     {
         # Get validate asssign
         include ds(dirname(__FILE__) . '/validate_variable.php');
@@ -48,7 +50,7 @@ class cValidate
      */
     public static function Add($value, $name=false)
     {
-        $Validator = new cValidateVariable($value, $name);
+        $Validator = new ValidateVariable($value, $name);
         self::$ValidationsList[] = $Validator;
         return $Validator;
     }
@@ -86,7 +88,7 @@ class cValidate
      */
     private static function AddSimple($value)
     {
-        return new cValidateVariable($value, false);
+        return new ValidateVariable($value, false);
     }
     //-
 

@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Avrelia
@@ -13,7 +13,7 @@
  * @since      Version 0.80
  * @since      Tue Nov 08 11:13:20 2011
  */
-class uMessage
+class Message
 {
     private static $List = array(); # array The list of all messages
 

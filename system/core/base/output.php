@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Core; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Output class
@@ -10,7 +10,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class Output_Base
+class Output
 {
     # Whole output
     protected static $output_cache = array();

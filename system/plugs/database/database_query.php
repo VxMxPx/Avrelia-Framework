@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Avrelia
@@ -13,7 +13,7 @@
  * @since      Version 0.80
  * @since      čet apr 05 16:42:15 2012
  */
-class cDatabaseQuery
+class DatabaseQuery
 {
     # Used in create method
     const DATABASE = 2;

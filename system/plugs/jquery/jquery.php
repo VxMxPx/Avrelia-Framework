@@ -1,4 +1,7 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
+
+use Avrelia\Core\Plug as Plug;
+use Avrelia\Core\Cfg  as Cfg;
 
 /**
  * Avrelia
@@ -13,18 +16,18 @@
  * @since      Version 0.80
  * @since      2012-02-19
  */
-class cJquery
+class JQuery
 {
     private static $Config; # string    Plug's configs
     private static $link;   # string    Actual full link to script (either local or googleapis)
     private static $tag;    # string    Tag template
 
     /**
-     * Will add jQuery to cHTML footer.
+     * Will add jQuery to HTML footer.
      * --
      * @return  boolean
      */
-    public static function _OnInit()
+    public static function _on_include_()
     {
         self::$Config = Plug::get_config(__FILE__);
 
@@ -43,7 +46,7 @@ class cJquery
         self::$tag = '<script src="'.self::$link.'"></script>';
 
         # Add footer tag
-        cHtml::add_footer(self::$tag, 'cjquery');
+        HTML::add_footer(self::$tag, 'cjquery');
 
         return true;
     }
@@ -56,7 +59,7 @@ class cJquery
      */
     public static function Add()
     {
-        cHtml::add_footer(self::$tag, 'cjquery');
+        HTML::add_footer(self::$tag, 'cjquery');
     }
     //-
 
@@ -67,9 +70,8 @@ class cJquery
      */
     public static function Remove()
     {
-        cHtml::add_footer(false, 'cjquery');
+        HTML::add_footer(false, 'cjquery');
     }
-    //-
 
     /**
      * Get only url
@@ -80,6 +82,4 @@ class cJquery
     {
         return self::$link;
     }
-    //-
 }
-//-

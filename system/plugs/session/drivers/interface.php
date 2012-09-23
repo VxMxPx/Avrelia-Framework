@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Avrelia
@@ -13,7 +13,7 @@
  * @since      Version 0.80
  * @since      2012-03-25
  */
-interface cSessionDriverInterface
+interface SessionDriverInterface
 {
     /**
      * Create all files / tables required by this plug to work

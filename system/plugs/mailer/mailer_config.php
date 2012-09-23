@@ -1,6 +1,6 @@
 <?php if (!defined('AVRELIA')) { die('Access is denied!'); }
 
-$mail_config = array
+$mailer_config = array
 (
     'useragent'     => 'Avrelia Framework',     # User Agent
     'mailpath'      => '/usr/sbin/sendmail',    # Sendmail path

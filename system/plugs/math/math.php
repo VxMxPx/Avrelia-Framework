@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Avrelia
@@ -14,7 +14,7 @@
  * @since      2011-08-17
  */
 
-class uMath
+class Math
 {
     /**
      * Get percent value from two numbers (amount, total)

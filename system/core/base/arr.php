@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Core; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Arr Base Class
@@ -9,7 +9,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class Arr_Base
+class Arr
 {
     /**
      * Multi dimensional array, to one dimension.

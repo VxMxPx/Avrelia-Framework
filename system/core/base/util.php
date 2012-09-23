@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Core; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Util Class
@@ -7,7 +7,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class Util_Base
+class Util
 {
     # List of loaded files
     private static $loaded = array();

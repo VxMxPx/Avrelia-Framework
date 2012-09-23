@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Avrelia
@@ -14,7 +14,7 @@
  * @since      2011-06-29
  */
 
-class uUpload
+class Upload
 {
     # Those Messages Are For Log Only!
     private static $FileMessages = array(

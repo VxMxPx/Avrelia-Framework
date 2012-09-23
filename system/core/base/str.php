@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Core; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Str Base Class
@@ -9,7 +9,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class Str_Base
+class Str
 {
     # Cache, set by method: symbols_to_words
     protected static $symbols_list = null;
@@ -37,7 +37,7 @@ class Str_Base
                 try {
                     $input = self::limit_repeat($input, $char_item, $limit);
                 }
-                catch (ValueError_AvreliaException $e) {
+                catch (\Avrelia\Exception\ValueError $e) {
                     throw new $e;
                 }
             }
@@ -45,7 +45,7 @@ class Str_Base
         }
 
         if (strlen($char) < 1) {
-            throw new ValueError_AvreliaException(
+            throw new \Avrelia\Exception\ValueError(
                 "Expected parameter is string, long at least one character.", 1);
             
         }
@@ -55,7 +55,7 @@ class Str_Base
         $limit = (int) $limit;
 
         if ($limit < 1) {
-            throw new ValueError_AvreliaException(
+            throw new \Avrelia\Exception\ValueError(
                 "Expected parameter is integer higher than one.", 2);
         }
 
@@ -250,10 +250,10 @@ class Str_Base
             if ($c                 !== false) { $filter .= $c; }
         }
         else 
-            { throw new ValueError_AvreliaException('Invalid or empty mask.', 1); }
+            { throw new \Avrelia\Exception\ValueError('Invalid or empty mask.', 1); }
 
         if (empty($filter)) 
-            { throw new ValueError_AvreliaException('Empty filter.', 2); }
+            { throw new \Avrelia\Exception\ValueError('Empty filter.', 2); }
 
         # Construct regular expression filter
         $filter = '/([^' . $filter . '])/sm';
@@ -357,7 +357,7 @@ class Str_Base
 
         # Check if limit < 1
         if ($limit < 1) {
-            throw new ValueError_AvreliaException(
+            throw new \Avrelia\Exception\ValueError(
                 'Limit must be at least one character!', 1);
         }
 
@@ -402,7 +402,7 @@ class Str_Base
 
         # Check if limit < 1
         if ($limit < 1) {
-            throw new ValueError_AvreliaException(
+            throw new \Avrelia\Exception\ValueError(
                 'Limit must be at least one character!', 1);
         }
 

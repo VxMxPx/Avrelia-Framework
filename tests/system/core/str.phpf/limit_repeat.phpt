@@ -12,13 +12,13 @@ var_dump(Str::limit_repeat('', ' ', 1));
 try {
 	var_dump(Str::limit_repeat('A          B', '', 1));
 }
-catch (ValueError_AvreliaException $e) {
+catch (\Avrelia\Exception\ValueError $e) {
 	var_dump($e->getMessage());
 }
 try {
 	var_dump(Str::limit_repeat('A          B', ' ', 0));
 }
-catch (ValueError_AvreliaException $e) {
+catch (\Avrelia\Exception\ValueError $e) {
 	var_dump($e->getMessage());
 }
 ?>

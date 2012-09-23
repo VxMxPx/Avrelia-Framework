@@ -1,4 +1,6 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
+
+use Avrelia\Core\Plug as Plug;
 
 /**
  * Avrelia
@@ -14,7 +16,7 @@
  * @since      Version 0.80
  * @since      2011-07-21
  */
-class cForm
+class Form
 {
     private $FormData = array('wrap' => false); # array Specific settings for form
     private $Defaults = array();                # array Default values for form
@@ -25,7 +27,7 @@ class cForm
      * --
      * @return  boolean
      */
-    public static function _OnInit()
+    public static function _on_include_()
     {
         # Get language
         Plug::get_language(__FILE__);

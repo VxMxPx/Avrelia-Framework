@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Avrelia
@@ -15,7 +15,7 @@
  * @since      Version 0.80
  * @since      2011-07-05
  */
-class cMail
+class Mailer
 {
     private $Config       = array();    # array     All the configurations for this instance
     private $safeMode     = false;      # boolean   Is PHP safe-mode turned on?

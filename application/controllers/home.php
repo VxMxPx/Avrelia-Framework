@@ -1,6 +1,6 @@
 <?php if (!defined('AVRELIA')) { die('Access is denied!'); }
 
-class homeController
+class Home_Controller
 {
     /**
      * Default Action
@@ -10,7 +10,7 @@ class homeController
     public function index()
     {
         # Add jQuery
-        cJquery::Add();
+        JQuery::Add();
 
         # Set variable
         View::assign(
@@ -30,7 +30,7 @@ class homeController
      */
     public function greeting()
     {
-        $Model = new homeModel();
+        $Model = new Home_Model();
 
         View::get('simple', array(
             'data' => $Model->sayHello(),

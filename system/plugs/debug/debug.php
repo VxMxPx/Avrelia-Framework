@@ -1,4 +1,10 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
+
+use Avrelia\Core\Plug as Plug;
+use Avrelia\Core\Log  as Log;
+use Avrelia\Core\FileSystem as FileSystem;
+use Avrelia\Core\Event as Event;
+use Avrelia\Core\View as View;
 
 /**
  * Avrelia
@@ -13,31 +19,31 @@
  * @since      Version 0.80
  * @since      2012-04-08
  */
-class cDebug
+class Debug
 {
     /**
      * Initialize Debug plug
      */
-    public static function _OnInit()
+    public static function _on_include_()
     {
         # Need cJquery
-        if (!Plug::has('jquery'))
+        if (!Plug::has('Avrelia\\Plug\\JQuery'))
         {
             Log::war("Plug `debug` need `jquery` plug to be enabled.");
             return false;
         }
 
         # Need cHTML (if we have jQuery then HTML is almost for sure available too, but just to be sure)
-        if (!Plug::has('html')) {
+        if (!Plug::has('Avrelia\\Plug\\HTML')) {
             Log::war("Plug `debug` need `html` plug to be enabled.");
             return false;
         }
 
         # Add jQuery
-        cJquery::Add();
-        cHtml::add_header('<style>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.css')).'</style>', 'cdebug_css');
+        JQuery::Add();
+        HTML::add_header('<style>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.css')).'</style>', 'cdebug_css');
 
-        Event::watch('/plug/html/get_footers', array('cDebug', 'AddPanel'));
+        Event::watch('/plug/html/get_footers', array('Debug', 'AddPanel'));
 
         return true;
     }
@@ -51,8 +57,8 @@ class cDebug
     public static function AddPanel()
     {
         Log::add_benchmarks();
-        cHtml::add_footer(View::get(ds(dirname(__FILE__).'/views/panel.php'))->do_return(), 'cdebugPanel');
-        cHtml::add_footer('<script>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.js')).'</script>', 'cdebug_js');
+        HTML::add_footer(View::get(ds(dirname(__FILE__).'/views/panel.php'))->do_return(), 'cdebugPanel');
+        HTML::add_footer('<script>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.js')).'</script>', 'cdebug_js');
     }
     //-
 }

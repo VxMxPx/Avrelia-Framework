@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Core; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Avrelia
@@ -14,7 +14,7 @@
  * @since      2012-03-20
  */
 
-class vString_Base
+class vString
 {
     /**
      * This function works similar as native crypt in PHP.
@@ -42,7 +42,7 @@ class vString_Base
     {
         if ($attachSalt) {
             if (!$salt) {
-                $salt = str_replace('.', '+', md5(self::Random(12)));
+                $salt = str_replace('.', '+', md5(Str::random(12)));
             }
             else {
                 # Check if we have anything meaningful

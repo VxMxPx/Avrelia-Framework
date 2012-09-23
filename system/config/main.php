@@ -96,19 +96,6 @@ $avrelia_config = array
         'debug'      => false,
     ),
 
-    # Cookies settings.
-    'cookie' => array
-    (
-        # Enter domain name (example.com).
-        'domain' => '',
-
-        # Cookie prefix (can be empty if you want so).
-        'prefix' => 'avrelia_',
-
-        # Default timeout (seconds).
-        'timeout' => 86400,
-    ),
-
     # Log settings.
     'log' => array
     (

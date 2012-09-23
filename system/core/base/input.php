@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Core; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Input Base Class
@@ -7,7 +7,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class Input_Base
+class Input
 {
     # List Of All URI segments (segment0/segment1) ('segment0', 'segment1')
     protected static $uri_segments = array();

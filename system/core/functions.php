@@ -20,11 +20,13 @@ function is_cli() { return php_sapi_name() === 'cli'; }
 /**
  * Correct Directory Separators
  * --
- * @param  string  $path
  * @return string
  */
-function ds($path)
+function ds()
 {
+    $path = func_get_args();
+    $path = implode(DIRECTORY_SEPARATOR, $path);
+
     if ($path) {
         return preg_replace('/[\/\\\\]+/', DIRECTORY_SEPARATOR, $path);
     }
@@ -389,6 +391,9 @@ function to_camelcase($string, $uc_first=true)
 
     if (!$uc_first) {
         $string = lcfirst($string);
+    }
+    else {
+        $string = ucfirst($string);
     }
 
     return $string;

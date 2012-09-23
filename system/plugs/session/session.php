@@ -1,4 +1,7 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
+
+use Avrelia\Core\Plug as Plug;
+use Avrelia\Core\Cfg as Cfg;
 
 /**
  * Avrelia
@@ -13,7 +16,7 @@
  * @since      Version 0.80
  * @since      2012-01-19
  */
-class cSession
+class Session
 {
     private static $Driver;         # cSessionDriverInterface   Session driver instance
 
@@ -22,10 +25,14 @@ class cSession
      * --
      * @return  boolean
      */
-    public static function _OnInit()
+    public static function _on_include_()
     {
         Plug::get_config(__FILE__);
-        $class = Plug::get_driver(__FILE__, Cfg::get('plugs/session/driver'), false);
+        $class = Plug::get_driver(
+            __FILE__, 
+            Cfg::get('plugs/session/driver'), 
+            __NAMESPACE__,
+            false);
 
         # Create new driver instance
         self::$Driver = new $class();
@@ -38,10 +45,14 @@ class cSession
      * --
      * @return  boolean
      */
-    public static function _OnEnable()
+    public static function _on_enable_()
     {
         Plug::get_config(__FILE__);
-        $class = Plug::get_driver(__FILE__, Cfg::get('plugs/session/driver'), false);
+        $class = Plug::get_driver(
+            __FILE__, 
+            Cfg::get('plugs/session/driver'), 
+            __NAMESPACE__,
+            false);
 
         if (!$class::_create()) {
             Log::err("Failed to enable session driver: `{$class}`.");
@@ -58,10 +69,14 @@ class cSession
      * --
      * @return  boolean
      */
-    public static function _OnDisable()
+    public static function _on_disable_()
     {
         Plug::get_config(__FILE__);
-        $class = Plug::get_driver(__FILE__, Cfg::get('plugs/session/driver'), false);
+        $class = Plug::get_driver(
+            __FILE__, 
+            Cfg::get('plugs/session/driver'), 
+            __NAMESPACE__,
+            false);
 
         if (!$class::_destroy()) {
             Log::err("Failed to disable session driver: `{$class}`.");

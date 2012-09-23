@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Core; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * View Class and ViewAssign
@@ -10,7 +10,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class View_Base
+class View
 {
     # How many vew rendering is in progress? (for calls from template itself)
     protected static $views_progress = 0;
@@ -130,7 +130,7 @@ class View_Base
 /**
  * ViewAssign
  */
-class ViewAssign_Base
+class ViewAssign
 {
     # View's content
     private $contents;

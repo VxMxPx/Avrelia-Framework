@@ -1,4 +1,7 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
+
+use Avrelia\Core\Plug as Plug;
+use Avrelia\Core\Cfg as Cfg;
 
 /**
  * Avrelia
@@ -13,7 +16,7 @@
  * @since      Version 0.80
  * @since      2012-03-21
  */
-class cDatabase
+class Database
 {
     /**
      * @var cDatabaseDriverInterface    PDO Database Driver Instance
@@ -26,14 +29,14 @@ class cDatabase
      * --
      * @return  boolean
      */
-    public static function _OnInit()
+    public static function _on_include_()
     {
         self::_LoadDriver();
 
         # Load all other required libraries
-        if (!class_exists('cDatabaseQuery',     false)) { include(ds(dirname(__FILE__).'/database_query.php'));     }
-        if (!class_exists('cDatabaseResult',    false)) { include(ds(dirname(__FILE__).'/database_result.php'));    }
-        if (!class_exists('cDatabaseStatement', false)) { include(ds(dirname(__FILE__).'/database_statement.php')); }
+        if (!class_exists('Avrelia\Plug\DatabaseQuery',     false)) { include(ds(dirname(__FILE__).'/database_query.php'));     }
+        if (!class_exists('Avrelia\Plug\DatabaseResult',    false)) { include(ds(dirname(__FILE__).'/database_result.php'));    }
+        if (!class_exists('Avrelia\Plug\DatabaseStatement', false)) { include(ds(dirname(__FILE__).'/database_statement.php')); }
 
         if (!self::$Driver->connect()) {
             Log::err("Can't connect to, or create database.");
@@ -49,7 +52,7 @@ class cDatabase
      * --
      * @return  boolean
      */
-    public static function _OnEnable()
+    public static function _on_enable_()
     {
         self::_LoadDriver();
         return self::$Driver->_create();
@@ -61,7 +64,7 @@ class cDatabase
      * --
      * @return  boolean
      */
-    public static function _OnDisable()
+    public static function _on_disable_()
     {
         self::_LoadDriver();
         return self::$Driver->_destroy();
@@ -76,7 +79,11 @@ class cDatabase
     private static function _LoadDriver()
     {
         Plug::get_config(__FILE__);
-        self::$Driver = Plug::get_driver(__FILE__, Cfg::get('plugs/database/driver'));
+        self::$Driver = Plug::get_driver(
+            __FILE__, 
+            Cfg::get('plugs/database/driver'),
+            __NAMESPACE__
+        );
     }
     //-
 

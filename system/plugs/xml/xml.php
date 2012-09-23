@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Avrelia
@@ -15,7 +15,7 @@
  */
 
 
-class uXML
+class XML
 {
     # XML Resource, as string
     private $resource    = false;

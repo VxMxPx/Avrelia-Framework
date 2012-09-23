@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Exception; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Exceptions Classes
@@ -14,11 +14,11 @@
 
 # Base AvreliaException; all exceptions extends this one.
 if (!class_exists('AvreliaException', false)) 
-	{ class AvreliaException extends Exception {} }
+	{ class Base extends \Exception {} }
 
 # When: creating, deleting, moving, copying, reading file...
-if (!class_exists('FileSystem_AvreliaException', false)) 
-	{ class FileSystem_AvreliaException extends AvreliaException {} }
+if (!class_exists('Avrelia\\Exception\\FileSystem', false)) 
+	{ class FileSystem extends Base {} }
 
-if (!class_exists('ValueError_AvreliaException', false))
-	{ class ValueError_AvreliaException extends AvreliaException {} }
+if (!class_exists('Avrelia\\Exception\\ValueError', false))
+	{ class ValueError extends Base {} }

@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Core; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Plug Base Class
@@ -7,7 +7,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class Plug_Base
+class Plug
 {
     # List of included plugs
     protected static $included = array();
@@ -78,7 +78,7 @@ class Plug_Base
     }
 
     /**
-     * Will enable particular plug. This will check for static method _OnEnable,
+     * Will enable particular plug. This will check for static method _on_enable_,
      * if method can't be found, we'll return true (no need to enable it).
      * If method can be found, it will be called and result will be returned.
      * --
@@ -87,25 +87,23 @@ class Plug_Base
      */
     public static function enable($plug)
     {
-        $plug_path  = self::calculate_path($plug);
-        $class_name = self::class_name($plug);
+        $plug_path  = self::get_path($plug);
+        $class_name = $plug;
 
-        if (!$class_name) {
-            include ds("{$plug_path}/{$plug}.php");
+        if (!class_exists($class_name, false)) {
+            include ds($plug_path, self::get_file($plug).'.php');
         }
 
-        $class_name = self::class_name($plug);
-
-        if (!$class_name) {
+        if (!class_exists($class_name, false)) {
             Log::war("Can't enable plug, class not found for: `{$plug}`.");
             return false;
         }
 
-        if (method_exists($class_name, '_OnEnable')) {
-            $return = $class_name::_OnEnable();
+        if (method_exists($class_name, '_on_enable_')) {
+            $return = $class_name::_on_enable_();
         }
         else {
-            Log::inf("Method `_OnEnable` not found in `{$class_name}`.");
+            Log::inf("Method `_on_enable_` not found in `{$class_name}`.");
             $return = true;
         }
 
@@ -119,7 +117,7 @@ class Plug_Base
     }
 
     /**
-     * Will disable particular plug. This will check for static method _OnDisable,
+     * Will disable particular plug. This will check for static method _on_disable_,
      * if method can't be found, we'll return true (no need to do anything disable).
      * If method can be found, it will be called and result will be returned.
      * --
@@ -134,25 +132,23 @@ class Plug_Base
             self::_save_list();
         }
 
-        $plug_path  = self::calculate_path($plug);
-        $class_name = self::class_name($plug);
+        $plug_path  = self::get_path($plug);
+        $class_name = $plug;
 
-        if (!$class_name) {
-            include ds("{$plug_path}/{$plug}.php");
+        if (!class_exists($class_name, false)) {
+            include ds($plug_path, self::get_file($plug).'.php');
         }
 
-        $class_name = self::class_name($plug);
-
-        if (!$class_name) {
+        if (!class_exists($class_name, false)) {
             Log::war("Can't disable plug, class not found for: `{$plug}`.");
             return false;
         }
 
-        if (method_exists($class_name, '_OnDisable')) {
-            return $class_name::_OnDisable();
+        if (method_exists($class_name, '_on_disable_')) {
+            return $class_name::_on_disable_();
         }
         else {
-            Log::inf("Method `_OnDisable` no found in `{$class_name}`.");
+            Log::inf("Method `_on_disable_` no found in `{$class_name}`.");
             return true;
         }
     }
@@ -275,6 +271,7 @@ class Plug_Base
      * @param   string  $full_path  Full path to plug (including filename for 
      *                              main static class __FILE__)
      * @param   string  $type       Which driver do we need
+     * @param   string  $namespace
      * @param   boolean $construct  If true, the driver will be constructed
      * @param   mixed   $prefix     In some cases we have more than one driver, 
      *                              and they're prefixed
@@ -282,8 +279,13 @@ class Plug_Base
      *                              object if construct is true, 
      *                              string (class name) if construct is false.
      */
-    public static function get_driver($full_path, $type, $construct=true, $prefix=false)
-    {
+    public static function get_driver(
+        $full_path,
+        $type,
+        $namespace,
+        $construct=true,
+        $prefix=false
+    ) {
         # Get basepath
         $path = dirname($full_path);
         $plug_name = basename($path);
@@ -295,7 +297,8 @@ class Plug_Base
 
         # Resolve filenames
         # 1. interface
-        $interface_class  = 'c' . to_camelcase($plug_name) . 'Driver';
+        $interface_class  = $namespace . CHAR_BACKSLASH;
+        $interface_class .= to_camelcase($plug_name) . 'Driver';
         $interface_class .= ($prefix) ? to_camelcase($prefix) : '';
         $interface_class .= 'Interface';
 
@@ -304,7 +307,8 @@ class Plug_Base
         $interface_file .= 'interface.php';
 
         # 2. base
-        $base_class  = 'c' . to_camelcase($plug_name) . 'Driver';
+        $base_class  = $namespace . CHAR_BACKSLASH;
+        $base_class .= to_camelcase($plug_name) . 'Driver';
         $base_class .= ($prefix) ? to_camelcase($prefix) : '';
         $base_class .= 'Base';
 
@@ -313,7 +317,8 @@ class Plug_Base
         $base_file .= 'base.php';
 
         # 3. driver
-        $driver_class  = 'c' . to_camelcase($plug_name) . 'Driver';
+        $driver_class  = $namespace . CHAR_BACKSLASH;
+        $driver_class .= to_camelcase($plug_name) . 'Driver';
         $driver_class .= ($prefix) ? to_camelcase($prefix) : '';
         $driver_class .= to_camelcase($type);
 
@@ -391,7 +396,7 @@ class Plug_Base
      * @param   array   $components     List of plugs to initialize
      * @param   boolean $auto_init      By default all plugs will be auto-initialize,
      *                                  set this to false, to avoid this behavior.
-     *                                  Plug need to have static public method "_OnInit".
+     *                                  Plug need to have static public method "_on_include_".
      * @param   boolean $stop_on_failed If one of the plugs, doesn't initialize, 
      *                                  should we stop loading?
      * @return  mixed
@@ -424,12 +429,12 @@ class Plug_Base
             }
 
             # Do we have class already?
-            $class_name = self::class_name($component);
+            $class_name = $component;
 
-            if (!$class_name) {
+            if (!class_exists($class_name, false)) {
                 # Try to include main class!
-                $base_class_filename = self::calculate_path($component);
-                $full_class_fileName = ds($base_class_filename."/{$component}.php");
+                $base_class_filename = self::get_path($component);
+                $full_class_fileName = ds($base_class_filename, self::get_file($component).'.php');
 
                 if (file_exists($full_class_fileName)) {
                     include $full_class_fileName;
@@ -445,9 +450,9 @@ class Plug_Base
 
             if ($auto_init)
             {
-                $class_name = self::class_name($component);
+                $class_name = $component;
 
-                if (!$class_name) {
+                if (!class_exists($class_name, false)) {
                     Log::war("Can't find plug's class for: `{$component}`.");
                     $failed[] = $component;
                     if ($stop_on_failed) {
@@ -455,16 +460,31 @@ class Plug_Base
                     }
                 }
 
-                if (method_exists($class_name, '_OnInit'))
+                if (method_exists($class_name, '_on_include_'))
                 {
-                    if (!$class_name::_OnInit()) {
-                        Log::war("Method: `_OnInit` in `{$class_name}` failed!");
+                    if (!$class_name::_on_include_()) {
+                        Log::war("Method: `_on_include_` in `{$class_name}` failed!");
                     }
                 }
             }
         }
 
+        self::map_class($component);
         return (empty($failed)) ? true : $failed;
+    }
+
+    /**
+     * Convert namespaced plug to flat class name
+     * @param  string $class_name
+     * @return void
+     */
+    protected static function map_class($class_name)
+    {
+        # Conver it to path
+        $path  = ds($class_name);
+        $alias = get_path_segment($path, -1);
+
+        class_alias($class_name, $alias);
     }
 
     /**
@@ -544,36 +564,35 @@ class Plug_Base
      * @param   string  $plug
      * @return  string
      */
-    public static function calculate_path($plug)
+    public static function get_path($plug)
     {
-        $app_path = app_path("plugs/{$plug}");
-        $sys_path = sys_path("/plugs/{$plug}");
+        $plug = mb_strtolower($plug);
+        $path_segments = Str::explode_trim(CHAR_BACKSLASH, $plug, 3);
+
+        # Is it system plug?
+        if (substr($plug, 0, 7) === 'avrelia') {
+            $path = sys_path(
+                'plugs/'.
+                $path_segments[2].'/');
+        }
+        else {
+            $path = app_path(
+                'plugs/'.
+                $path_segments[0].'/'.
+                $path_segments[2].'/');
+        }
 
         return 
-            is_dir($app_path) 
-            ? $app_path 
-            : is_dir($sys_path) 
-                ? $sys_path 
+            is_dir($path) 
+                ? $path 
                 : false;
     }
 
-    /**
-     * Get Class Name from plug's name
-     * --
-     * @param   string  $plug
-     * @return  string
-     */
-    public static function class_name($plug)
+    public static function get_file($plug)
     {
-        # Guess class name :)
-        $class_name_one = 'c' . to_camelcase($plug, true);
-        $class_name_two = 'c' . strtoupper($plug);
+        $plug = mb_strtolower($plug);
+        $path_segments = Str::explode_trim(CHAR_BACKSLASH, $plug);
 
-        if (class_exists($class_name_one, false)) 
-            { return $class_name_one; }
-        elseif (class_exists($class_name_two, false)) 
-            { return $class_name_two; }
-        else 
-            { return false; }
+        return array_pop($path_segments);
     }
 }

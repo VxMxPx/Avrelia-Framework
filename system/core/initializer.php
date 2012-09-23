@@ -39,7 +39,7 @@ function _call_include_method_($class_name)
 }
 
 /* -----------------------------------------------------------------------------
- * We'll load all base classes now
+ * We'll load all base (files) classes now, and make them available
  */
 $base_classes = scandir(sys_path('core/base'));
 
@@ -53,91 +53,36 @@ foreach ($base_classes as $base_file) {
 }
 
 /* -----------------------------------------------------------------------------
- * Initialize base system classes now.
+ * Classes map
  */
-if (!_inc_core_app_class_('loader'))
-    { class Loader extends Loader_Base {} }
-_call_include_method_('Loader');
+$classes_map = array(
+    'Avrelia\\Core\\Loader'     => 'Loader',
+    'Avrelia\\Core\\Arr'        => 'Arr',
+    'Avrelia\\Core\\Str'        => 'Str',
+    'Avrelia\\Core\\Bool'       => 'Bool',
+    'Avrelia\\Core\\Json'       => 'Json',
+    'Avrelia\\Core\\vString'    => 'vString',
+    'Avrelia\\Core\\Benchmark'  => 'Benchmark',
+    'Avrelia\\Core\\Cfg'        => 'Cfg',
+    'Avrelia\\Core\\Log'        => 'Log',
+    'Avrelia\\Core\\Dot'        => 'Dot',
+    'Avrelia\\Core\\Dispatcher' => 'Dispatcher',
+    'Avrelia\\Core\\Event'      => 'Event',
+    'Avrelia\\Core\\FileSystem' => 'FileSystem',
+    'Avrelia\\Core\\Http'       => 'Http',
+    'Avrelia\\Core\\Input'      => 'Input',
+    'Avrelia\\Core\\Language'   => 'Language',
+    'Avrelia\\Core\\Model'      => 'Model',
+    'Avrelia\\Core\\Output'     => 'Output',
+    'Avrelia\\Core\\Plug'       => 'Plug',
+    'Avrelia\\Core\\Util'       => 'Util',
+    'Avrelia\\Core\\View'       => 'View',
+    'Avrelia\\Core\\ViewAssign' => 'ViewAssign',
+);
 
-if (!_inc_core_app_class_('arr'))
-    { class Arr extends Arr_Base {} }
-_call_include_method_('Arr');
-
-if (!_inc_core_app_class_('str'))
-    { class Str extends Str_Base {} }
-_call_include_method_('Str');
-
-if (!_inc_core_app_class_('bool'))
-    { class Bool extends Bool_Base {} }
-_call_include_method_('Bool');
-
-if (!_inc_core_app_class_('json'))
-    { class Json extends Json_Base {} }
-_call_include_method_('Json');
-
-if (!_inc_core_app_class_('v_string'))
-    { class vString extends vString_Base {} }
-_call_include_method_('vString');
-
-if (!_inc_core_app_class_('benchmark'))
-    { class Benchmark extends Benchmark_Base {} }
-_call_include_method_('Benchmark');
-
-if (!_inc_core_app_class_('cfg'))
-    { class Cfg extends Cfg_Base {} }
-_call_include_method_('Cfg');
-
-if (!_inc_core_app_class_('log'))
-    { class Log extends Log_Base {} }
-_call_include_method_('Log');
-
-if (!_inc_core_app_class_('dot'))
-    { class Dot extends Dot_Base {} }
-_call_include_method_('Dot');
-
-if (!_inc_core_app_class_('dispatcher'))
-    { class Dispatcher extends Dispatcher_Base {} }
-_call_include_method_('Dispatcher');
-
-if (!_inc_core_app_class_('event'))
-    { class Event extends Event_Base {} }
-_call_include_method_('Event');
-
-if (!_inc_core_app_class_('file_system'))
-    { class FileSystem extends FileSystem_Base {} }
-_call_include_method_('FileSystem');
-
-if (!_inc_core_app_class_('http'))
-    { class HTTP extends HTTP_Base {} }
-_call_include_method_('HTTP');
-
-if (!_inc_core_app_class_('input'))
-    { class Input extends Input_Base {} }
-_call_include_method_('Input');
-
-if (!_inc_core_app_class_('language'))
-    { class Language extends Language_Base {} }
-_call_include_method_('Language');
-
-if (!_inc_core_app_class_('model'))
-    { class Model extends Model_Base {} }
-_call_include_method_('Model');
-
-if (!_inc_core_app_class_('output'))
-    { class Output extends Output_Base {} }
-_call_include_method_('Output');
-
-if (!_inc_core_app_class_('plug'))
-    { class Plug extends Plug_Base {} }
-_call_include_method_('Plug');
-
-if (!_inc_core_app_class_('util'))
-    { class Util extends Util_Base {} }
-_call_include_method_('Util');
-
-if (!_inc_core_app_class_('view'))
-    { class View extends View_Base {} }
-_call_include_method_('View');
-
-if (!class_exists('ViewAssign', false))
-    { class ViewAssign extends ViewAssign_Base {} }
+// Will set aliases for all core classes and run on include function...
+foreach ($classes_map as $class => $alias)
+{
+    class_alias($class, $alias);
+    _call_include_method_($alias);
+}

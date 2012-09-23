@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Core; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Loader Base Class
@@ -9,7 +9,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class Loader_Base
+class Loader
 {
     /**
      * Load class by filename
@@ -20,16 +20,16 @@ class Loader_Base
     public static function get($class_name)
     {
         # Try to understand what kind of a class do we have...
-        if (substr($class_name,  -10) === 'Controller') 
+        if (substr($class_name,  -11) === '_Controller') 
             { return self::get_controller($class_name); }
 
-        if (substr($class_name,   -5) === 'Model')
+        if (substr($class_name,   -6) === '_Model')
             { return self::get_model($class_name); }
 
         if (substr($class_name, 0, 1) === 'u')
             { return self::get_util($class_name); }
 
-        if (substr($class_name, 0, 1) === 'c')
+        if (strpos($class_name, '\\Plug\\') !== false)
             { return self::get_plug($class_name); }
 
         # Nothing of above rules?
@@ -44,8 +44,7 @@ class Loader_Base
      */
     public static function get_plug($class_name)
     {
-        $file_name = to_underscore(substr($class_name, 1));
-        return Plug::load($file_name);
+        return Plug::load($class_name);
     }
 
     /**

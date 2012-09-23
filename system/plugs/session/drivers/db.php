@@ -1,4 +1,9 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
+
+use Avrelia\Core\Cfg        as Cfg;
+use Avrelia\Core\Str        as Str;
+use Avrelia\Core\vString    as vString;
+use Avrelia\Core\Log        as Log;
 
 /**
  * Avrelia
@@ -13,7 +18,7 @@
  * @since      Version 0.80
  * @since      2012-03-27
  */
-class cSessionDriverDb implements cSessionDriverInterface
+class SessionDriverDb implements SessionDriverInterface
 {
     private $CurrentUser;       # array
     private $loggedIn = false;  # boolean
@@ -262,7 +267,7 @@ class cSessionDriverDb implements cSessionDriverInterface
     private function sessionDiscover()
     {
         # Check if we can find session id in cookies.
-        if ($sessionId = uCookie::Read(Cfg::get('plugs/session/cookie_name')))
+        if ($sessionId = Cookie::read(Cfg::get('plugs/session/cookie_name')))
         {
             # Look for session
             $SessionDetails = cDatabase::Find(
@@ -348,7 +353,7 @@ class cSessionDriverDb implements cSessionDriverInterface
         $qId  = time() . '_' . Str::random(20, 'aA1');
 
         # Store cookie
-        uCookie::Create(Cfg::get('plugs/session/cookie_name'), $qId, $expires);
+        Cookie::create(Cfg::get('plugs/session/cookie_name'), $qId, $expires);
 
         # Set session file
         $Session = array(
@@ -373,7 +378,7 @@ class cSessionDriverDb implements cSessionDriverInterface
     private function sessionDestroy($userId)
     {
         # Remove cookies
-        uCookie::Remove(Cfg::get('plugs/session/cookie_name'));
+        Cookie::remove(Cfg::get('plugs/session/cookie_name'));
 
         # Okay, clear session now...
         return cDatabase::Delete(Cfg::get('plugs/session/db/sessions_table'), array('user_id' => (int) $userId))->succeed();

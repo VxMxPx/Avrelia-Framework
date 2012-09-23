@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Core; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Models Base Class
@@ -7,7 +7,7 @@
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class Model_Base
+class Model
 {
     # Already created models
     protected static $cache = array();
@@ -22,7 +22,7 @@ class Model_Base
      */
     public static function get($name, $force_new=false)
     {
-        $class = $name . 'Model';
+        $class = ucfirst($name) . '_Model';
 
         if (!$force_new && isset(self::$cache[$class]))
         {

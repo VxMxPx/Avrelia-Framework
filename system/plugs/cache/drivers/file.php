@@ -1,30 +1,25 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
+
+use Avrelia\Core\Log as Log;
+use Avrelia\Core\Cfg as Cfg;
+use Avrelia\Core\Str as Str;
+use Avrelia\Core\FileSystem as FileSystem;
 
 /**
- * Avrelia
- * ----
- * Cache Driver: File
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
- * @copyright  Copyright (c) 2012, Avrelia.com
+ * Cache Driver File
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
+ * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-06-28
  */
-class cCacheDriverFile implements cCacheDriverInterface
+class CacheDriverFile implements CacheDriverInterface
 {
-
     public function __construct()
-    {
-        Log::inf("Will use `file` cache driver.");
-    }
-    //-
+        { Log::inf("Will use `file` cache driver."); }
 
     /**
      * Called when plug is enabled.
-     * --
+     * 
      * @return  boolean
      */
     public function _create()
@@ -36,11 +31,10 @@ class cCacheDriverFile implements cCacheDriverInterface
 
         return true;
     }
-    //-
 
     /**
      * Called when plug is disabled.
-     * --
+     * 
      * @return  boolean
      */
     public function _destroy()
@@ -52,17 +46,15 @@ class cCacheDriverFile implements cCacheDriverInterface
 
         return true;
     }
-    //-
 
     /**
      * Will set cache (store content into cache file)
-     * --
+     * 
      * @param   string  $contents
      * @param   string  $key
      * @param   integer $expires    Time when chache expires, in seconds.
      *                              If set to false, then cache won't expire at all.
      *                              It can be refreshed if we set it again.
-     * --
      * @return  boolean
      */
     public function set($contents, $key, $expires=false)
@@ -73,20 +65,22 @@ class cCacheDriverFile implements cCacheDriverInterface
         Log::inf("Set cache: `{$key}` to expires in `{$expires}` seconds.");
 
         $expires = $expires === 0 ? 'infinite' : (time() + $expires);
-        return FileSystem::Write($expires.'||'.$contents, $this->fileFromKey($key), false, 0777);
+        return FileSystem::Write(
+                $expires.'||'.$contents, 
+                $this->_file_from_key($key), 
+                false, 
+                0777);
     }
-    //-
 
     /**
      * Will get cache or return false if can't find it.
-     * --
+     * 
      * @param   string  $key
-     * --
      * @return  mixed
      */
     public function get($key)
     {
-        $filename = $this->fileFromKey($key);
+        $filename = $this->_file_from_key($key);
 
         if (file_exists($filename)) {
             $content = FileSystem::Read($filename);
@@ -105,27 +99,23 @@ class cCacheDriverFile implements cCacheDriverInterface
         # We need false if there's no cache!
         return false;
     }
-    //-
 
     /**
      * Check if particular key exists.
-     * --
+     * 
      * @param   string  $key
-     * --
      * @return  boolean
      */
     public function has($key)
     {
-        $filename = $this->fileFromKey($key);
+        $filename = $this->_file_from_key($key);
         return file_exists($filename);
     }
-    //-
 
     /**
      * Clear particular cache, or all cache (if key is false)
      * --
      * @param   mixed   $key    String key name or false to clear all cache
-     * --
      * @return  boolean
      */
     public function clear($key=false)
@@ -139,11 +129,10 @@ class cCacheDriverFile implements cCacheDriverInterface
             return (bool) FileSystem::Remove(ds(Cfg::get('plugs/cache/location', DATPATH.'/cache')), '*.cache');
         }
         else {
-            $filename = $this->fileFromKey($key);
+            $filename = $this->_file_from_key($key);
             return (bool) FileSystem::Remove($filename);
         }
     }
-    //-
 
     /**
      * Will create full cache filename from key.
@@ -153,11 +142,9 @@ class cCacheDriverFile implements cCacheDriverInterface
      * --
      * @return  mixed
      */
-    private function fileFromKey($key)
+    private function _file_from_key($key)
     {
         $key = Str::clean($key, 'aA1', '_-');
         return ds(Cfg::get('cache/location', DATPATH.'/cache').'/'.$key.'.cache');
     }
-    //-
 }
-//--

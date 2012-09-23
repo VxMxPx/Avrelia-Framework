@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) { die('Access is denied!'); }
+<?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
  * Avrelia
@@ -13,7 +13,7 @@
  * @since      Version 0.80
  * @since      sre dec 07 16:33:56 2011
  */
-class cImage
+class Image
 {
     private $Allow       = array('jpg','jpeg','gif','png'); # array Allowed image extensions
     private $Source      = array();                         # array Info about source image
