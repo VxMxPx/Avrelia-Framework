@@ -39,7 +39,7 @@ class Log_Base
 
         'html_item' =>
         '<div style="text-align:left; border-bottom: 2px solid #444;
-        padding:10px; background-color:#{{background}}; class="type_{{class}}">
+        padding:10px; background-color:#{{background}};" class="type_{{class}}">
             <div style="text-align:left;margin:0 0 10px 0;padding:0px;">
                 <pre style="color:#{{type_color}}; white-space: pre-wrap;">{{message}}</pre>
             </div>
@@ -251,7 +251,7 @@ class Log_Base
                         : self::$templates['colors']['even']),
                     $log['type'],
                     self::$templates['colors'][$log['type']],
-                    $log['message'],
+                    htmlspecialchars($log['message']),
                     $log['date_time'],
                     $log['type'],
                     $log['file'],

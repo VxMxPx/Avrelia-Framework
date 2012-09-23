@@ -58,6 +58,10 @@ function dump($variable, $die=true, $return=false)
         $bool = $variable ? 'true' : 'false';
     }
 
+    //$result  = (!is_cli()) ? "\n<pre>\n" : "\n";
+    //$result .=  var_export($variable, true);
+    //$result .= (!is_cli()) ? "\n</pre>\n" : "\n";
+
     $result  = (!is_cli()) ? "\n<pre>\n" : "\n";
     $result .= '' . gettype($variable);
     $result .= (is_string($variable) ? '['.strlen($variable).']' : '');

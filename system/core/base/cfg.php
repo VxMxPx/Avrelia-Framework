@@ -94,10 +94,13 @@ class Cfg_Base
      */
     public static function debug()
     {
+        $cache   = htmlspecialchars(print_r(self::$cache, true));
+        $configs = htmlspecialchars(print_r(self::$configs, true));
+        
         return
-            'Cache ' . dump(self::$cache, false, true) .
+            'Cache ' . dump($cache, false, true) .
             "\n" .
-            'Config ' . dump(self::$configs, false, true);
+            'Config ' . dump($configs, false, true);
     }
 
     /**

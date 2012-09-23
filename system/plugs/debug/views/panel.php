@@ -20,7 +20,7 @@
 
 <div class="content config">
     <div class="spacer">
-        <?php dump(Cfg::debug(), false); ?>
+        <?php echo Cfg::debug(); ?>
     </div>
 </div>
 
