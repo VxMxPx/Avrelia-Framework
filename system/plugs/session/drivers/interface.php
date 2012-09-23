@@ -80,6 +80,6 @@ interface SessionDriverInterface
      * --
      * @return  array
      */
-    function asArray($key=false);
+    function as_array($key=false);
 }
 //--

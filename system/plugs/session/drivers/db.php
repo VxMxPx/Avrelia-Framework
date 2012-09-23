@@ -45,8 +45,8 @@ class SessionDriverDb implements SessionDriverInterface
     {
         # Create users table (if doesn't exists)
         if (Plug::has('database')) {
-            cDatabase::Execute(Cfg::get('plugs/session/db/Tables/users_table'));
-            cDatabase::Execute(Cfg::get('plugs/session/db/Tables/sessions_table'));
+            Database::execute(Cfg::get('plugs/session/db/Tables/users_table'));
+            Database::execute(Cfg::get('plugs/session/db/Tables/sessions_table'));
         }
         else {
             trigger_error("Can't create, database plug must be enabled.", E_USER_ERROR);
@@ -58,7 +58,7 @@ class SessionDriverDb implements SessionDriverInterface
         foreach ($Defaults as $DefUser)
         {
             $DefUser['password'] = vString::Hash($DefUser['password'], false, true);
-            cDatabase::Create($DefUser,  Cfg::get('plugs/session/users_table'));
+            Database::create($DefUser,  Cfg::get('plugs/session/users_table'));
         }
 
         return true;
@@ -72,8 +72,8 @@ class SessionDriverDb implements SessionDriverInterface
      */
     public static function _destroy()
     {
-        cDatabase::Execute('DROP TABLE IF EXISTS ' . Cfg::get('plugs/session/users_table'));
-        cDatabase::Execute('DROP TABLE IF EXISTS ' . Cfg::get('plugs/session/sessions_table'));
+        Database::execute('DROP TABLE IF EXISTS ' . Cfg::get('plugs/session/users_table'));
+        Database::execute('DROP TABLE IF EXISTS ' . Cfg::get('plugs/session/sessions_table'));
         return true;
     }
     //-
@@ -100,7 +100,7 @@ class SessionDriverDb implements SessionDriverInterface
      * --
      * @return  mixed
      */
-    public function asArray($key=false)
+    public function as_array($key=false)
     {
         if (!$key) {
             return $this->CurrentUser;
@@ -219,10 +219,10 @@ class SessionDriverDb implements SessionDriverInterface
     {
         # Select user
         if ($password) {
-            $User = cDatabase::Find(Cfg::get('plugs/session/db/users_table'), array('uname' => $user));
+            $User = Database::find(Cfg::get('plugs/session/db/users_table'), array('uname' => $user));
         }
         else {
-            $User = cDatabase::Find(Cfg::get('plugs/session/db/users_table'), array('id' => (int)$user));
+            $User = Database::find(Cfg::get('plugs/session/db/users_table'), array('id' => (int)$user));
         }
 
         # Valid user?
@@ -231,7 +231,7 @@ class SessionDriverDb implements SessionDriverInterface
             return false;
         }
 
-        $User = $User->asArray(0);
+        $User = $User->as_array(0);
 
         if (!$User['active']) {
             Log::inf("User's account is not active.");
@@ -270,7 +270,7 @@ class SessionDriverDb implements SessionDriverInterface
         if ($sessionId = Cookie::read(Cfg::get('plugs/session/cookie_name')))
         {
             # Look for session
-            $SessionDetails = cDatabase::Find(
+            $SessionDetails = Database::find(
                                     Cfg::get('plugs/session/db/sessions_table'),
                                     array('id' => Str::clean($sessionId, 'aA1', '_', 400))
                                 );
@@ -278,7 +278,7 @@ class SessionDriverDb implements SessionDriverInterface
             # Okey we have something, check it...
             if ($SessionDetails->succeed())
             {
-                $SessionDetails = $SessionDetails->asArray(0);
+                $SessionDetails = $SessionDetails->as_array(0);
                 $userId  = $SessionDetails['user_id'];
                 $expires = $SessionDetails['expires'];
                 $ip      = $SessionDetails['ip'];
@@ -364,7 +364,7 @@ class SessionDriverDb implements SessionDriverInterface
             'agent'   => self::cleanAgent($_SERVER['HTTP_USER_AGENT']),
         );
 
-        return cDatabase::Create($Session, Cfg::get('plugs/session/db/sessions_table'))->succeed();
+        return Database::create($Session, Cfg::get('plugs/session/db/sessions_table'))->succeed();
     }
     //-
 
@@ -381,7 +381,7 @@ class SessionDriverDb implements SessionDriverInterface
         Cookie::remove(Cfg::get('plugs/session/cookie_name'));
 
         # Okay, clear session now...
-        return cDatabase::Delete(Cfg::get('plugs/session/db/sessions_table'), array('user_id' => (int) $userId))->succeed();
+        return Database::delete(Cfg::get('plugs/session/db/sessions_table'), array('user_id' => (int) $userId))->succeed();
     }
     //-
 
@@ -392,7 +392,7 @@ class SessionDriverDb implements SessionDriverInterface
      */
     private function sessionsClearExpired()
     {
-        cDatabase::Delete(
+        Database::delete(
             Cfg::get('plugs/session/db/sessions_table'),
             'WHERE expires < :expires',
             array('expires' => time())

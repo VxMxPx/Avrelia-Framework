@@ -1,45 +1,42 @@
 <?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
+use Avrelia\Core\Log as Log;
+
 /**
- * Avrelia
- * ----
- * Database Result Class
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * DatabaseResult
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-03-21
  */
 class DatabaseResult
 {
     /**
-     * @var PDOStatement    Instance of PDOStatement
+     * @var PDOStatement  Instance of PDOStatement
      */
-    private $PDOStatement;
+    protected $PDOStatement;
 
     /**
-     * @var array   List of fetched items.
+     * @var array  List of fetched items.
      */
-    private $Fetched;
+    protected $fetched;
 
     /**
      * @var string  Last inserted ID.
      */
-    private $lastId;
+    protected $last_id;
 
     /**
-     * @var boolean The status of PDO statement. Was execution valid / successful or not.
+     * @var boolean  The status of PDO statement. 
+     *               Was execution successful or not.
      */
-    private $status;
+    protected $status;
 
 
     /**
      * Construct the database result object.
-     * This require prepeared PDOStatement, which will be executed on construction
-     * of this this class.
+     * This require prepeared PDOStatement, which will be 
+     * executed on construction of this this class.
      * --
      * @param   PDOStatement    $PDOStatement   Prepeared PDO statement.
      * --
@@ -50,28 +47,26 @@ class DatabaseResult
         if (is_object($PDOStatement)) {
             $this->PDOStatement = $PDOStatement;
             $this->status = $this->PDOStatement->execute();
-            $this->lastId = cDatabase::_getDriver()->getPDO()->lastInsertId();
+            $this->last_id = Database::get_driver()->get_PDO()->lastInsertId();
 
             if (!$this->status) {
-                trigger_error("Failed to execute: `" . print_r(cDatabase::_getDriver()->getPDO()->errorInfo(), true) . '`.', E_USER_WARNING);
+                trigger_error("Failed to execute: `" . 
+                    print_r(Database::get_driver()->get_PDO()->errorInfo(), true).'`.', 
+                    E_USER_WARNING);
             }
         }
         else {
             $this->status = false;
         }
     }
-    //-
 
     /**
-     * Return true if this query succeed, and false if didn't
+     * Return true if this query succeed, and false if didn't.
      * --
      * @return  boolean
      */
     public function succeed()
-    {
-        return $this->status;
-    }
-    //-
+        { return $this->status; }
 
     /**
      * Return true if this query failed, and false if succeed
@@ -79,10 +74,7 @@ class DatabaseResult
      * @return  boolean
      */
     public function failed()
-    {
-        return !$this->status;
-    }
-    //-
+        { return !$this->status; }
 
     /**
      * Returns the number of columns in the result set represented by the PDOStatement object.
@@ -91,10 +83,7 @@ class DatabaseResult
      * @return  integer
      */
     public function count()
-    {
-        return $this->status ? count($this->asArray()) : 0;
-    }
-    //-
+        { return $this->status ? count($this->as_array()) : 0; }
 
     /**
      * Will return ALL rows as an array.
@@ -105,21 +94,21 @@ class DatabaseResult
      * --
      * @return  array
      */
-    public function asArray($index=false)
+    public function as_array($index=false)
     {
         if (is_object($this->PDOStatement)) {
             if ($index === false) {
-                if (!is_array($this->Fetched)) {
-                    $this->Fetched = $this->PDOStatement->fetchAll(PDO::FETCH_ASSOC);
+                if (!is_array($this->fetched)) {
+                    $this->fetched = $this->PDOStatement->fetchAll(PDO::FETCH_ASSOC);
                 }
-                return $this->Fetched;
+                return $this->fetched;
             }
             elseif ($index === true) {
                 return $this->PDOStatement->fetch(PDO::FETCH_ASSOC);
             }
             elseif (is_integer($index)) {
-                $Fetched = $this->asArray(false);
-                return isset($Fetched[$index]) ? $Fetched[$index] : false;
+                $fetched = $this->as_array(false);
+                return isset($fetched[$index]) ? $fetched[$index] : false;
             }
         }
         else {
@@ -127,29 +116,21 @@ class DatabaseResult
             return array();
         }
     }
-    //-
 
     /**
      * Return _raw_ PDOStatement object.
-     * Read more about it here: http://www.php.net/manual/en/class.pdostatement.php
+     * Read more about PDO: http://www.php.net/manual/en/class.pdostatement.php
      * --
      * @return  PDOStatement
      */
-    public function asRaw()
-    {
-        return $this->PDOStatement;
-    }
-    //-
+    public function as_raw()
+        { return $this->PDOStatement; }
 
     /**
      * Return ID (of last inserted statement)
      * --
      * @return  mixed
      */
-    public function insertedId()
-    {
-        return $this->lastId;
-    }
-    //-
+    public function inserted_id()
+        { return $this->last_id; }
 }
-//--

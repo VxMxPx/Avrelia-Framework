@@ -1,29 +1,22 @@
 <?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 use Avrelia\Core\Cfg as Cfg;
+use Avrelia\Core\Log as Log;
 use Avrelia\Core\FileSystem as FileSystem;
 
 /**
- * Avrelia
- * ----
- * SQLite Database Driver
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * Database Driver SQLite
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-03-22
- * ---
- * @param boolean $valid Was construct successful?
  */
 class DatabaseDriverSqlite 
     extends DatabaseDriverBase 
     implements DatabaseDriverInterface
 {
     private $valid;
-    private $databasePath;
+    private $database_path;
 
     /**
      * Init the database driver, called initialy when connection is established.
@@ -40,21 +33,18 @@ class DatabaseDriverSqlite
         }
 
         # Since This Is SQLite database, we must define only path & database filename
-        $this->databasePath = ds(DATPATH.'/'.Cfg::get('plugs/database/sqlite/filename'));
+        $this->database_path = dat_path(Cfg::get('plugs/database/sqlite/filename'));
 
         # File was found?
-        if (!file_exists($this->databasePath)) {
-            $this->valid = false;
-        }
-        else {
-            $this->valid = true;
-        }
+        if (!file_exists($this->database_path)) 
+            { $this->valid = false; }
+        else 
+            { $this->valid = true; }
     }
-    //-
 
     /**
      * Make the connection.
-     * ---
+     * --
      * @return PDO
      */
     public function connect()
@@ -62,58 +52,53 @@ class DatabaseDriverSqlite
         if ($this->valid) {
             # Try to connect to database
             try {
-                $this->PDO = new \PDO('sqlite:'.$this->databasePath);
+                $this->PDO = new \PDO('sqlite:'.$this->database_path);
                 return true;
             }
             catch (\PDOException $e) {
-                trigger_error("Can't create PDO object: `" . $e->getMessage() . '`.', E_USER_WARNING);
+                trigger_error(
+                    "Can't create PDO object: `" . $e->getMessage() . '`.', 
+                    E_USER_WARNING);
                 return false;
             }
         }
-        else {
-            return false;
-        }
+        else 
+            { return false; }
     }
-    //-
 
     /**
      * Create the database file (in case of SQLite)
-     * ---
+     * --
      * @return boolean
      */
     public function _create()
     {
         # Create dummy file
-        FileSystem::Write('', $this->databasePath);
+        FileSystem::Write('', $this->database_path);
 
         if (is_cli()) {
             # Chmod it to full permission!
-            if (!chmod(ds($this->databasePath), 0777)) {
+            if (!chmod(ds($this->database_path), 0777)) {
                 Log::war("Can't set aproprite chmod permissions for database file: `".
-                    $this->databasePath.'`.');
+                    $this->database_path.'`.');
             }
         }
 
-        if (file_exists($this->databasePath)) {
+        if (file_exists($this->database_path)) {
             $this->valid = true;
             return $this->connect() ? true : false;
         }
         else {
-            Log::war("File wasn't created: `{$this->databasePath}`.");
+            Log::err("File wasn't created: `{$this->database_path}`.");
             return false;
         }
     }
-    //-
 
     /**
      * Destroy the database file (in case of SQLite)
-     * ---
+     * --
      * @return boolean
      */
     public function _destroy()
-    {
-        return FileSystem::Remove($this->databasePath);
-    }
-    //-
+        { return FileSystem::Remove($this->database_path); }
 }
-//--

@@ -238,7 +238,7 @@ class SessionDriverJson implements SessionDriverInterface
      * --
      * @return  mixed
      */
-    public function asArray($key=false)
+    public function as_array($key=false)
     {
         if (!$key) {
             return $this->CurrentUser;

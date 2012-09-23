@@ -523,7 +523,7 @@ class Plug
 
     /**
      * Used when we want to construct sub-class for particular plug before main
-     * class was initialized. For example: cDatabaseQuery (before we called cDatabase,
+     * class was initialized. For example: DatabaseQuery (before we called Database,
      * which would actually included this class).
      * This will only find main class and initialize it, then if sub-class exists,
      * return true else false.

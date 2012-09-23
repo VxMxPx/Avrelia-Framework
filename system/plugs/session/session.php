@@ -162,9 +162,9 @@ class Session
      * --
      * @return  mixed
      */
-    public static function AsArray($key=false)
+    public static function as_array($key=false)
     {
-        return self::$Driver ? self::$Driver->asArray($key) : false;
+        return self::$Driver ? self::$Driver->as_array($key) : false;
     }
     //-
 }

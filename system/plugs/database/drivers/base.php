@@ -1,22 +1,20 @@
 <?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
+use Avrelia\Core\Log as Log;
+
 /**
- * Avrelia
- * ----
- * Database Driver Interface
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * Database Driver Base
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-03-22
  */
 class DatabaseDriverBase
 {
-    protected $PDO;     # PDO   Link to the PDO Connection
-
+    /**
+     * @var object Link to the PDO Connection
+     */
+    protected $PDO;
 
     /**
      * Init the database driver, called initialy when connection is established.
@@ -27,10 +25,11 @@ class DatabaseDriverBase
     {
         # Check If is PDO enabled...
         if (!class_exists('PDO')) {
-            trigger_error('PDO class doesn\'t exists. Please enable PDO extension.', E_USER_ERROR);
+            trigger_error(
+                'PDO class doesn\'t exists. Please enable PDO extension.', 
+                E_USER_ERROR);
         }
     }
-    //-
 
     /**
      * Bind values and execute particular statement.
@@ -71,22 +70,19 @@ class DatabaseDriverBase
             }
         }
         else {
-            trigger_error("Failed to prepare: `" . print_r($this->PDO->errorInfo(), true) . '`.', E_USER_WARNING);
+            trigger_error(
+                "Failed to prepare: `" . print_r($this->PDO->errorInfo(), true) . '`.', 
+                E_USER_WARNING);
         }
 
-        return new cDatabaseResult($link);
+        return new DatabaseResult($link);
     }
-    //-
 
     /**
      * Will get -raw- PDO class.
      * --
      * @return  PDO
      */
-    public function getPDO()
-    {
-        return $this->PDO;
-    }
-    //-
+    public function get_PDO()
+        { return $this->PDO; }
 }
-//--

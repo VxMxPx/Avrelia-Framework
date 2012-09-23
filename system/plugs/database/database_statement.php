@@ -1,29 +1,23 @@
 <?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
- * Avrelia
- * ----
- * Database Statement Class
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * DatabaseStatement
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-03-21
  */
 class DatabaseStatement
 {
     /**
      * @var string  $statement  An SQL statement which will be executed.
      */
-    private $statement;
+    protected $statement;
 
     /**
      * @var array   An array of all values which need to be binded.
      */
-    private $Bind;
+    protected $bind;
 
 
     /**
@@ -34,10 +28,7 @@ class DatabaseStatement
      * @return  void
      */
     public function __construct($statement)
-    {
-        $this->statement = $statement;
-    }
-    //-
+        { $this->statement = $statement; }
 
     /**
      * Add string to the end of the statement.
@@ -51,7 +42,6 @@ class DatabaseStatement
         $this->statement .= ' ' . $statement;
         return $this;
     }
-    //-
 
     /**
      * Replace whole statement with something else.
@@ -65,7 +55,6 @@ class DatabaseStatement
         $this->statement = $statement;
         return $this;
     }
-    //-
 
     /**
      * Will bind values. Can accept $key as array or as string,
@@ -81,27 +70,24 @@ class DatabaseStatement
         if ($key) {
             if (is_array($key)) {
                 foreach ($key as $k => $v) {
-                    $this->Bind[$k] = $v;
+                    $this->bind[$k] = $v;
                 }
             }
             else {
-                $this->Bind[$key] = $val;
+                $this->bind[$key] = $val;
             }
         }
 
         return $this;
     }
-    //-
 
     /**
-     * Execute statement and return cDatabaseResult object.
+     * Execute statement and return DatabaseResult object.
      * --
-     * @return  cDatabaseResult
+     * @return  DatabaseResult
      */
     public function execute()
     {
-        return cDatabase::_getDriver()->prepare($this->statement, $this->Bind);
+        return Database::get_driver()->prepare($this->statement, $this->bind);
     }
-    //-
 }
-//--

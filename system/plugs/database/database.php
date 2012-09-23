@@ -1,170 +1,157 @@
 <?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
+use Avrelia\Core\Log  as Log;
 use Avrelia\Core\Plug as Plug;
-use Avrelia\Core\Cfg as Cfg;
+use Avrelia\Core\Cfg  as Cfg;
 
 /**
- * Avrelia
- * ----
  * Database Plug
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-03-21
  */
 class Database
 {
-    /**
-     * @var cDatabaseDriverInterface    PDO Database Driver Instance
-     */
-    private static $Driver;
-
+    # DatabaseDriverInterface PDO Database Driver Instance
+    private static $driver;
 
     /**
      * Init the Database object
-     * --
+     * 
      * @return  boolean
      */
     public static function _on_include_()
     {
-        self::_LoadDriver();
+        self::_load_driver();
 
         # Load all other required libraries
-        if (!class_exists('Avrelia\Plug\DatabaseQuery',     false)) { include(ds(dirname(__FILE__).'/database_query.php'));     }
-        if (!class_exists('Avrelia\Plug\DatabaseResult',    false)) { include(ds(dirname(__FILE__).'/database_result.php'));    }
-        if (!class_exists('Avrelia\Plug\DatabaseStatement', false)) { include(ds(dirname(__FILE__).'/database_statement.php')); }
+        if (!class_exists('Avrelia\Plug\DatabaseQuery',     false)) 
+            { include(ds(dirname(__FILE__).'/database_query.php')); }
+        
+        if (!class_exists('Avrelia\Plug\DatabaseResult',    false)) 
+            { include(ds(dirname(__FILE__).'/database_result.php')); }
 
-        if (!self::$Driver->connect()) {
+        if (!class_exists('Avrelia\Plug\DatabaseStatement', false)) 
+            { include(ds(dirname(__FILE__).'/database_statement.php')); }
+
+        if (!self::$driver->connect()) {
             Log::err("Can't connect to, or create database.");
             return false;
         }
 
         return true;
     }
-    //-
 
     /**
      * Enable database plug
-     * --
-     * @return  boolean
+     * 
+     * @return boolean
      */
     public static function _on_enable_()
     {
-        self::_LoadDriver();
-        return self::$Driver->_create();
+        self::_load_driver();
+        return self::$driver->_create();
     }
-    //-
 
     /**
      * Remove the database
-     * --
+     * 
      * @return  boolean
      */
     public static function _on_disable_()
     {
-        self::_LoadDriver();
-        return self::$Driver->_destroy();
+        self::_load_driver();
+        return self::$driver->_destroy();
     }
-    //-
 
     /**
      * Will load driver and config
-     * --
-     * @return  void
+     * 
+     * @return void
      */
-    private static function _LoadDriver()
+    protected static function _load_driver()
     {
         Plug::get_config(__FILE__);
-        self::$Driver = Plug::get_driver(
+        self::$driver = Plug::get_driver(
             __FILE__, 
             Cfg::get('plugs/database/driver'),
             __NAMESPACE__
         );
     }
-    //-
 
     /**
      * Return PDO Driver object.
-     * ---
-     * @return  cDatabaseDriverInterface
+     * 
+     * @return DatabaseDriverInterface
      */
-    public static function _getDriver()
-    {
-        return self::$Driver;
-    }
-    //-
+    public static function get_driver()
+        { return self::$driver; }
 
     /**
      * Execute raw SQL statement
-     * --
+     * 
      * @param   string  $statement
      * @param   array   $bind
-     * --
-     * @return  cDatabaseResult
+     * @return  DatabaseResult
      */
-    public static function Execute($statement, $bind=false)
+    public static function execute($statement, $bind=false)
     {
-        $Statement = new cDatabaseStatement($statement);
+        $statement = new DatabaseStatement($statement);
 
-        if ($bind) {
-            $Statement->bind($bind);
-        }
+        if ($bind) 
+            { $statement->bind($bind); }
 
-        return $Statement->execute();
+        return $statement->execute();
     }
-    //-
 
     /**
      * Create new record.
-     * --
-     * @param   array   $Values
+     * 
+     * @param   array   $values
      * @param   string  $table
-     * --
-     * @return  cDatabaseResult
+     * @return  DatabaseResult
      */
-    public static function Create($Values, $table)
+    public static function create($values, $table)
     {
         # Create statement
-        $sql = "INSERT INTO {$table} (" . Arr::implode_keys(', ', $Values) . ')' .
+        $sql = "INSERT INTO {$table} (" . Arr::implode_keys(', ', $values) . ')' .
                 ' VALUES (';
 
-        foreach ($Values as $k => $v) {
+        foreach ($values as $k => $v) {
             $sql .= ":{$k}, ";
         }
 
         $sql = substr($sql, 0, -2);
         $sql .= ')';
 
-        $Statement = new cDatabaseStatement($sql);
-        $Statement->bind($Values);
+        $statement = new DatabaseStatement($sql);
+        $statement->bind($values);
 
-        return $Statement->execute();
+        return $statement->execute();
     }
-    //-
 
     /**
      * Will read (select) items from database.
-     * --
+     * 
      * @param   string  $table
-     * @param   mixed   $condition  ['id' => 12] || 'id=:id AND name=:name' and bind it later.
+     * @param   mixed   $condition  ['id' => 12] || 
+     *                              'id=:id AND name=:name' and bind it later.
      * @param   array   $bind
      * @param   mixed   $limit      Select 12 records || range: [10, 25]
-     * @param   array   $order      ['name' => 'DESC'] || ['name' => 'DESC', 'date' => 'ASC'] || ['name', 'id' => 'DESC']
-     * --
-     * @return  cDatabaseResult
+     * @param   array   $order      ['name' => 'DESC'] || 
+     *                              ['name' => 'DESC', 'date' => 'ASC'] || 
+     *                              ['name', 'id' => 'DESC']
+     * @return  DatabaseResult
      */
-    public static function Find($table, $condition=false, $bind=false, $limit=false, $order=false)
+    public static function find($table, $condition=false, $bind=false, $limit=false, $order=false)
     {
         # Initial statement
         $sql = "SELECT * FROM {$table}";
 
         # Parse condition, if is an array
         if (is_array($condition)) {
-            $bind = self::ParseCondition($condition);
+            $bind = self::_parse_condition($condition);
         }
 
         # Append condition
@@ -184,119 +171,117 @@ class Database
 
         # Do we have order?
         if ($order) {
-            $orderStatement = '';
+            $order_statement = '';
             foreach ($order as $field => $type) {
                 if (is_integer($field)) {
                     # name, id DESC
-                    $orderStatement .= $type . ', ';
+                    $order_statement .= $type . ', ';
                 }
                 else {
                     # id DESC, name ASC, ...
-                    $orderStatement .= "{$field} {$type}, ";
+                    $order_statement .= "{$field} {$type}, ";
                 }
             }
-            $sql .= ' ORDER BY ' . substr($orderStatement, 0, -2);
+            $sql .= ' ORDER BY ' . substr($order_statement, 0, -2);
         }
 
         # Make it happened
-        $Statement = new cDatabaseStatement($sql);
+        $statement = new DatabaseStatement($sql);
 
         # Do we have anything to bind?
         if ($bind) {
-            $Statement->bind($bind);
+            $statement->bind($bind);
         }
 
         # Execute, and return results
-        return $Statement->execute();
+        return $statement->execute();
     }
-    //-
 
     /**
      * Update particular record.
-     * --
-     * @param   array   $Values
+     * 
+     * @param   array   $values
      * @param   string  $table
      * @param   mixed   $condition  ['id' => 12] || 'id=:id AND name=:name' and bind it.
      * @param   array   $bind
-     * --
-     * @return  cDatabaseResult
+     * @return  DatabaseResult
      */
-    public static function Update($Values, $table, $condition, $bind=false)
+    public static function update($values, $table, $condition, $bind=false)
     {
         $sql = "UPDATE {$table} SET ";
 
-        foreach ($Values as $key => $val) {
+        foreach ($values as $key => $val) {
             $sql .= "{$key}=:{$key}, ";
         }
 
         $sql = substr($sql, 0, -2);
 
         if (is_array($condition)) {
-            $bind = self::ParseCondition($condition);
+            $bind = self::_parse_condition($condition);
         }
 
         $sql .= ' '.$condition;
 
-        $Statement = new cDatabaseStatement($sql);
-        $Statement->bind($Values);
+        $statement = new DatabaseStatement($sql);
+        $statement->bind($values);
         if ($bind) {
-            $Statement->bind($bind);
+            $statement->bind($bind);
         }
 
-        return $Statement->execute();
+        return $statement->execute();
     }
-    //-
 
     /**
      * Will delete particular item.
-     * --
+     * 
      * @param   string  $table
      * @param   mixed   $condition  ['id' => 12] || 'id=:id AND name=:name' and bind it later.
      * @param   array   $bind
-     * --
-     * @return  cDatabaseResult
+     * @return  DatabaseResult
      */
-    public static function Delete($table, $condition, $bind=false)
+    public static function delete($table, $condition, $bind=false)
     {
         $sql  = "DELETE FROM {$table}";
 
         if (is_array($condition)) {
-            $bind = self::ParseCondition($condition);
+            $bind = self::_parse_condition($condition);
         }
 
         $sql .= ' ' . $condition;
 
-        $Statement = new cDatabaseStatement($sql);
+        $statement = new DatabaseStatement($sql);
 
         if ($bind) {
-            $Statement->bind($bind);
+            $statement->bind($bind);
         }
 
-        return $Statement->execute();
+        return $statement->execute();
     }
-    //-
 
     /**
      * Parse an array condition (like) ['id' => 12] into WHERE id=:id
-     * --
+     * 
      * @param   array   $condition
-     * --
      * @return  string
      */
-    private static function ParseCondition(&$condition)
+    protected static function _parse_condition(&$condition)
     {
         if (is_array($condition)) {
-            $bind         = array();
-            $newCondition = 'WHERE ';
+            $bind          = array();
+            $new_condition = 'WHERE ';
 
             foreach ($condition as $k => $v) {
-                $divider = strpos(str_replace(array('AND ', 'OR '), '', $k), ' ') !== false ? ' ' : ' = ';
+                
+                $divider = strpos(str_replace(array('AND ', 'OR '), '', $k), ' ') !== false 
+                            ? ' ' 
+                            : ' = ';
+
                 $kclean  = Str::clean($k, 'aA1', '_', 100);
-                $newCondition .= "{$k}{$divider}:{$kclean} AND ";
+                $new_condition .= "{$k}{$divider}:{$kclean} AND ";
                 $bind[$kclean] = $v;
             }
 
-            $condition = substr($newCondition, 0, -5);
+            $condition = substr($new_condition, 0, -5);
             return $bind;
         }
         else {
@@ -304,6 +289,4 @@ class Database
             return $condition;
         }
     }
-    //-
 }
-//--

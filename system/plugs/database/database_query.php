@@ -1,17 +1,13 @@
 <?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
+use Avrelia\Core\Log as Log;
+
 /**
- * Avrelia
- * ----
- * Database Query Constructor
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
- * @copyright  Copyright (c) 2009, Avrelia.com
- * @license    http://avrelia.com/license
- * @link       http://avrelia.com
- * @since      Version 0.80
- * @since      čet apr 05 16:42:15 2012
+ * DatabaseQuery Class
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
+ * @copyright  Copyright (c) 2010, Avrelia.com
+ * @license    http://framework.avrelia.com/license
  */
 class DatabaseQuery
 {
@@ -22,59 +18,59 @@ class DatabaseQuery
     /**
      * @var string  CREATE || SELECT || INSERT || UPDATE || DELETE
      */
-    private $type;
+    protected $type;
 
     /**
      * @var array   Values, set by: create, insert, update (set).
      */
-    private $where;
+    protected $where;
 
     /**
      * @var array
      */
-    private $values;
+    protected $values;
 
     /**
      * @var array   List of joins
      */
-    private $joins;
+    protected $joins;
 
     /**
      * @var string  Group by
      */
-    private $group;
+    protected $group;
 
     /**
      * @var string  Table name, set by: into, from, update, delete
      */
-    private $table;
+    protected $table;
 
     /**
      * @var string  Selected fields (SELECT field_1, field_2 FROM)
      */
-    private $select;
+    protected $select;
 
     /**
      * @var string  ORDER BY
      */
-    private $order;
+    protected $order;
 
     /**
      * @var string  LIMIT, set by limit, page
      */
-    private $limit;
+    protected $limit;
 
     /**
-     * @var array   Binded values (if any), set after prepare() method call
+     * @var array   Binded values (if any), set after _prepare() method call
      */
-    private $bindedValues;
+    protected $binded_values;
 
 
     /**
      * Create new table or database
      * --
      * @param   string  $name
-     * @param   integer $type       cDatabaseQuery::DATABASE || cDatabaseQuery::TABLE
+     * @param   integer $type    DatabaseQuery::DATABASE || DatabaseQuery::TABLE
      * @param   array   $fields
      * --
      * @return  $this
@@ -84,16 +80,11 @@ class DatabaseQuery
         $this->type  = 'CREATE';
         $this->table = $name;
 
-        if ($type === self::TABLE) {
-            $this->values = $fields;
-        }
-        else {
-            $this->values = false;
-        }
-
+        $this->values = ($type === self::TABLE)
+                            ? $fields
+                            : false;
         return $this;
     }
-    //-
 
     /**
      * Values to be inserted into database.
@@ -106,16 +97,15 @@ class DatabaseQuery
      */
     public function insert($key, $value=false)
     {
-        if (!is_array($key)) {
-            $key = array($key => $value);
-        }
+        if (!is_array($key)) 
+            { $key = array($key => $value); }
 
         $this->type   = 'INSERT';
-        $this->values = is_array($this->values) ? Arr::merge($this->values, $key) : $key;
-
+        $this->values = is_array($this->values) 
+                            ? Arr::merge($this->values, $key) 
+                            : $key;
         return $this;
     }
-    //-
 
     /**
      * Into which table do we wanna insert values
@@ -127,10 +117,8 @@ class DatabaseQuery
     public function into($table)
     {
         $this->table = $table;
-
         return $this;
     }
-    //-
 
     /**
      * Select fields from database
@@ -145,7 +133,6 @@ class DatabaseQuery
         $this->select = !$what ? '*' : $what;
         return $this;
     }
-    //-
 
     /**
      * From which table?
@@ -159,7 +146,6 @@ class DatabaseQuery
         $this->table = $table;
         return $this;
     }
-    //-
 
     /**
      * WHERE condition
@@ -172,10 +158,9 @@ class DatabaseQuery
      */
     public function where($key, $value, $group=null)
     {
-        $this->makeWhere($key, $value, $group, 'AND');
+        $this->_make_where($key, $value, $group, 'AND');
         return $this;
     }
-    //-
 
     /**
      * AND (WHERE) condition
@@ -186,12 +171,11 @@ class DatabaseQuery
      * --
      * @return  $this
      */
-    public function andWhere($key, $value, $group=null)
+    public function and_where($key, $value, $group=null)
     {
-        $this->makeWhere($key, $value, $group, 'AND');
+        $this->_make_where($key, $value, $group, 'AND');
         return $this;
     }
-    //-
 
     /**
      * OR (WHERE) condition
@@ -202,12 +186,11 @@ class DatabaseQuery
      * --
      * @return  $this
      */
-    public function orWhere($key, $value, $group=null)
+    public function or_where($key, $value, $group=null)
     {
-        $this->makeWhere($key, $value, $group, 'OR');
+        $this->_make_where($key, $value, $group, 'OR');
         return $this;
     }
-    //-
 
     /**
      * Make AND | OR Where statement
@@ -219,7 +202,7 @@ class DatabaseQuery
      * --
      * @return  $this
      */
-    private function makeWhere($key, $value, $group, $type)
+    protected function _make_where($key, $value, $group, $type)
     {
         if ($group !== null) {
             if ($group === true) {
@@ -241,44 +224,42 @@ class DatabaseQuery
         $key = $this->where ? $type . ' ' . $key  : $key;
         $this->where[$key] = $value;
     }
-    //-
 
     /**
      * ORDER BY
      * --
-     * @param   mixed   $field  string || ['name' => 'DESC'] ||
-     *                          ['name' => 'DESC', 'date' => 'ASC'] || ['name', 'id' => 'DESC']
+     * @param   mixed   $field  string || 
+     *                          ['name' => 'DESC'] ||
+     *                          ['name' => 'DESC', 'date' => 'ASC'] || 
+     *                          ['name', 'id' => 'DESC']
      * @param   string  $type   ASC || DESC
      * --
      * @return  $this
      */
     public function order($field, $type=false)
     {
-        if (!is_array($field)) {
-            $order = array($field => $type);
-        }
-        else {
-            $order = $field;
-        }
+        if (!is_array($field)) 
+            { $order = array($field => $type); }
+        else 
+            { $order = $field; }
 
         # Prepear order sql
-        $orderStatement = '';
+        $order_statement = '';
         foreach ($order as $field => $type) {
             if (is_integer($field)) {
                 # name, id DESC
-                $orderStatement .= $type . ', ';
+                $order_statement .= $type . ', ';
             }
             else {
                 # id DESC, name ASC, ...
-                $orderStatement .= "{$field} {$type}, ";
+                $order_statement .= "{$field} {$type}, ";
             }
         }
 
-        $this->order = 'ORDER BY ' . substr($orderStatement, 0, -2);
+        $this->order = 'ORDER BY ' . substr($order_statement, 0, -2);
 
         return $this;
     }
-    //-
 
     /**
      * Update table
@@ -294,7 +275,6 @@ class DatabaseQuery
 
         return $this;
     }
-    //-
 
     /**
      * Values to be set for insert.
@@ -307,18 +287,16 @@ class DatabaseQuery
      */
     public function set($key, $value=false)
     {
-        if (!is_array($key)) {
-            $values = array($key => $value);
-        }
-        else {
-            $values = $key;
-        }
+        if (!is_array($key)) 
+            { $values = array($key => $value); }
+        else 
+            { $values = $key; }
 
-        $this->values = is_array($this->values) ? Arr::merge($this->values, $values) : $values;
-
+        $this->values = is_array($this->values) 
+                            ? Arr::merge($this->values, $values) 
+                            : $values;
         return $this;
     }
-    //-
 
     /**
      * DELETE FROM table
@@ -334,7 +312,6 @@ class DatabaseQuery
 
         return $this;
     }
-    //-
 
     /**
      * LIMIT
@@ -347,10 +324,8 @@ class DatabaseQuery
     public function limit($start, $amount)
     {
         $this->limit = "LIMIT {$start}, {$amount}";
-
         return $this;
     }
-    //-
 
     /**
      * Create calculated limit
@@ -367,7 +342,6 @@ class DatabaseQuery
 
         return $this;
     }
-    //-
 
     /**
      * Will LEFT JOIN table
@@ -382,7 +356,6 @@ class DatabaseQuery
         $this->joins[$table] = $on;
         return $this;
     }
-    //-
 
     /**
      * Will GROUP BY field
@@ -396,35 +369,30 @@ class DatabaseQuery
         $this->group = $field;
         return $this;
     }
-    //-
 
     /**
      * Execute statement
      * --
-     * @return  cDatabaseResult
+     * @return  DatabaseResult
      */
     public function execute()
     {
         # Always need to prepare before anything can be done
-        $sql = $this->prepare();
+        $sql = $this->_prepare();
 
-        $Statement = new cDatabaseStatement($sql);
-        $Statement->bind($this->bindedValues);
+        $statement = new DatabaseStatement($sql);
+        $statement->bind($this->binded_values);
 
-        return $Statement->execute();
+        return $statement->execute();
     }
-    //-
 
     /**
      * Get SQL statement as string
      * --
      * @return  string
      */
-    public function asString()
-    {
-        return $this->prepare();
-    }
-    //-
+    public function as_string()
+        { return $this->_prepare(); }
 
     /**
      * Get SQL statement as array. Return string (in case you selected string index) or array.
@@ -434,12 +402,12 @@ class DatabaseQuery
      * --
      * @return  mixed
      */
-    public function asArray($index=false)
+    public function as_array($index=false)
     {
-        $this->prepare();
+        $this->_prepare();
 
         if ($index) {
-            $index = $index == 'binded' ? 'bindedValues' : $index;
+            $index = $index == 'binded' ? 'binded_values' : $index;
             return property_exists($this, $index) ? $this->{$index} : false;
         }
         else {
@@ -451,22 +419,25 @@ class DatabaseQuery
                 'select' => $this->select,
                 'order'  => $this->order,
                 'limit'  => $this->limit,
-                'binded' => $this->bindedValues
+                'binded' => $this->binded_values
             );
         }
     }
-    //-
 
     /**
-     * From all parameters create valid SQL string, and list of values for binding.
+     * From all parameters create valid SQL string, 
+     * and list of values for binding.
      * --
      * @return  void
      */
-    private function prepare()
+    protected function _prepare()
     {
         // CREATE || SELECT || INSERT || UPDATE || DELETE
         switch(strtoupper($this->type))
         {
+            /* -----------------------------------------------------------------
+             * CREATE STATEMENT
+             */
             case 'CREATE':
                 if ($this->values === false) {
                     # Create database
@@ -482,6 +453,9 @@ class DatabaseQuery
                 }
                 break;
 
+            /* -----------------------------------------------------------------
+             * SELECT STATEMENT
+             */
             case 'SELECT':
                 # Select values from database
                 $sql = 'SELECT ' . $this->select . ' FROM ' . $this->table;
@@ -495,18 +469,25 @@ class DatabaseQuery
 
                 break;
 
+            /* -----------------------------------------------------------------
+             * INSERT STATEMENT
+             */
             case 'INSERT':
                 # Build insert statement
-                $Values = $this->prepareBind($this->values, 'v_');
+                $values = $this->prepare_bind($this->values, 'v_');
                 $sql = 'INSERT INTO ' . $this->table .
-                        ' (' . Arr::implode_keys(', ', $Values) .  ') VALUES (' . implode(', ', $Values) . ')';
+                        ' (' . Arr::implode_keys(', ', $values) .  ') VALUES ('. 
+                        implode(', ', $values) . ')';
                 break;
 
+            /* -----------------------------------------------------------------
+             * UPDATE STATEMENT
+             */
             case 'UPDATE':
-                $Values = $this->prepareBind($this->values, 's_');
+                $values = $this->prepare_bind($this->values, 's_');
                 $sql = 'UPDATE ' . $this->table . ' SET ';
-                if (!empty($Values)) {
-                    foreach ($Values as $k => $v) {
+                if (!empty($values)) {
+                    foreach ($values as $k => $v) {
                         $sql .= "{$k}={$v}, ";
                     }
                 }
@@ -517,86 +498,100 @@ class DatabaseQuery
                 $sql = substr($sql, 0, -2);
                 break;
 
+            /* -----------------------------------------------------------------
+             * DELETE STATEMENT
+             */
             case 'DELETE':
                 $sql = 'DELETE FROM ' . $this->table;
                 break;
 
+            /* -----------------------------------------------------------------
+             * DEFAULT
+             */
             default:
                 Log::err("Invalid type: `{$this->type}`.");
                 return false;
         }
 
-        # Append where
+        /* ---------------------------------------------------------------------
+         * WHERE CONDITION
+         */
         if (is_array($this->where)) {
-            $where     = $this->prepareBind($this->where, 'w_');
-            $whereStr  = '';
+            $where     = $this->prepare_bind($this->where, 'w_');
+            $where_str = '';
             foreach ($where as $k => $v) {
                 $k = trim($k);
                 if (substr($k,-1) === ')') {
-                    $clsGroup = ')';
+                    $cls_group = ')';
                     $k = substr($k,0,-1);
                 }
                 else {
-                    $clsGroup = '';
+                    $cls_group = '';
                 }
-                $divider   = strpos(str_replace(array('AND ', 'OR '), '', $k), ' ') !== false ? ' ' : ' = ';
-                $whereStr .= "{$k}{$divider}{$v}{$clsGroup} ";
+                $divider = strpos(str_replace(array('AND ', 'OR '), '', $k), ' ') !== false 
+                                ? ' ' 
+                                : ' = ';
+
+                $where_str .= "{$k}{$divider}{$v}{$cls_group} ";
             }
-            $where = 'WHERE ' . substr($whereStr, 0, -1);
+            $where = 'WHERE ' . substr($where_str, 0, -1);
             $sql  .= ' ' . $where;
         }
 
-        # Append order
+        /* ---------------------------------------------------------------------
+         * ORDER BY
+         */
         if ($this->order) {
             $sql .= ' ' . $this->order;
         }
 
-        # Append limit
+        /* ---------------------------------------------------------------------
+         * LIMIT
+         */
         if ($this->limit) {
             $sql .= ' ' . $this->limit;
         }
 
-        # Group?
+        /* ---------------------------------------------------------------------
+         * GROUP BY
+         */
         if ($this->group) {
             $sql .= ' GROUP BY ' . $this->group;
         }
 
         return $sql;
     }
-    //-
 
     /**
-     * Will add values to be $this->bindedValues. Require array, return array,
+     * Will add values to be $this->binded_values. Require array, return array,
      * with key => :key_bind
      * --
-     * @param   array   $Values
+     * @param   array   $values
      * @param   string  $prefix Bind key prefix :<prefix><key>
      * --
      * @return  array
      */
-    public function prepareBind($Values, $prefix='')
+    public function prepare_bind($values, $prefix='')
     {
-        $Result = array();
+        $result = array();
 
-        foreach ($Values as $key => $val)
+        foreach ($values as $key => $val)
         {
-            $keyBind = str_replace(array('AND ', 'OR ', 'LIKE'), '', $key);
-            $keyBind = $prefix . Str::clean($keyBind, 'aA1', '_');
+            $key_bind = str_replace(array('AND ', 'OR ', 'LIKE'), '', $key);
+            $key_bind = $prefix . Str::clean($key_bind, 'aA1', '_');
 
             # Duplicated?
-            $nKeyBind = $keyBind;
+            $n_key_bind = $key_bind;
             $i = 2;
-            while (isset($this->bindedValues[$nKeyBind])) {
-                $nKeyBind = "{$keyBind}_{$i}";
+            while (isset($this->binded_values[$n_key_bind])) {
+                $n_key_bind = "{$key_bind}_{$i}";
                 $i++;
             }
 
-            $Result[$key] = ':'.$nKeyBind;
-            $this->bindedValues[$nKeyBind] = $val;
+            $result[$key] = ':'.$n_key_bind;
+            $this->binded_values[$n_key_bind] = $val;
         }
 
-        return $Result;
+        return $result;
     }
-    //-
 }
-//--

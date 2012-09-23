@@ -24,6 +24,9 @@ class Dot
     {
         $params = $this->params;
 
+        # Insert empty space / line
+        self::inf('');
+
         # Parameter one must be set for sure
         if (!isset($params[1])) {
             return
@@ -65,12 +68,16 @@ class Dot
 
         # Construct object and try to run the action, if possible...
         $cli_class = new $class($params);
-        $params[2] = (isset($params[2])) ? $params[2] : false;
+        $action    = (isset($params[2])) ? 'action_' . $params[2] : 'action_none';
 
-        if (method_exists($cli_class, $params[2])) {
-            call_user_func(array($cli_class, $params[2]));
-        }
+        # Unset all params we don't need
+        $params_in = array_slice($params, 3);
 
+        if (method_exists($cli_class, $action))
+            { call_user_func_array(array($cli_class, $action), $params_in); }
+
+        # Insert empty space / line
+        self::inf('');
         return;
     }
 
