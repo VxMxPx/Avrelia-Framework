@@ -24,14 +24,6 @@ $avrelia_config['system']['routes'] = array
 
 # List of enabled plugs + map
 $avrelia_config['plug']['enabled']   = array(
-    'Avrelia\\Plug\\Cookie',
-    'Avrelia\\Plug\\Cache',
-    'Avrelia\\Plug\\Database',
-    'Avrelia\\Plug\\Form',
-    'Avrelia\\Plug\\Image',
-    'Avrelia\\Plug\\Mailer',
-    'Avrelia\\Plug\\Session',
-    'Avrelia\\Plug\\Validate',
     'Avrelia\\Plug\\HTML',
     'Avrelia\\Plug\\JQuery',
     'Avrelia\\Plug\\Debug'
@@ -39,8 +31,6 @@ $avrelia_config['plug']['enabled']   = array(
 
 # List of plugs which will be auto-loaded
 $avrelia_config['plug']['auto_load'] = array(
-    'Avrelia\\Plug\\Cache',
-    'Avrelia\\Plug\\Session',
     'Avrelia\\Plug\\Debug'
 );
 

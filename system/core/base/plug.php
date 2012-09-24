@@ -475,9 +475,10 @@ class Plug
                     }
                 }
             }
+
+            self::map_class($component);
         }
 
-        self::map_class($component);
         return (empty($failed)) ? true : $failed;
     }
 
@@ -518,7 +519,10 @@ class Plug
      */
     protected static function map_class($class_name)
     {
-        class_alias($class_name, self::_get_class_alias($class_name));
+        $alias = self::_get_class_alias($class_name);
+        Log::inf("Will map class `{$class_name}` to `{$alias}`.");
+        
+        class_alias($class_name, $alias);
     }
 
     /**

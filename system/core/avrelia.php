@@ -79,9 +79,6 @@ class Avrelia
         # Set Timer...
         Benchmark::set_timer('system');
 
-        # First Log Entry...
-        Log::inf('PHP version: ' . PHP_VERSION . ' | Framework version: ' . self::VERSION);
-
         # Error Handling
         set_error_handler('avrelia_error_handler');
 
