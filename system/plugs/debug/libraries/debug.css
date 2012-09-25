@@ -1,9 +1,9 @@
 #cdebugOverlay {
     position: fixed;
-    top: 0px;
-    left: 0px;
-    bottom: 0px;
-    right: 0px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
     width: 100%;
     height: 100%;
     opacity: 0.9;
@@ -19,12 +19,12 @@
 
 #cdebugToggle {
     background-color: white;
-    border-radius: 4px 0 0 0;
-    bottom: 0px;
-    right: 0px;
-    border-top: 1px solid #999;
-    border-left: 1px solid #999;
-    color: #000000;
+    border-radius: 2px 0 0 0;
+    bottom: 0;
+    right: 0;
+    border-top:  1px solid #ccc;
+    border-left: 1px solid #ccc;
+    color: #222;
     font-size: 12px;
     font-weight: bold;
     padding: 4px 10px;
@@ -42,7 +42,7 @@
     padding: 1px 4px;
 }
 
-.cdebugToggleTag.cdtttError { background-color: #F66; }
+.cdebugToggleTag.cdtttError   { background-color: #F66; }
 .cdebugToggleTag.cdtttWarning { background-color: #FB4; }
 
 #cdebugPanel {
@@ -51,11 +51,11 @@
     background: #222;
     color: #fff;
     right: -750px;
-    bottom: 0px;
+    bottom: 0;
     display: none;
-    border-radius: 4px 0 0 0;
-    border-top: 1px solid #999;
-    border-left: 1px solid #999;
+    border-radius: 2px 0 0 0;
+    border-top: 1px solid #fff;
+    border-left: 1px solid #fff;
     z-index: 91;
 }
 
@@ -78,7 +78,7 @@
 
 #cdebugPanel .navigation a.selected {
     background-color: #222222;
-    border-radius: 4px 4px 0 0;
+    border-radius: 2px 2px 0 0;
     color: white;
     font-weight: bold;
     outline: none;
@@ -89,6 +89,7 @@
     overflow: auto;
     width: 100%;
     height: 97%;
+    font-size: 14px;
 }
 
 #cdebugPanel div.content.log {

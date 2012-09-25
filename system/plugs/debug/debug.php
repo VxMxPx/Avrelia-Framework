@@ -26,21 +26,13 @@ class Debug
      */
     public static function _on_include_()
     {
-        # Need cJquery
-        if (!Plug::has('Avrelia\\Plug\\JQuery'))
-        {
-            Log::war("Plug `debug` need `jquery` plug to be enabled.");
-            return false;
-        }
-
-        # Need cHTML (if we have jQuery then HTML is almost for sure available too, but just to be sure)
-        if (!Plug::has('Avrelia\\Plug\\HTML')) {
-            Log::war("Plug `debug` need `html` plug to be enabled.");
-            return false;
-        }
+        Plug::need(array(
+            'Avrelia\\Plug\\JQuery',
+            'Avrelia\\Plug\\HTML'
+        ));
 
         # Add jQuery
-        JQuery::Add();
+        JQuery::add();
         HTML::add_header('<style>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.css')).'</style>', 'cdebug_css');
 
         Event::watch('/plug/html/get_footers', array('Debug', 'AddPanel'));

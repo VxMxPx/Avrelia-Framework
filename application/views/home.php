@@ -1,4 +1,7 @@
-<h1><?php echo $greeting; ?></h1><small>(<a href="#" id="newGreeting">Ajax Greeting!</a>)</small>
+<h1>
+	Avrelia Framework
+	<small class="fade">v2</small>
+</h1>
 
 <h2>So, what to do next?</h2>
 <p>
@@ -16,6 +19,4 @@
 <p>No problem. Just cd to application folder and run <code>./dot help</code> and follow instructions.</p>
 
 <h2>What just happened?</h2>
-<p>
-    If you're curious what's going on under the hood, <a href="#log" id="toggleLog">see the log</a>.
-</p>
+<p>If you're curious what's going on under the hood, <a href="#log" id="toggleLog">see the log</a>.</p>
