@@ -29,7 +29,7 @@
     </div> <!-- end: page -->
     <?php HTML::get_footers(); ?>
     <script>
-        $('toggleLog').on('click', Avrelia.Plug.Debug.show);
+        $('toggleLog').on('click', Avrelia.Plug.Debug.showPanel);
     </script>
 </body>
 </html>
