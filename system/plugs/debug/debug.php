@@ -7,17 +7,11 @@ use Avrelia\Core\Event as Event;
 use Avrelia\Core\View as View;
 
 /**
- * Avrelia
- * ----
- * Debug Plug
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * Debug Panel Code
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-04-08
  */
 class Debug
 {
@@ -33,25 +27,26 @@ class Debug
 
         # Add jQuery
         JQuery::add();
-        HTML::add_header('<style>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.css')).'</style>', 'cdebug_css');
+        HTML::add_header(
+            '<style>'.
+                FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.css')).
+            '</style>', 
+            'Avrelia/Plug/Debug');
 
-        Event::watch('/plug/html/get_footers', array('Debug', 'AddPanel'));
+        Event::watch('/plug/html/get_footers', function() {
+            Log::add_benchmarks();
+
+            HTML::add_footer(
+                View::get(ds(dirname(__FILE__).'/views/panel.php'))->do_return(), 
+                'cdebugPanel');
+
+            HTML::add_footer(
+                '<script>'.
+                    FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.js')).
+                    '</script>',
+                    'Avrelia/Plug/Debug');
+        });
 
         return true;
     }
-    //-
-
-    /**
-     * Will add footers
-     * --
-     * @return  void
-     */
-    public static function AddPanel()
-    {
-        Log::add_benchmarks();
-        HTML::add_footer(View::get(ds(dirname(__FILE__).'/views/panel.php'))->do_return(), 'cdebugPanel');
-        HTML::add_footer('<script>'.FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.js')).'</script>', 'cdebug_js');
-    }
-    //-
 }
-//--
