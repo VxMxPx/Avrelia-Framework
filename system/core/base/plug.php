@@ -64,13 +64,48 @@ class Plug
     }
 
     /**
-     * Check if particular plug is enabled.
+     * The same as "has" only that this will trigger Avrelia\Plug\Exception if
+     * and of the needed plugs isn't enabled.
      * --
-     * @param   string  $name
+     * @param  mixed $name String or array, list of needed plugs
+     * --
+     * @return void
+     */
+    public static function need($name)
+    {
+        if (is_array($name)) {
+            foreach ($name as $n) {
+                self::need($n);
+            }
+
+            return true;
+        }
+
+        if (!self::has($name)) {
+            throw new Avrelia\Exception\Plug("Missing dependency: `{$name}`.");
+        }
+        else 
+            { return true; }
+    }
+
+    /**
+     * Check if particular plug is enabled. If you pass in the array, all plugs
+     * on the list will be checked, and if any of them is missing false will
+     * be returned.
+     * --
+     * @param   mixed  $name
      * @return  boolean
      */
     public static function has($name)
     {
+        if (is_array($name)) {
+            foreach ($name as $n) {
+                if (!self::has($n)) { return false; }
+            }
+
+            return true;
+        }
+
         return 
             isset(self::$available[$name]) && self::$available[$name] 
                 ? true 
