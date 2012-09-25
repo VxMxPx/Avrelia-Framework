@@ -34,11 +34,14 @@ class JQuery
             Plug::set_public(__FILE__);
 
             # Link
-            self::$link = url(Cfg::get('plug/public_dir', 'plugs').'/jquery/jquery-'.self::$config['version'].'.min.js');
+            self::$link = url(
+                Cfg::get('plug/public_dir', 'plugs').
+                '/jquery/jquery-'.self::$config['version'].'.min.js');
         }
         else {
             # Link
-            self::$link = 'http://ajax.googleapis.com/ajax/libs/jquery/'.self::$config['version'].'/jquery.min.js';
+            self::$link = 'http://ajax.googleapis.com/ajax/libs/jquery/'.
+                            self::$config['version'].'/jquery.min.js';
         }
 
         self::$tag = '<script src="'.self::$link.'"></script>';
@@ -55,7 +58,7 @@ class JQuery
      * @return  void
      */
     public static function add()
-        { HTML::add_footer(self::$tag, 'avrelia/plug/jquery'); }
+        { HTML::add_footer(self::$tag, 'Avrelia/Plug/JQuery'); }
 
     /**
      * Remove jQuery from cHTML footer.
@@ -63,7 +66,7 @@ class JQuery
      * @return  void
      */
     public static function Remove()
-        { HTML::add_footer(false, 'avrelia/plug/jquery'); }
+        { HTML::add_footer(false, 'Avrelia/Plug/JQuery'); }
 
     /**
      * Get only url
