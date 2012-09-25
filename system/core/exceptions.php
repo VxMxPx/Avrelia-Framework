@@ -20,5 +20,10 @@ if (!class_exists('AvreliaException', false))
 if (!class_exists('Avrelia\\Exception\\FileSystem', false)) 
 	{ class FileSystem extends Base {} }
 
+# Any value problem (wrong variable's value was passes in, etc...)
 if (!class_exists('Avrelia\\Exception\\ValueError', false))
 	{ class ValueError extends Base {} }
+
+# General plug-related exception
+if (!class_exists('Avrelia\\Exception\\Plug', false))
+	{ class Plug extends Base {} }
