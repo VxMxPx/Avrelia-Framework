@@ -29,7 +29,9 @@
     </div> <!-- end: page -->
     <?php HTML::get_footers(); ?>
     <script>
-        $('toggleLog').on('click', Avrelia.Plug.Debug.showPanel);
+        (function($) {
+            $('#toggleLog').on('click', Avrelia.Plug.Debug.panelShow);
+        })(jQuery);
     </script>
 </body>
 </html>
