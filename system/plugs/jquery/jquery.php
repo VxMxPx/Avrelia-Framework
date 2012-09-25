@@ -4,23 +4,17 @@ use Avrelia\Core\Plug as Plug;
 use Avrelia\Core\Cfg  as Cfg;
 
 /**
- * Avrelia
- * ----
- * Will All jQuery Library To cHTML Footers
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * JQuery Plug
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-02-19
  */
 class JQuery
 {
-    private static $Config; # string    Plug's configs
-    private static $link;   # string    Actual full link to script (either local or googleapis)
-    private static $tag;    # string    Tag template
+    private static $config; # string Plug's configs
+    private static $link;   # string Actual full link to script (either local or googleapis)
+    private static $tag;    # string Tag template
 
     /**
      * Will add jQuery to HTML footer.
@@ -29,18 +23,22 @@ class JQuery
      */
     public static function _on_include_()
     {
-        self::$Config = Plug::get_config(__FILE__);
+        Plug::need(array(
+            'Avrelia\\Plug\\HTML'
+        ));
+        
+        self::$config = Plug::get_config(__FILE__);
 
-        if (self::$Config['local']) {
+        if (self::$config['local']) {
             # We have some public material
             Plug::set_public(__FILE__);
 
             # Link
-            self::$link = url(Cfg::get('plug/public_dir', 'plugs').'/jquery/jquery-'.self::$Config['version'].'.min.js');
+            self::$link = url(Cfg::get('plug/public_dir', 'plugs').'/jquery/jquery-'.self::$config['version'].'.min.js');
         }
         else {
             # Link
-            self::$link = 'http://ajax.googleapis.com/ajax/libs/jquery/'.self::$Config['version'].'/jquery.min.js';
+            self::$link = 'http://ajax.googleapis.com/ajax/libs/jquery/'.self::$config['version'].'/jquery.min.js';
         }
 
         self::$tag = '<script src="'.self::$link.'"></script>';
@@ -50,18 +48,14 @@ class JQuery
 
         return true;
     }
-    //-
 
     /**
      * Add jQuery to cHTML footer.
      * --
      * @return  void
      */
-    public static function Add()
-    {
-        HTML::add_footer(self::$tag, 'cjquery');
-    }
-    //-
+    public static function add()
+        { HTML::add_footer(self::$tag, 'avrelia/plug/jquery'); }
 
     /**
      * Remove jQuery from cHTML footer.
@@ -69,17 +63,13 @@ class JQuery
      * @return  void
      */
     public static function Remove()
-    {
-        HTML::add_footer(false, 'cjquery');
-    }
+        { HTML::add_footer(false, 'avrelia/plug/jquery'); }
 
     /**
      * Get only url
      * --
      * @return  string
      */
-    public static function Url()
-    {
-        return self::$link;
-    }
+    public static function url()
+        { return self::$link; }
 }
