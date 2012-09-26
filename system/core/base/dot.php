@@ -24,6 +24,7 @@ class Dot
 
     /**
      * Execute the params previously set.
+     * --
      * @return void
      */
     public function execute()
@@ -112,8 +113,10 @@ class Dot
     /**
      * Get particular script's path by script's id / name.
      * For example: help => /some/path/help.php
-     * @param  [type] $name [description]
-     * @return [type]       [description]
+     * --
+     * @param  string $name
+     * --
+     * @return string
      */
     public static function get_script_by_name($name)
     {
@@ -148,10 +151,51 @@ class Dot
     }
 
     /**
+     * Capture the cursos - wait for user's input. You must pass in a function,
+     * this will run until function returns false.
+     * --
+     * @param  string   $title The text displayed for input question.
+     * @param  function $func  Function to be executed for each input, 
+     *                         when function returns false, the cursor will be
+     *                         released.
+     * --
+     * @return array    array(
+     *                     'title'  => $title,
+     *                     'inputs' => array(all inputed values),
+     *                     'line'   => number of lines
+    *                   )
+     */
+    public static function input($title, $func)
+    {
+        $shell = array(
+            'title'  => $title,
+            'inputs' => array(),
+            'line'   => 0
+        );
+
+        do {
+            if (function_exists('readline')) {
+                $stdin = readline($shell['title']);
+                readline_add_history($stdin);
+            }
+            else {
+                echo $shell['title'];
+                $stdin = fread(STDIN, 8192);
+            }
+            $stdin = trim($stdin);
+
+            $shell['inputs'][] = $stdin;
+            $shell['line']++;
+
+        } while($func($stdin, $shell));
+
+        return $shell;
+    }
+
+    /**
      * Print out the message
      * @param  string  $message
      * @param  boolean $new_line
-     * @return void
      */
     public static function war($message, $new_line=true)
         { return self::out('war', $message, $new_line); }
@@ -166,6 +210,46 @@ class Dot
         { return self::out('ok', $message, $new_line); }
 
     /**
+     * Create a new line
+     * @param  integer $num Number of new lines
+     */
+    public static function nl($num=1)
+        { echo str_repeat("\n", (int)$num); }
+
+    /**
+     * Create documentation / help for particular command.
+     */
+    public static function doc($title, $usage, $commands=false)
+    {
+        Dot::inf($title);
+        Dot::nl();
+        Dot::inf('  ' . $usage);
+        Dot::nl();
+
+        if (!is_array($commands)) { return; }
+
+        // Get longest key, to align with it
+        $longest = 0;
+        foreach ($commands as $key => $command) {
+            strlen($key) > $longest
+                and $longest = strlen($key);
+        }
+
+        // Print all commands
+        Dot::inf('Available options:');
+        Dot::nl();
+        foreach ($commands as $key => $command) {
+            Dot::inf(
+                '  ' . 
+                $key . 
+                '    ' . 
+                str_repeat(" ", $longest - strlen($key)) .
+                $command
+            );
+        }
+    }
+
+    /**
      * Will print out the message
      * --
      * @param   string  $type
@@ -175,7 +259,6 @@ class Dot
      *                      ok  -- Green message
      * @param   string  $message
      * @param   boolean $new_line   Should message be in new line
-     * @return  void
      */
     public static function out($type, $message, $new_line=true)
     {
