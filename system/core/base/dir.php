@@ -223,10 +223,10 @@ class Dir
      */
     public static function is_empty($path)
     {
-        $path = realpath($path);
+        $path = ds($path);
 
-        # Actually, doesn't exists, so we throw null back, as "no results"
-        if (!is_dir($path)) { return null; }
+        # Actually, doesn't exists, so we return true, as "no results"
+        if (!$path || !is_dir($path)) { return true; }
 
         $contents = scandir($path);
         $contents = implode('', $contents);
