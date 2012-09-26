@@ -164,7 +164,7 @@ class Plug
 
         # Add it to the list
         self::$available[$plug] = array(
-            'path'        => $path,
+            'path'        => $plug_path,
             'time'        => time(),
             'alias'       => self::_get_class_alias($plug),
             'has_scripts' => $has_scripts
