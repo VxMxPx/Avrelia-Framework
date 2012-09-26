@@ -10,8 +10,8 @@ class javascriptBuild extends baseBuild
 	public function execute()
 	{
 		$filename = basename($this->output);
-		$filename = explode('.', $filename);
-		$filename = $filename[0];
+		$filename = explode('.', strrev($filename), 2);
+		$filename = strrev($filename[1]);
 
 		$this->outputMin = dirname($this->output) . '/' . $filename . '.min.js';
 		$this->rawJs     = dirname($this->output) . '/' . $filename . '.js';
@@ -30,9 +30,12 @@ class javascriptBuild extends baseBuild
 
 				if (file_put_contents($this->output, $contents)) {
 					$this->say('INF', '  JavaScript to: ' . $this->output);
-					dump($this->output);
-					//system('coffee --compile ' . $this->output);
-					//system("uglifyjs -o {$this->outputMin} {$this->rawJs}");
+					if (strpos($this->options, 'coffe') !== false) {
+						system('coffee --compile ' . $this->output);
+					}
+					if (strpos($this->options, 'uglify') !== false) {
+						system("uglifyjs -o {$this->outputMin} {$this->rawJs}");
+					}
 				}
 				else {
 					$this->say('ERR', "Failed: {$output}");

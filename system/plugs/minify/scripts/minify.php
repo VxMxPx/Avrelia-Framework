@@ -32,20 +32,21 @@ class Minify_Cli
     {
         Dot::doc(
             'Minify, JavaScript and CSS compressor',
-            'Usage: minify watch',
+            'Usage: minify watch <option>',
             array(
-                'watch' => 'Will be observing selected files and directories.',
+                'watch <css|js>' => 'Will be observing selected files and directories.',
             )
         );
     }
 
-    public function action_watch()
+    public function action_watch($param=false)
     {
         $directory = ds(get_path_segment(__FILE__, 0, -2), 'libs');
         $shell_dir = escapeshellarg($directory);
-        $js = Cfg::get('plugs/minify/javascript');
+        $js  = Cfg::get('plugs/minify/javascript');
+        $css = Cfg::get('plugs/minify/css');
 
-        if ($js['enabled'] === true) {
+        if ($js['enabled'] === true && (!$param || $param === 'js')) {
             $command  = "cd {$shell_dir} && ";
             $command .= "php javascript.build.php ";
 
@@ -63,11 +64,19 @@ class Minify_Cli
                 { $command = false; }
 
             if ($command) {
-                dump($command);
-                // $this->_fork_command($command);
+                $this->_fork_command($command);
             }
         }
 
-        //$this->_fork_command('php stylus.build.php ../bugless/sources/stylus/brown.styl ../profile/public/themes/brown');
+        if ($css['enabled'] === true && (!$param || $param === 'css')) {
+            $command  = "cd {$shell_dir} && ";
+            $command .= "php stylus.build.php ";
+
+            $input  = escapeshellarg($css['input']);
+            $output = escapeshellarg($css['output']);
+            $command .= "{$input} {$output}";
+
+            $this->_fork_command($command);
+        }
     }
 }

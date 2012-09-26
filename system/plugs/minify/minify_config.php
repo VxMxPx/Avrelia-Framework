@@ -3,12 +3,16 @@
 $minify_config = array(
     'javascript' => array(
         'enabled' => true,
-        'input'   => pub_path('js/main.dev.js'),
-        'output'  => pub_path('js/main.all.js'),
         'coffee'  => false,
         'uglify'  => true,
+        // Enter BOTH directory and filename
+        'input'   => pub_path('js/main.dev.js'),
+        'output'  => pub_path('js/main.js'),
     ),
     'css' => array(
         'enabled' => true,
+        // Enter ONLY directoried as input and output
+        'input'   => pub_path('css/'),
+        'output'  => pub_path('css/'),
     ),
 );
