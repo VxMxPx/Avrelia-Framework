@@ -341,7 +341,7 @@ class Plug
 
         if (is_array(self::$available)) {
             foreach (self::$available as $plug) {
-                if ($plug['has_scripts'] && is_array($plug['has_scripts'])) {
+                if (isset($plug['has_scripts']) && is_array($plug['has_scripts'])) {
                     foreach ($plug['has_scripts'] as $script_id => $script_path) {
                         $result[$script_id] = $script_path;
                     }
