@@ -65,6 +65,9 @@ class Avrelia
 
         include(sys_path('core/exceptions.php'));
 
+        # Error Handling
+        set_error_handler('avrelia_error_handler');
+
         /* ---------------------------------------------------------------------
          * Load initializer
          */
@@ -78,9 +81,6 @@ class Avrelia
 
         # Set Timer...
         Benchmark::set_timer('system');
-
-        # Error Handling
-        set_error_handler('avrelia_error_handler');
 
         # Now scan and autoload plugs
         if (Cfg::get('plug/enabled')) 
@@ -99,6 +99,13 @@ class Avrelia
      */
     public function __destruct()
     {
+        if (!class_exists('Event', false) 
+            || !class_exists('Cfg', false) 
+            || !class_exists('Log', false)
+        ) {
+            return false;
+        }
+
         # Final event
         Event::trigger('/core/avrelia/destruct');
 
