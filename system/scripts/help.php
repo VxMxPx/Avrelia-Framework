@@ -14,23 +14,11 @@ class help_Cli
     public function __construct($params)
     {
         Dot::inf("Available commands:");
+        $list = Dot::get_all_scripts();
 
-        if (is_dir(sys_path('scripts'))) 
-            { $list_sys = scandir(sys_path('scripts')); }
-        else 
-            { $list_sys = array(); }
-
-        if (is_dir(app_path('scripts')))
-            { $list_app = scandir(app_path('scripts')); }
-        else
-            { $list_app = array(); }
-
-        $list_all = array_merge($list_sys, $list_app);
-
-        if (!empty($list_all)) {
-            foreach ($list_all as $comm) {
-                if (substr($comm, -4, 4) != '.php') { continue; }
-                Dot::inf("  " . substr($comm, 0, -4));
+        if (!empty($list)) {
+            foreach ($list as $script => $path) {
+                Dot::inf("  {$script}");
             }
         }
     }

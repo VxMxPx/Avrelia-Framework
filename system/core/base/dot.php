@@ -14,6 +14,12 @@ class Dot
     # Parameters to execute
     protected $params = null;
 
+    # Available scripts
+    protected static $available = false;
+
+    # Get available scripts
+
+    # Construct the object
     public function __construct($params) { $this->params = $params; }
 
     /**
@@ -37,32 +43,25 @@ class Dot
 
         # Class in a format command_Cli
         $class = $params[1] . '_Cli';
-        $file  = strtolower(str_replace('.', '', $params[1]));
+        $file  = $params[1];
 
         if (!class_exists($class, false))
         {
-            if (file_exists(app_path("scripts/{$file}.php")))
-            {
-                include(app_path("scripts/{$file}.php"));
-                if (!class_exists($class, false))
-                {
-                    self::err("File was found, but class couldn't be constucted.");
-                    return;
-                }
-            }
-            elseif (file_exists(sys_path("scripts/{$file}.php")))
-            {
-                include(sys_path("scripts/{$file}.php"));
-                if (!class_exists($class, false))
-                {
-                    self::err("File was found, but class couldn't be constucted.");
-                    return;
-                }
-            }
-            else
-            {
+            $file = self::get_script_by_name($file);
+
+            if (!$file) {
                 self::war("Invalid command. Type `help` for list of commands.");
                 return;
+            }
+
+            if (file_exists($file))
+            {
+                include($file);
+                if (!class_exists($class, false))
+                {
+                    self::err("File was found, but class couldn't be constucted.");
+                    return;
+                }
             }
         }
 
@@ -79,6 +78,73 @@ class Dot
         # Insert empty space / line
         self::inf('');
         return;
+    }
+
+    /* -------------------------------------------------------------------------
+     * STATIC METHODS
+     */
+
+    # Will set all scripts
+    public static function _on_include_()
+    {
+        self::$available = self::get_all_scripts();
+    }
+
+    /**
+     * Get list of available scripts. Return array in format:
+     *     'script_id'  => 'script_path',
+     *     'another_id' => 'another_path'
+     * --
+     * @return array
+     */
+    public static function get_all_scripts()
+    {
+        if (self::$available) { return self::$available; }
+
+        // Scan application, system and plugs directories
+        return array_merge(
+            self::_find_in_dir(app_path('scripts')),
+            self::_find_in_dir(sys_path('scripts')),
+            (array) Plug::get_scripts()
+        );
+    }
+
+    /**
+     * Get particular script's path by script's id / name.
+     * For example: help => /some/path/help.php
+     * @param  [type] $name [description]
+     * @return [type]       [description]
+     */
+    public static function get_script_by_name($name)
+    {
+        return isset(self::$available[$name])
+                ? self::$available[$name]
+                : false;
+    }
+
+    /**
+     * Scan particular directory to find scripts in it. Return array in format:
+     *     'script_id'  => 'script_path',
+     *     'another_id' => 'another_path'
+     * --
+     * @param  string $directory
+     * @return array
+     */
+    protected static function _find_in_dir($directory)
+    {
+        $final = array();
+
+        if (is_dir($directory)) 
+            { $list = scandir($directory); }
+
+        if (!empty($list)) {
+            foreach ($list as $script) {
+                if (substr($script, -4, 4) !== '.php') { continue; }
+                $final[substr($script, 0, -4)] = ds($directory, $script);
+            }
+        }
+
+        return $final;
     }
 
     /**

@@ -9,10 +9,11 @@
  */
 class Plug
 {
-    # List of included plugs
+    # List of included plugs, those are the one, which were loaded
     protected static $included = array();
 
-    # List of available plugs
+    # List of available plugs, those are the one, which are enabled
+    # But not necessarily loaded at the moment.
     protected static $available = array();
 
 
@@ -64,8 +65,8 @@ class Plug
     }
 
     /**
-     * The same as "has" only that this will trigger Avrelia\Plug\Exception if
-     * and of the needed plugs isn't enabled.
+     * The same as "has" only that this will trigger fatal error if any of the 
+     * needed plugs isn't enabled.
      * --
      * @param  mixed $name String or array, list of needed plugs
      * --
@@ -82,7 +83,9 @@ class Plug
         }
 
         if (!self::has($name)) {
-            throw new Avrelia\Exception\Plug("Missing dependency: `{$name}`.");
+            trigger_error("Missing dependency: `{$name}`.", E_USER_ERROR);
+            return false;
+            //throw new \Avrelia\Exception\Plug("Missing dependency: `{$name}`.");
         }
         else 
             { return true; }
@@ -94,6 +97,7 @@ class Plug
      * be returned.
      * --
      * @param   mixed  $name
+     * --
      * @return  boolean
      */
     public static function has($name)
@@ -118,6 +122,7 @@ class Plug
      * If method can be found, it will be called and result will be returned.
      * --
      * @param   string  $plug
+     * --
      * @return  boolean
      */
     public static function enable($plug)
@@ -142,10 +147,27 @@ class Plug
             $return = true;
         }
 
+        # Check if we have script(s) for this plug...
+        if (Dir::is_empty(ds($plug_path,'scripts'))) {
+            $has_scripts = false;
+        } else {
+            $has_scripts = array();
+            $files = scandir(ds($plug_path,'scripts'));
+            foreach ($files as $file) {
+                if (substr($file, -4, 4) === '.php') {
+                    $has_scripts[substr($file, 0, -4)] = ds($plug_path,'scripts',$file);
+                }
+            }
+            if (empty($has_scripts))
+                    { $has_scripts = false; }
+        }
+
         # Add it to the list
         self::$available[$plug] = array(
-            'time'  => time(),
-            'alias' => self::_get_class_alias($plug)
+            'path'        => $path,
+            'time'        => time(),
+            'alias'       => self::_get_class_alias($plug),
+            'has_scripts' => $has_scripts
         );
         self::_save_list();
 
@@ -160,6 +182,7 @@ class Plug
      * If method can be found, it will be called and result will be returned.
      * --
      * @param   string  $plug
+     * --
      * @return  boolean
      */
     public static function disable($plug)
@@ -212,6 +235,7 @@ class Plug
      * The public folder name will be set based on plug's _id_ (name).
      * --
      * @param   string  $full_path   You can just pass __FILE__
+     * --
      * @return  boolean
      */
     public static function set_public($full_path)
@@ -256,6 +280,7 @@ class Plug
      * Will get config for particular plug
      * --
      * @param   string  $full_path   You can just pass __FILE__
+     * --
      * @return  array
      */
     public static function get_config($full_path)
@@ -301,6 +326,30 @@ class Plug
         Cfg::append($config);
 
         return $$variable;
+    }
+
+    /**
+     * Get all, in plugs, registered scripts. Return an array, example:
+     *     'script_id' => 'full_path',
+     *     'script_id' => 'full_path'
+     * --
+     * @return array
+     */
+    public static function get_scripts()
+    {
+        $result = array();
+
+        if (is_array(self::$available)) {
+            foreach (self::$available as $plug) {
+                if ($plug['has_scripts'] && is_array($plug['has_scripts'])) {
+                    foreach ($plug['has_scripts'] as $script_id => $script_path) {
+                        $result[$script_id] = $script_path;
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -661,6 +710,13 @@ class Plug
                 : false;
     }
 
+    /**
+     * Get filename from class / plug name
+     * --
+     * @param  string $plug
+     * --
+     * @return string
+     */
     public static function get_file($plug)
     {
         $plug = mb_strtolower($plug);
