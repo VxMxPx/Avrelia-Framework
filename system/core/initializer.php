@@ -65,7 +65,6 @@ $classes_map = array(
     'Avrelia\\Core\\Benchmark'  => 'Benchmark',
     'Avrelia\\Core\\Cfg'        => 'Cfg',
     'Avrelia\\Core\\Log'        => 'Log',
-    'Avrelia\\Core\\Dot'        => 'Dot',
     'Avrelia\\Core\\Dispatcher' => 'Dispatcher',
     'Avrelia\\Core\\Event'      => 'Event',
     'Avrelia\\Core\\FileSystem' => 'FileSystem',
@@ -78,6 +77,7 @@ $classes_map = array(
     'Avrelia\\Core\\Util'       => 'Util',
     'Avrelia\\Core\\View'       => 'View',
     'Avrelia\\Core\\ViewAssign' => 'ViewAssign',
+    'Avrelia\\Core\\Dot'        => 'Dot',
 );
 
 // Will set aliases for all core classes and run on include function...
