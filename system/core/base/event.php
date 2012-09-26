@@ -34,12 +34,36 @@ class Event
         }
     }
 
+    public static function inf($event, $message)
+        { return self::_log('inf', $event, $message); }
+    public static function err($event, $message)
+        { return self::_log('err', $event, $message); }
+    public static function war($event, $message)
+        { return self::_log('war', $event, $message); }
+
+    /**
+     * Trigger event with some message and log it.
+     * --
+     * @param  string  $type    inf|err|war
+     * @param  string  $event   Event name
+     * @param  string  $message Event message
+     * --
+     * @return integer Number of called functions.
+     *                 Function count only if "true" was returned.
+     */
+    private static function _log($type, $event, $message)
+    {
+        Log::add($message, $type);
+        return self::trigger($event, $message);
+    }
+
     /**
      * Trigger the event.
      * --
      * @param   string  $event  Which event?
      * @param   mixed   $params Shall we provide any params?
-     * @return  integer Number of called functions - function count only if "true" was returned.
+     * @return  integer Number of called functions.
+     *                  Function count only if "true" was returned.
      */
     public static function trigger($event, &$params=null)
     {
