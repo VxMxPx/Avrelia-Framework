@@ -27,7 +27,7 @@ class Language
     # Default languages
     protected static $defaults   = array();
 
-    public function _on_include_()
+    public static function _on_include_()
         { self::set_defaults(Cfg::get('system/languages')); }
 
     /**
