@@ -17,3 +17,10 @@ Error here
 
 %s %d
 ----------------------------------------
+Date/Time: %s
+Type: war
+Message: Compile Warning:
+Some silly warn
+File: %s
+Line: %d
+--------------------------------------------------
