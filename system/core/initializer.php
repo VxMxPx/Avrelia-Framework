@@ -73,10 +73,10 @@ $classes_map = array(
     'Avrelia\\Core\\Language'   => 'Language',
     'Avrelia\\Core\\Model'      => 'Model',
     'Avrelia\\Core\\Output'     => 'Output',
-    'Avrelia\\Core\\Plug'       => 'Plug',
     'Avrelia\\Core\\Util'       => 'Util',
     'Avrelia\\Core\\View'       => 'View',
     'Avrelia\\Core\\ViewAssign' => 'ViewAssign',
+    'Avrelia\\Core\\Plug'       => 'Plug',
     'Avrelia\\Core\\Dot'        => 'Dot',
 );
 
