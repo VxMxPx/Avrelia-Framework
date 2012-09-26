@@ -89,6 +89,34 @@ function dump($variable, $die=true, $return=false)
  */
 function avrelia_error_handler($errno, $errmsg, $filename, $linenum)
 {
+    static $template = <<<TEMPLATE
+<!DOCTYPE html>
+<html lang="en">
+<meta charset=utf-8>
+<title>Error .at AvreliaFramework</title>
+<style>
+*       { padding: 0; margin: 0; line-height: 1.5em; }
+::selection      { background-color: #47c; color: #eee; }
+::-moz-selection { background-color: #47c; color: #eee; }
+body    { background-color: #888; color: #000; font-size: 16px; font-family: "Sans", sans-serif; }
+h1, h2  { font-family: "Serif", serif; font-weight: normal; }
+h2      { padding-top: 30px; padding-bottom: 4px; margin-bottom: 4px; border-bottom: 1px dotted #ddd; }
+a       { color: #47c; padding: 2px; }
+a:hover { background-color: #47c; color: #fff; text-decoration: none; border-radius: 4px; }
+code    { font-family: "Monospace", monospace; background-color: #f2f2f2; color: #224; }
+.fade   { color: #282828; font-style: italic; }
+#page   { width: 800px; margin: 20px auto; padding: 20px; }
+#log    { padding-top: 10px; margin-top: 5px; }
+#log > div { box-shadow: 0 0 8px #060606; border-radius: 4px; }
+#log > div > div:first-child { border-radius: 4px 4px 0 0; }
+#log > div > div:last-child  { border-radius: 0 0 4px 4px; border-bottom: none !important; }
+</style>
+<div id=page>
+    <h1>Something went wrong, <small class=fade>here's what happened:</small></h1>
+    <div id=log>
+        {{error_report}}
+TEMPLATE;
+
     # Error codes to plain English string.
     $errorToTitle = array
     (
@@ -113,25 +141,48 @@ function avrelia_error_handler($errno, $errmsg, $filename, $linenum)
     $title = isset($errorToTitle[$errno]) ? $errorToTitle[$errno] : 'Unknown';
     $errmsg = $title . ":\n" . $errmsg;
 
-    # Get error simple type
-    $errorTypes = Cfg::get('log/map');
-    $type = isset($errorTypes[$errno]) ? $errorTypes[$errno] : 'war';
+    # Get error simple type, if we have cfg already...
+    if (class_exists('Cfg', false)) {
+        $errorTypes = Cfg::get('log/map');
+        $type = isset($errorTypes[$errno]) ? $errorTypes[$errno] : 'war';
+    }
+    else 
+        { $type = 'err'; }
 
     # Please note: At this point, we have Log class for sure, as error handler
     # is set after all core classes were loaded.
-    Log::add($errmsg, $type);
+    if (class_exists('Log', false)) {
+        Log::add($errmsg, $type);
+    }
 
     # Fatal error.
     if ($type === 'err')
     {
         # Write log to file (fatal)
-        if (Cfg::get('log/enabled') && Cfg::get('log/write_all_on_fatal')) {
-            Log::save_all(true);
+        if (class_exists('Cfg', false) && class_exists('Log', false)) {
+            if (Cfg::get('log/enabled') && Cfg::get('log/write_all_on_fatal')) {
+                Log::save_all(true);
+            }
         }
 
         # Dump whole log on fatal error.
-        if (DEBUG && !is_cli()) {
-            die('<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><title>Error</title></head><body> ' . Log::as_html() . '</body></html>');
+        if (class_exists('Log', false)) {
+            if (is_cli()) 
+                { $error_report = Log::as_string('war', 'err'); }
+            elseif (DEBUG && !is_cli()) 
+                { $error_report = Log::as_html(); }
+        } 
+        else 
+            { $error_report = $errmsg; }
+
+        if (is_cli()) {
+            die($error_report);
+        }
+        else {
+            die(str_replace(
+                array('{{error_report}}', '{{error_no}}'), 
+                array($error_report, $errno), 
+                $template));
         }
     }
 }
