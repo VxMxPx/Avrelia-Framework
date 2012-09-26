@@ -7,13 +7,21 @@ class Migrate_Cli
 
     public function __construct()
     {
-        $this->model = new Migrate;
+        $this->model = new Migrate; 
+
+        // Subscribe to successful events...
+        Event::watch('/plug/avrelia/migrate/to/success', function($message) {
+            Dot::ok($message);
+        });
+
+        // Subscribe to successful events...
+        Event::watch('/plug/avrelia/migrate', function($message) {
+            Dot::inf($message);
+        });
     }
 
     public function action_none()
-    {
-        $this->action_help();
-    }
+        { $this->action_migrate(); }
 
     public function action_help()
     {
@@ -22,14 +30,58 @@ class Migrate_Cli
             'Usage: migration [option]',
             array(
                 'migrate'      => 'Migrate to the latest version',
-                'to <version>' => 'Migrate to particualt version',
+                'to <version>' => 'Migrate to particular version',
                 'up'           => 'One version up, is possible',
-                'down'         => 'One version down, if possilbe',
+                'down'         => 'One version down, if possible',
                 'create'       => 'Create a new migration',
-                'current'      => 'Dispay current version',
+                'current'      => 'Display current version',
                 'latest'       => 'Display latest version',
             )
         );
+    }
+
+    public function action_migrate()
+    {
+        try {
+            $this->model->migrate();
+        }  catch(\Avrelia\Exception\Database $e) {
+            Dot::err($e->getMessage());
+        }
+
+        $this->action_current();
+    }
+
+    public function action_up()
+    {
+        try {
+            $this->model->up();
+        }  catch(\Avrelia\Exception\Database $e) {
+            Dot::err($e->getMessage());
+        }
+
+        $this->action_current();
+    }
+
+    public function action_down()
+    {
+        try {
+            $this->model->down();
+        }  catch(\Avrelia\Exception\Database $e) {
+            Dot::err($e->getMessage());
+        }
+
+        $this->action_current();
+    }
+
+    public function action_to($version=false)
+    {
+        try {
+            if ($this->model->to((int)$version)) {
+                $this->action_current();
+            }
+        } catch(\Avrelia\Exception\Database $e) {
+            Dot::err($e->getMessage());
+        }
     }
 
     public function action_create()
@@ -56,12 +108,8 @@ class Migrate_Cli
     }
 
     public function action_current()
-    {
-        Dot::inf('Current version is: ' . $this->model->get_current());
-    }
+        { Dot::inf('Current version is: ' . $this->model->get_current()); }
 
     public function action_latest()
-    {
-        Dot::inf('Laters version is: ' . $this->model->get_latest());
-    }
+        { Dot::inf('Laters version is: ' . $this->model->get_latest()); }
 }
