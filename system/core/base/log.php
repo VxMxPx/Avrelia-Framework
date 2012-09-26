@@ -164,6 +164,7 @@ class Log
         }
         else {
             if (empty(self::$logs)) { return false; }
+            if (!is_array($type))   { $type = array($type); }
 
             foreach (self::$logs as $log) {
                 if (in_array($log['type'], $type)) { return true; }
@@ -178,8 +179,9 @@ class Log
      */
     public static function as_array($type=false)
     {
-        if (!self::has()) { return array(); }
-        if (!$type) { return self::$logs; }
+        if (!self::has())     { return array(); }
+        if (!$type)           { return self::$logs; }
+        if (!is_array($type)) { $type = array($type); }
 
         $collection = array();
         foreach (self::$logs as $log) {
@@ -197,16 +199,18 @@ class Log
     public static function as_string($type=false)
     {
         if (!self::has()) { return null; }
+        if ($type && !is_array($type)) { $type = array($type); }
 
         $collection = array();
         foreach (self::$logs as $log) {
-            if ($type && in_array($log['type'], $type)) { continue; }
-            $collection[] = "Date/Time: {$log['date_time']}\n".
-                            "Type: {$log['type']}\n".
-                            "Message: {$log['message']}\n".
-                            "File: {$log['file']}\n".
-                            "Line: {$log['line']}\n".
-                            str_repeat('-', 50) . "\n";
+            if (!$type || in_array($log['type'], $type)) {
+                $collection[] = "Date/Time: {$log['date_time']}\n".
+                                "Type: {$log['type']}\n".
+                                "Message: {$log['message']}\n".
+                                "File: {$log['file']}\n".
+                                "Line: {$log['line']}\n".
+                                str_repeat('-', 50) . "\n";
+                }
         }
 
         return implode("\n", $collection);
@@ -220,12 +224,13 @@ class Log
     public static function as_html($type=false)
     {
         if (!self::has()) { return null; }
+        if ($type && !is_array($type)) { $type = array($type); }
 
         $collection = array();
         $i = 0;
         
         foreach (self::$logs as $log) {
-            if ($type && in_array($log['type'], $type)) { continue; }
+            if ($type && !in_array($log['type'], $type)) { continue; }
             # To remove absolute long paths in case of application, system or
             # public path.
             if (strpos($log['file'], SYSPATH) !== false)
