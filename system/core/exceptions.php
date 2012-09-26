@@ -24,6 +24,10 @@ if (!class_exists('Avrelia\\Exception\\FileSystem', false))
 if (!class_exists('Avrelia\\Exception\\ValueError', false))
 	{ class ValueError extends Base {} }
 
+# General database-related exception
+if (!class_exists('Avrelia\\Exception\\Database', false))
+    { class Database extends Base {} }
+
 # General plug-related exception
 if (!class_exists('Avrelia\\Exception\\Plug', false))
 	{ class Plug extends Base {} }
