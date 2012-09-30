@@ -3,25 +3,18 @@
 use Avrelia\Core\Plug as Plug;
 
 /**
- * Avrelia
- * ----
- * Validate Static Class and Validate Assign Class
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * Validate Class
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2011-11-19
  */
 class Validate
 {
     /**
-     * @var array   List of fields to be validated
+     * @var array  List of fields to be validated
      */
-    private static $ValidationsList = array();
-
+    private static $validations_list = array();
     
     /**
      * Get files, ...
@@ -38,7 +31,6 @@ class Validate
 
         return true;
     }
-    //-
 
     /**
      * Will add new filed to validate it.
@@ -46,26 +38,25 @@ class Validate
      * @param   mixed   $value
      * @param   string  $name   If there's no name, no message will be set!
      * --
-     * @return  cValidateVariable
+     * @return  ValidateVariable
      */
-    public static function Add($value, $name=false)
+    public static function add($value, $name=false)
     {
         $Validator = new ValidateVariable($value, $name);
-        self::$ValidationsList[] = $Validator;
-        return $Validator;
+        self::$validations_list[] = $validator;
+        return $validator;
     }
-    //-
 
     /**
      * Check if every field is valid...
      * --
      * @return  boolean
      */
-    public static function IsValid()
+    public static function is_valid()
     {
-        if (is_array(self::$ValidationsList) && (!empty(self::$ValidationsList))) {
-            foreach (self::$ValidationsList as $Obj) {
-                if ($Obj->isValid() === false) {
+        if (is_array(self::$validations_list) && (!empty(self::$validations_list))) {
+            foreach (self::$validations_list as $obj) {
+                if ($obj->is_valid() === false) {
                     return false;
                 }
             }
@@ -77,33 +68,33 @@ class Validate
 
         return true;
     }
-    //-
 
     /**
      * Will add new simple filed to validate it.
      * --
      * @param   mixed   $value
      * --
-     * @return  cValidateVariable
+     * @return  ValidateVariable
      */
-    private static function AddSimple($value)
+    private static function check($value)
     {
         return new ValidateVariable($value, false);
     }
-    //-
 
     /**
      * Check if value is valid e-mail address
      * --
      * @param   string  $value
-     * @param   string  $domain Check if is on particular domain (example: @gmail.com)
+     * @param   string  $domain Check if is on particular domain 
+     *                          (example: @gmail.com)
      * --
      * @return  boolean
      */
-    public static function IsEmail($value, $domain=null)
+    public static function is_email($value, $domain=null)
     {
-        return self::AddSimple($value)->hasValue()->isEmail($domain)->isValid();
+        return self::check($value)
+                ->has_value()
+                ->is_email($domain)
+                ->is_valid();
     }
-    //-
 }
-//--

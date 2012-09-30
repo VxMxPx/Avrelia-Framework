@@ -1,25 +1,21 @@
 <?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
- * Avrelia
- * ----
- * Validate Assign
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * ValidateVariable Class
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-03-27
  */
 class ValidateVariable
 {
-    private $isValid    = true;     # boolean
-    private $addMessage = true;     # boolean   If true, uMessage will be added
-    private $value      = '';       # string    Actual field's value
-    private $name       = false;    # string    The name of field
-    private $needValue  = false;    # boolean   To be valid, does this field need to have value?
+    private $is_valid    = true;  # boolean
+    private $add_message = true;  # boolean  If true, message will be added
+                                  #          using Message plug.
+    private $value       = '';    # string   Actual field's value.
+    private $name        = false; # string   The name of the field.
+    private $need_value  = false; # boolean  To be valid, does this field need 
+                                  #          to have value?
 
     /**
      * New Validation Assigment!
@@ -34,27 +30,21 @@ class ValidateVariable
         $this->value = $value;
         $this->name  = $name;
 
-        if ($name == false) {
-            $this->addMessage = false;
-        }
+        if (!$name && Plug::has('Avrelia\\Plug\\Message')) 
+            { $this->add_message = false; }
     }
-    //-
 
     /**
      * Is valid?
      * --
      * @return  boolean
      */
-    public function isValid()
+    public function is_valid()
     {
-        if (!$this->needValue && empty($this->value)) {
-            return true;
-        }
-        else {
-            return $this->isValid;
-        }
+        return !$this->need_value && empty($this->value)
+                    ? true
+                    : $this->is_valid;
     }
-    //-
 
     /*  ****************************************************** *
      *          Filters
@@ -65,71 +55,79 @@ class ValidateVariable
      * --
      * @return  $this
      */
-    public function hasValue()
+    public function has_value()
     {
         $return = true;
 
-        $this->needValue = true;
+        $this->need_value = true;
 
         if (is_string($this->value)) {
-            if (strlen($this->value) === 0) {
-                $return = false;
-            }
+            if (strlen($this->value) === 0) 
+                { $return = false; }
         }
         elseif (empty($this->value)) {
             $return = false;
         }
 
         if ($return == false) {
-            if ($this->addMessage) {
-                uMessage::Add('WAR', l('VAL_FIELD_CANT_BE_EMPTY', $this->name), __FILE__);
+            if ($this->add_message) {
+                Message::war(
+                    l('VAL_FIELD_CANT_BE_EMPTY', $this->name), 
+                    __CLASS__);
             }
-            $this->isValid = false;
+            $this->is_valid = false;
         }
 
         // Always return self
         return $this;
     }
-    //-
 
     /**
      * Check if variable contains valid e-mail
      * --
-     * @param   string  $domain Check if is on particular domain (example: @gmail.com)
+     * @param   string  $domain Check if is on particular domain 
+     *                          (example: @gmail.com)
      * --
      * @return  $this
      */
-    public function isEmail($domain=null)
+    public function is_email($domain=null)
     {
         # Preform test
         $return = filter_var($this->value, FILTER_VALIDATE_EMAIL);
 
         # Add any message?
         if (!$return) {
-            if ($this->addMessage) {
-                uMessage::Add('WAR', l('VAL_FIELD_DOESNT_VALID_EMAIL', $this->name), __FILE__);
+            if ($this->add_message) {
+                Message::war(
+                    l('VAL_FIELD_DOESNT_VALID_EMAIL', $this->name), 
+                    __CLASS__);
             }
-            $this->isValid = false;
+            $this->is_valid = false;
             return $this;
         }
 
         # Valid domain?
         if (!is_null($domain)) {
-            $lenFront = strlen($domain);
-            $lenBack  = $lenFront * -1;
-            $return = (substr($this->value, $lenBack, $lenFront) == $domain) ? true : false;
+            $len_front = strlen($domain);
+            $len_back  = $len_front * -1;
+            $return = (substr($this->value, $len_back, $len_front) == $domain) 
+                        ? true 
+                        : false;
 
             if (!$return) {
-                if ($this->addMessage) {
-                    uMessage::Add('WAR', l('VAL_FIELD_MUST_EMAIL_ON_DOMAIN', array($this->name, $domain)), __FILE__);
+                if ($this->add_message) {
+                    Message::war(
+                        l(
+                            'VAL_FIELD_MUST_EMAIL_ON_DOMAIN', 
+                            array($this->name, $domain)), 
+                    __CLASS__);
                 }
-                $this->isValid = false;
+                $this->is_valid = false;
             }
         }
 
         return $this;
     }
-    //-
 
     /**
      * Check if is valid IP address
@@ -138,30 +136,33 @@ class ValidateVariable
      * --
      * @return  $this
      */
-    public function isIP($mask=null)
+    public function is_ip($mask=null)
     {
         $return = filter_var($this->value, FILTER_VALIDATE_IP);
 
         if (!$return) {
-            if ($this->addMessage) {
-                uMessage::Add('WAR', l('VAL_FIELD_MUST_VALID_IP_ADDRESS', $this->name), __FILE__);
+            if ($this->add_message) {
+                Message::war(
+                    l('VAL_FIELD_MUST_VALID_IP_ADDRESS', $this->name), 
+                    __CLASS__);
             }
-            $this->isValid = false;
+            $this->is_valid = false;
             return $this;
         }
 
         # Check for mask...
-        $maskReg = str_replace(array('.', '*'), array('\.', '.*'), $mask);
-        if (!preg_match("/^{$maskReg}$/", $this->value)) {
-            if ($this->addMessage) {
-                uMessage::Add('WAR', l('VAL_FIELD_IP_MUST_EQ_MASK', array($this->name, $mask)), __FILE__);
+        $mask_reg = str_replace(array('.', '*'), array('\.', '.*'), $mask);
+        if (!preg_match("/^{$mask_reg}$/", $this->value)) {
+            if ($this->add_message) {
+                Message::war(
+                    l('VAL_FIELD_IP_MUST_EQ_MASK', array($this->name, $mask)), 
+                    __CLASS__);
             }
-            $this->isValid = false;
+            $this->is_valid = false;
         }
 
         return $this;
     }
-    //-
 
     /**
      * Test for particular Regex
@@ -170,38 +171,40 @@ class ValidateVariable
      * --
      * @return  $this
      */
-    public function isRegex($mask)
+    public function is_regex($mask)
     {
         $cleaned = Str::clean_regex($this->value, $mask);
 
         if ($cleaned != $this->value) {
-            if ($this->addMessage) {
-                uMessage::Add('WAR', l('VAL_FIELD_MUST_MATCH_PATTERN', array($this->name, $mask)), __FILE__);
+            if ($this->add_message) {
+                Message::war(
+                    l('VAL_FIELD_MUST_MATCH_PATTERN', array($this->name, $mask)), 
+                    __CLASS__);
             }
-            $this->isValid = false;
+            $this->is_valid = false;
         }
 
         return $this;
     }
-    //-
 
     /**
      * Check if is URL
      * --
      * @return  $this
      */
-    public function isURL()
+    public function is_url()
     {
         if (!filter_var($this->value, FILTER_VALIDATE_URL)) {
-            if ($this->addMessage) {
-                uMessage::Add('WAR', l('VAL_FIELD_MUST_VALID_WEB_ADDRESS', $this->name), __FILE__);
+            if ($this->add_message) {
+                Message::war(
+                    l('VAL_FIELD_MUST_VALID_WEB_ADDRESS', $this->name), 
+                    __CLASS__);
             }
-            $this->isValid = false;
+            $this->is_valid = false;
         }
 
         return $this;
     }
-    //-
 
     /**
      * Check if is numeric and is it in particular range
@@ -211,7 +214,7 @@ class ValidateVariable
      * --
      * @return  $this
      */
-    public function isNumeric($min=null, $max=null)
+    public function is_numeric($min=null, $max=null)
     {
         if (is_numeric($this->value))
         {
@@ -219,118 +222,140 @@ class ValidateVariable
 
             if (!is_null($min)) {
                 if ($variable < $min) {
-                    if ($this->addMessage) {
-                        uMessage::Add('WAR', l('VAL_FIELD_NUM_MIN_AT_LEAST', array($this->name, $min)), __FILE__);
+                    if ($this->add_message) {
+                        Message::war(
+                            l(
+                                'VAL_FIELD_NUM_MIN_AT_LEAST', 
+                                array($this->name, $min)), 
+                            __CLASS__);
                     }
-                    $this->isValid = false;
+                    $this->is_valid = false;
                 }
             }
             if (!is_null($max)) {
                 if ($variable > $max) {
-                    if ($this->addMessage) {
-                        uMessage::Add('WAR', l('VAL_FIELD_NUM_MAX_CANT_MORE_THAN', array($this->name, $max)), __FILE__);
+                    if ($this->add_message) {
+                        Message::war(
+                            l(
+                                'VAL_FIELD_NUM_MAX_CANT_MORE_THAN', 
+                                array($this->name, $max)), 
+                            __CLASS__);
                     }
-                    $this->isValid = false;
+                    $this->is_valid = false;
                 }
             }
 
         }
         else {
-            if ($this->addMessage) {
-                uMessage::Add('WAR', l('VAL_FIELD_MUST_BE_NUMERIC', $this->name), __FILE__);
+            if ($this->add_message) {
+                Message::war(
+                    l('VAL_FIELD_MUST_BE_NUMERIC', $this->name), 
+                    __CLASS__);
             }
-            $this->isValid = false;
+            $this->is_valid = false;
         }
 
         return $this;
     }
-    //-
 
     /**
      * Check if is numeric, - whole numbers, not float
      * --
-     * @param   boolean $onlyPositive   Must have only positive numbers
+     * @param   boolean $only_positive  Must have only positive numbers
      * --
      * @return  $this
      */
-    public function isNumericWhole($onlyPositive=false)
+    public function is_numeric_whole($only_positive=false)
     {
         # Is Whole?
         if ((int)$this->value != $this->value) {
-            if ($this->addMessage) {
-                uMessage::Add('WAR', l('VAL_FIELD_MUST_BE_WHOLE_NUMBER', $this->name), __FILE__);
+            if ($this->add_message) {
+                Message::war(
+                    l('VAL_FIELD_MUST_BE_WHOLE_NUMBER', $this->name), 
+                    __CLASS__);
             }
-            $this->isValid = false;
+            $this->is_valid = false;
             return $this;
         }
 
         # Is positive?
-        if ($onlyPositive) {
+        if ($only_positive) {
             if ((int)$this->value < 0) {
-                if ($this->addMessage) {
-                    uMessage::Add('WAR', l('VAL_FIELD_MUST_BE_POSITIVE_NUMER', $this->name), __FILE__);
+                if ($this->add_message) {
+                    Message::war(
+                        l('VAL_FIELD_MUST_BE_POSITIVE_NUMER', $this->name), 
+                        __CLASS__);
                 }
-                $this->isValid = false;
+                $this->is_valid = false;
             }
         }
 
         return $this;
     }
-    //-
 
     /**
      * Check if is boolean
      * --
-     * @param   boolean $particular Set to true / false: it will check for particular boolean value (either true or false)
-     * @param   boolean $strict     If set to "false" we'll approve also: 1,0,"true","false","yes","no","on","off", "1", "0" (string values)
+     * @param   boolean $particular Set to true / false: it will check for 
+     *                              particular boolean value (either true or false)
+     * @param   boolean $strict     If set to "false" we'll approve also: 
+     *                              1,0,"true","false","yes","no","on","off", 
+     *                              "1", "0" (string values)
      * --
      * @return  $this
      */
-    public function isBoolean($particular=null, $strict=true)
+    public function is_boolean($particular=null, $strict=true)
     {
         # Internal value
         $value = $this->value;
 
         # Check for non-strict
         if (!$strict) {
-            $trueValues  = array('1', 'true', 'yes', 'on',  1);
-            $falseValues = array('0', 'false', 'no', 'off', 0);
+            $true_values  = array('1', 'true', 'yes', 'on',  1);
+            $false_values = array('0', 'false', 'no', 'off', 0);
 
-            if (in_array(strtolower($value), $trueValues)) {
-                $value = true;
-            }
-            elseif (in_array(strtolower($value), $falseValues)) {
-                $value = false;
-            }
+            if (in_array(strtolower($value), $true_values)) 
+                { $value = true; }
+            elseif (in_array(strtolower($value), $false_values)) 
+                { $value = false; }
         }
 
         # Check if is boolean
         if (!is_bool($value)) {
-            if ($this->addMessage) {
-                uMessage::Add('WAR', l('VAL_FIELD_MUST_CONTAIN_BOOLEAN', $this->name), __FILE__);
+            if ($this->add_message) {
+                Message::war(
+                    l('VAL_FIELD_MUST_CONTAIN_BOOLEAN', $this->name), 
+                    __CLASS__);
             }
-            $this->isValid = false;
+            $this->is_valid = false;
             return $this;
         }
 
         # Is particular?
         if (!is_null($particular)) {
             if ($value !== $particular) {
-                if ($this->addMessage) {
+                if ($this->add_message) {
                     if ($particular === true) {
-                        uMessage::Add('WAR', l('VAL_FIELD_MUST_BE_SET_TO_TRUE', $this->name), __FILE__);
+                        Message::war(
+                            l(
+                                'VAL_FIELD_MUST_BE_SET_TO_TRUE', 
+                                $this->name), 
+                            __CLASS__);
                     }
                     else {
-                        uMessage::Add('WAR', l('VAL_FIELD_MUST_BE_SET_TO_FALSE', $this->name), __FILE__);
+                        Message::war(
+                            l(
+                                'VAL_FIELD_MUST_BE_SET_TO_FALSE', 
+                                $this->name), 
+                            __CLASS__);
                     }
                 }
-                $this->isValid = false;
+                $this->is_valid = false;
             }
         }
 
         return $this;
     }
-    //-
 
     /**
      * Check if string is particular length
@@ -340,30 +365,37 @@ class ValidateVariable
      * --
      * @return  $this
      */
-    public function isLength($min=null, $max=null)
+    public function is_length($min=null, $max=null)
     {
         if (!is_null($min)) {
             if (strlen($this->value) < $min) {
-                if ($this->addMessage) {
-                    uMessage::Add('WAR', l('VAL_FIELD_MUST_CONTAIN_AT_LEAST', array($this->name, $min)));
+                if ($this->add_message) {
+                    Message::war(
+                        l(
+                            'VAL_FIELD_MUST_CONTAIN_AT_LEAST', 
+                            array($this->name, $min)),
+                        __CLASS__);
                 }
-                $this->isValid = false;
+                $this->is_valid = false;
                 return $this;
             }
         }
 
         if (!is_null($max)) {
             if (strlen($this->value) > $max) {
-                if ($this->addMessage) {
-                    uMessage::Add('WAR', l('VAL_FIELD_MUST_HAVE_NOT_MORE_THAN', array($this->name, $max)));
+                if ($this->add_message) {
+                    Message::war(
+                        l(
+                            'VAL_FIELD_MUST_HAVE_NOT_MORE_THAN', 
+                            array($this->name, $max)),
+                        __CLASS__);
                 }
-                $this->isValid = false;
+                $this->is_valid = false;
             }
         }
 
         return $this;
     }
-    //-
 
     /**
      * Check if field contain valid date
@@ -372,51 +404,61 @@ class ValidateVariable
      * --
      * @return  $this
      */
-    public function isDate($format)
+    public function is_date($format)
     {
-        $finalDate = strtotime($this->value);
-        $finalDate = uTime::Format_d($format, date('Y-m-d H:i:s', $finalDate));
+        $final_date = strtotime($this->value);
+        $final_date = date($format, strtotime(date('Y-m-d H:i:s', $final_date)));
 
-        if ($finalDate != $this->value) {
-            if ($this->addMessage) {
-                uMessage::Add('WAR', l('VAL_FIELD_MUST_HAVE_VALID_DATE', array($this->name, $format)), __FILE__);
+        if ($final_date != $this->value) {
+            if ($this->add_message) {
+                Message::war(
+                    l(
+                        'VAL_FIELD_MUST_HAVE_VALID_DATE', 
+                        array($this->name, $format)), 
+                    __CLASS__);
             }
-            $this->isValid = false;
+            $this->is_valid = false;
         }
         return $this;
     }
-    //-
 
     /**
      * Check if field contain exact value
      * --
-     * @param   array   $Allow          Array of allowed values
-     * @param   boolean $checkForKey    Will check for key of provided values
+     * @param   array   $allowed        Array of allowed values
+     * @param   boolean $check_for_key  Will check for key of provided values
      * --
      * @return  $this
      */
-    public function isExactly($Allow, $checkForKey=true)
+    public function is_exactly($allowed, $check_for_key=true)
     {
-        if ($checkForKey) {
-            if (!isset($Allow[$this->value])) {
-                if ($this->addMessage) {
-                    uMessage::Add('WAR', l('VAL_FIELD_MUST_BE_VALUES', array($this->name, implode(',', $Allow))), __FILE__);
+        if ($check_for_key) {
+            if (!isset($allowed[$this->value])) {
+                if ($this->add_message) {
+                    Message::war(
+                        l(
+                            'VAL_FIELD_MUST_BE_VALUES', 
+                            array($this->name, implode(',', $allowed))), 
+                        __CLASS__);
                 }
-                $this->isValid = false;
+                $this->is_valid = false;
             }
         }
         else {
-            if (!in_array($this->value, $Allow)) {
-                if ($this->addMessage) {
-                    uMessage::Add('WAR', l('VAL_FIELD_MUST_BE_VALUES', array($this->name, implode(',', $Allow))), __FILE__);
+            if (!in_array($this->value, $allowed)) {
+                if ($this->add_message) {
+                    Message::war(
+                        l(
+                            'VAL_FIELD_MUST_BE_VALUES', 
+                            array($this->name, implode(',', $allowed))), 
+                        __CLASS__);
                 }
-                $this->isValid = false;
+                $this->is_valid = false;
             }
         }
 
         return $this;
     }
-    //-
 
     /**
      * Check if field is the same as another filed
@@ -426,19 +468,20 @@ class ValidateVariable
      * --
      * @return  $this
      */
-    public function isSameAs($field, $name)
+    public function is_same_as($field, $name)
     {
 
         if ($this->value != $field) {
-            if ($this->addMessage) {
-                uMessage::Add('WAR', l('VAL_FIELD_MUST_BE_THE_SAME_AS', array($this->name, $name)), __FILE__);
+            if ($this->add_message) {
+                Message::war(
+                    l(
+                        'VAL_FIELD_MUST_BE_THE_SAME_AS', 
+                        array($this->name, $name)), 
+                    __CLASS__);
             }
-            $this->isValid = false;
+            $this->is_valid = false;
         }
 
         return $this;
     }
-    //-
-
 }
-//--
