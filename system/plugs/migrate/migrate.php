@@ -4,7 +4,7 @@ use Avrelia\Core\Plug as Plug;
 use Avrelia\Core\FileSystem as FileSystem;
 use Avrelia\Core\Cfg as Cfg;
 use Avrelia\Core\Log as Log;
-use Avrelia\Core\JSON as JSON;
+use Avrelia\Core\JSON as Json;
 use Avrelia\Core\Arr as Arr;
 use Avrelia\Core\Str as Str;
 use Avrelia\Core\Event as Event;
@@ -21,6 +21,9 @@ class Migrate
     # Current status
     protected $status = false;
 
+    # Latest available version
+    protected $latest = 0;
+
     public function __construct()
     {
         # Load config
@@ -29,15 +32,17 @@ class Migrate
         # Try to load file with current status
         $filename = Cfg::get('plugs/migrate/status_file');
         if (file_exists($filename)) {
-            $this->status = JSON::decode_file($filename, true);
+            $this->status = Json::decode_file($filename, true);
         }
         else {
             $this->status = array(
-                'current_version' => 0,
-                'latest_version'  => $this->_find_latest()
+                'current_version' => 0
             );
             $this->_save_status();
         }
+
+        # Get laters possible version
+        $this->latest = $this->_find_latest();
     }
 
     /**
@@ -46,7 +51,7 @@ class Migrate
      */
     protected function _save_status()
     {
-        return JSON::encode_file(
+        return Json::encode_file(
             Cfg::get('plugs/migrate/status_file'),
             $this->status);
     }
@@ -86,10 +91,10 @@ class Migrate
             $string, 
             ds(
                 Cfg::get('plugs/migrate/directory'), 
-                (int)$this->status['latest_version'] + 1 . '.sql'
+                (int)$this->latest + 1 . '.sql'
             )
         )) {
-            $this->status['latest_version'] += 1;
+            $this->latest += 1;
             return $this->_save_status();
         }
     }
@@ -101,14 +106,14 @@ class Migrate
      */
     public function migrate()
     {
-        if ($this->status['current_version'] === $this->status['latest_version']) {
+        if ($this->status['current_version'] === $this->latest) {
             Event::inf(
                 '/plug/avrelia/migrate',
                 "Already at the latest version!");
             return true;
         }
 
-        return $this->to($this->status['latest_version']);
+        return $this->to($this->latest);
     }
 
     /**
@@ -118,7 +123,7 @@ class Migrate
      */
     public function up()
     {
-        if ($this->status['current_version'] === $this->status['latest_version']) {
+        if ($this->status['current_version'] === $this->latest) {
             Event::inf(
                 '/plug/avrelia/migrate',
                 "Can't go up, we're at the latest version!");
@@ -136,7 +141,7 @@ class Migrate
      */
     public function down()
     {
-        if ($this->status['current_version'] === 1) {
+        if ($this->status['current_version'] === 0) {
             Event::inf(
                 '/plug/avrelia/migrate',
                 "Can't go down, we're at the first version!");
@@ -157,13 +162,13 @@ class Migrate
     public function to($version)
     {
         $version = (int) $version;
-        if ($version < 1) { 
+        if ($version < 0) { 
             Log::war("Version must be more than one: `{$version}`.");
             return false; 
         }
-        if ($version > $this->status['latest_version']) { 
+        if ($version > $this->latest) { 
             Log::war("Version must not be more than latest: ".
-                     "`{$this->status['latest_version']}`, required was: ".
+                     "`{$this->latest}`, required was: ".
                      "`{$version}`.");
             return false; 
         }
@@ -374,7 +379,7 @@ class Migrate
      */
     public function get_latest()
     {
-        return $this->status['latest_version'];
+        return $this->latest;
     }
 
     /**

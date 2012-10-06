@@ -271,13 +271,17 @@ class Arr
      * Get particular elements out of array, or return default if element doesn't
      * exists, or if passed in array is not valid. This will build new array,
      * with required keys in it.
-     * @param  array   $keys
+     * @param  mixed   $keys        Can be array or string with comma separated keys.
      * @param  array   $input_array
      * @param  boolean $default
      * @return array
      */
     public static function elements($keys, $input_array, $default=false)
     {
+        if (!is_array($keys)) {
+            $keys = Str::explode_trim(',', $keys);
+        }
+
         if (self::is_empty($keys)) { return $default; }
         if (!is_array($input_array)) { $input_array = array(); }
         $result = array();

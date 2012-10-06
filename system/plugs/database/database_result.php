@@ -99,12 +99,12 @@ class DatabaseResult
         if (is_object($this->PDOStatement)) {
             if ($index === false) {
                 if (!is_array($this->fetched)) {
-                    $this->fetched = $this->PDOStatement->fetchAll(PDO::FETCH_ASSOC);
+                    $this->fetched = $this->PDOStatement->fetchAll(\PDO::FETCH_ASSOC);
                 }
                 return $this->fetched;
             }
             elseif ($index === true) {
-                return $this->PDOStatement->fetch(PDO::FETCH_ASSOC);
+                return $this->PDOStatement->fetch(\PDO::FETCH_ASSOC);
             }
             elseif (is_integer($index)) {
                 $fetched = $this->as_array(false);

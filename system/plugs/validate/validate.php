@@ -42,7 +42,7 @@ class Validate
      */
     public static function add($value, $name=false)
     {
-        $Validator = new ValidateVariable($value, $name);
+        $validator = new ValidateVariable($value, $name);
         self::$validations_list[] = $validator;
         return $validator;
     }

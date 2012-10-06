@@ -24,7 +24,7 @@ class DatabaseDriverBase
     public function __construct()
     {
         # Check If is PDO enabled...
-        if (!class_exists('PDO')) {
+        if (!class_exists('\PDO', false)) {
             trigger_error(
                 'PDO class doesn\'t exists. Please enable PDO extension.', 
                 E_USER_ERROR);
@@ -53,16 +53,16 @@ class DatabaseDriverBase
                 foreach ($bind as $key => $value) {
                     # Value type
                     if (is_integer($value)) {
-                        $type = PDO::PARAM_INT;
+                        $type = \PDO::PARAM_INT;
                     }
                     elseif (is_bool($value)) {
-                        $type = PDO::PARAM_BOOL;
+                        $type = \PDO::PARAM_BOOL;
                     }
                     elseif (is_null($value)) {
-                        $type = PDO::PARAM_NULL;
+                        $type = \PDO::PARAM_NULL;
                     }
                     else {
-                        $type = PDO::PARAM_STR;
+                        $type = \PDO::PARAM_STR;
                     }
 
                     $link->bindValue(':'.$key, $value, $type);
