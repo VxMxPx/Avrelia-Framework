@@ -98,13 +98,13 @@ function avrelia_error_handler($errno, $errmsg, $filename, $linenum)
 *       { padding: 0; margin: 0; line-height: 1.5em; }
 ::selection      { background-color: #47c; color: #eee; }
 ::-moz-selection { background-color: #47c; color: #eee; }
-body    { background-color: #888; color: #000; font-size: 16px; font-family: "Sans", sans-serif; }
+body    { background-color: #111; color: #bbb; font-size: 16px; font-family: "Sans", sans-serif; }
 h1, h2  { font-family: "Serif", serif; font-weight: normal; }
 h2      { padding-top: 30px; padding-bottom: 4px; margin-bottom: 4px; border-bottom: 1px dotted #ddd; }
 a       { color: #47c; padding: 2px; }
 a:hover { background-color: #47c; color: #fff; text-decoration: none; border-radius: 4px; }
 code    { font-family: "Monospace", monospace; background-color: #f2f2f2; color: #224; }
-.fade   { color: #282828; font-style: italic; }
+.fade   { color: #555; font-style: italic; }
 #page   { width: 800px; margin: 20px auto; padding: 20px; }
 #log    { padding-top: 10px; margin-top: 5px; }
 #log > div { box-shadow: 0 0 8px #060606; border-radius: 4px; }
