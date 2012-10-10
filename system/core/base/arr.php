@@ -258,13 +258,13 @@ class Arr
      */
     public static function element($key, $input_array, $default=false)
     {
-        if (self::is_empty($input_array)) { return $default; }
-        if (!self::has_key($input_array, $key)) {
-            return $default;
-        }
-        else {
-            return $input_array[$key];
-        }
+        if (self::is_empty($input_array)) 
+            { return $default; }
+
+        if (!self::has_key($input_array, $key)) 
+            { return $default; }
+        else 
+            { return $input_array[$key]; }
     }
 
     /**
