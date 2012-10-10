@@ -260,6 +260,19 @@ class Database
     }
 
     /**
+     * Empty all rows from the table
+     * --
+     * @param  string $table
+     * --
+     * @return DatabaseResult
+     */
+    public static function truncate($table)
+    {
+        $statement = new DatabaseStatement(self::$driver->truncate($table));
+        return $statement->execute();
+    }
+
+    /**
      * Parse an array condition (like) ['id' => 12] into WHERE id=:id
      * 
      * @param   array   $condition

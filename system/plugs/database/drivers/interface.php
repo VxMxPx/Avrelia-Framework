@@ -26,7 +26,16 @@ interface DatabaseDriverInterface
      * @return PDOStatement
      */
     function prepare($statement, $bind=false);
-    //-
+
+    /**
+     * Empty all rows from the table. This should return only proper SQL for this
+     * action.
+     * --
+     * @param  string $table
+     * --
+     * @return string
+     */
+    function truncate($table);
 
     /**
      * Return -raw- PDO object.

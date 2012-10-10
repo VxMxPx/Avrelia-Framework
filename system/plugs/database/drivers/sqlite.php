@@ -95,6 +95,19 @@ class DatabaseDriverSqlite
     }
 
     /**
+     * Empty all rows from the table. This should return only proper SQL for this
+     * action.
+     * --
+     * @param  string $table
+     * --
+     * @return string
+     */
+    function truncate($table)
+    {
+        return 'DELETE FROM ' . $table . ';';
+    }
+
+    /**
      * Destroy the database file (in case of SQLite)
      * --
      * @return boolean

@@ -79,6 +79,19 @@ class DatabaseDriverBase
     }
 
     /**
+     * Empty all rows from the table. This should return only proper SQL for this
+     * action.
+     * --
+     * @param  string $table
+     * --
+     * @return string
+     */
+    function truncate($table)
+    {
+        return 'TRUNCATE TABLE ' . $table . ';';
+    }
+
+    /**
      * Will get -raw- PDO class.
      * --
      * @return  PDO
