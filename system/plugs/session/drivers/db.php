@@ -6,77 +6,87 @@ use Avrelia\Core\vString    as vString;
 use Avrelia\Core\Log        as Log;
 
 /**
- * Avrelia
- * ----
- * Database Session Driver
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * Session Driver Db Class
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-03-27
  */
 class SessionDriverDb implements SessionDriverInterface
 {
-    private $CurrentUser;       # array
-    private $loggedIn = false;  # boolean
+    /**
+     * Current's user data
+     * @var array
+     */
+    private $current = false;
 
 
     /**
      * Will construct the database object.
      * --
-     * @return  void
+     * @return void
      */
     public function __construct()
     {
         # Try to find sessions
-        $this->sessionDiscover();
+        $this->_session_discover();
     }
-    //-
 
     /**
      * Create all files / tables required by this plug to work
      * --
      * @return  boolean
      */
-    public static function _create()
+    public static function _on_enable_()
     {
+        // Do not create things on enable...
+        if (Cfg::get('plugs/session/create_on_enable', false) === false) { return true; }
+
         # Create users table (if doesn't exists)
         if (Plug::has('database')) {
-            Database::execute(Cfg::get('plugs/session/db/Tables/users_table'));
-            Database::execute(Cfg::get('plugs/session/db/Tables/sessions_table'));
+            Cfg::get('plugs/session/db/tables/users_table') 
+                and Database::execute(Cfg::get('plugs/session/db/tables/users_table'));
+
+            Cfg::get('plugs/session/db/tables/sessions_table') 
+                and Database::execute(Cfg::get('plugs/session/db/tables/sessions_table'));
         }
         else {
-            trigger_error("Can't create, database plug must be enabled.", E_USER_ERROR);
+            trigger_error(
+                "Can't create, database plug must be enabled.", 
+                E_USER_ERROR);
+
             return false;
         }
 
-        $Defaults = Cfg::get('plugs/session/defaults');
+        $defaults = Cfg::get('plugs/session/defaults');
 
-        foreach ($Defaults as $DefUser)
+        foreach ($defaults as $default_user)
         {
-            $DefUser['password'] = vString::Hash($DefUser['password'], false, true);
-            Database::create($DefUser,  Cfg::get('plugs/session/users_table'));
+            $default_user['password'] = vString::Hash($default_user['password'], false, true);
+            Database::create($default_user, Cfg::get('plugs/session/users_table'));
         }
 
         return true;
     }
-    //-
 
     /**
      * Destroy all elements created by this plug
      * --
      * @return  boolean
      */
-    public static function _destroy()
+    public static function _on_disable_()
     {
-        Database::execute('DROP TABLE IF EXISTS ' . Cfg::get('plugs/session/users_table'));
-        Database::execute('DROP TABLE IF EXISTS ' . Cfg::get('plugs/session/sessions_table'));
+        // Do not drop it when disabled!
+        if (Cfg::get('plugs/session/drop_on_disable', false) === false) { return true; }
+
+        Cfg::get('plugs/session/db/tables/users_table') 
+            and Database::execute('DROP TABLE IF EXISTS ' . Cfg::get('plugs/session/users_table'));
+
+        Cfg::get('plugs/session/db/tables/sessions_table') 
+            and Database::execute('DROP TABLE IF EXISTS ' . Cfg::get('plugs/session/sessions_table'));
+
         return true;
     }
-    //-
 
 
     /**
@@ -86,176 +96,146 @@ class SessionDriverDb implements SessionDriverInterface
      * --
      * @return  string
      */
-    private static function cleanAgent($agent)
-    {
-        return Str::clean(str_replace(' ', '_', $agent), 'aA1', '_');
-    }
-    //-
+    protected static function _clean_agent($agent)
+        { return Str::clean(str_replace(' ', '_', $agent), 'aA1', '_'); }
 
     /**
-     * Return user's information as an array. If key provided, then only particular
-     * info can be returned. For example $key = uname
+     * Return user's information as an array.
      * --
-     * @param   string  $key
-     * --
-     * @return  mixed
+     * @return  array
      */
-    public function as_array($key=false)
-    {
-        if (!$key) {
-            return $this->CurrentUser;
-        }
-        else {
-            return isset($this->CurrentUser[$key]) ? $this->CurrentUser[$key] : false;
-        }
-    }
-    //-
-
-    /*  ****************************************************** *
-     *          Login / Logout / isLoggedin
-     *  **************************************  */
+    public function as_array()
+        { return $this->current; }
 
     /**
-     * Login the user
+     * Get particular information about user (session).
      * --
-     * @param   string  $username
-     * @param   string  $password
-     * @param   boolean $rememberMe If set to false, session will expire when user
-     *                              close browser's window.
+     * @param  string  $key
+     * @param  mixed   $default
      * --
-     * @return  boolean
+     * @return mixed
      */
-    public function login($username, $password, $rememberMe=true)
-    {
-        $return = $this->userSet($username, $password);
-
-        if ($return) {
-            $this->sessionSet($this->CurrentUser['id'], $rememberMe);
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    //-
+    public function get($key, $default=false)
+        { return Arr::element($key, $this->current, $default); }
 
     /**
-     * Will log-in user based on id.
+     * List all sessions currently set.
+     * --
+     * @return array
+     */
+    public function list_all()
+    {
+        # Look for session
+        $sessions = Database::find(Cfg::get('plugs/session/db/sessions_table'));
+
+        # Okey we have something, check it...
+        if ($sessions->succeed())
+            { return $sessions->as_array(); }
+        else
+            { return array(); }
+    }
+
+    /**
+     * Clear all sessions.
+     * --
+     * @return void
+     */
+    public function clear_all()
+    {
+        return Database::truncate(Cfg::get('plugs/session/db/sessions_table'));
+    }
+
+    /**
+     * Will create session for particular user
      * --
      * @param   integer $id
-     * @param   boolean $rememberMe
+     * @param   boolean $expires
      * --
      * @return  boolean
      */
-    public function loginId($id, $rememberMe=true)
+    public function create($id, $expires=null)
     {
-        $return = $this->userSet($id);
-
-        if ($return) {
-            $this->sessionSet($this->CurrentUser['id'], $rememberMe);
-            return true;
-        }
-        else {
-            return false;
+        if ($this->_user_set($id)) {
+            return $this->_session_set($this->current['id'], $expires);
         }
     }
-    //-
 
     /**
-     * Will logout current user
-     * ---
+     * Will destroy current session
+     * --
      * @return  void
      */
-    public function logout()
+    public function destroy()
     {
-        if ($this->loggedIn) {
-            $this->sessionDestroy($this->CurrentUser['id']);
-            $this->CurrentUser    = false;
-            $this->loggedIn       = false;
+        if ($this->current) {
+            $this->_session_destroy($this->current['id']);
+            $this->current = false;
         }
     }
-    //-
 
     /**
      * Is user logged in?
-     * ---
+     * --
      * @return  boolean
      */
-    public function isLoggedin()
-    {
-        # All this must be true.
-        return $this->CurrentUser && $this->loggedIn;
-    }
-    //-
+    public function has()
+        { return !!$this->current; }
 
     /**
-     * Will reload current user's informations; Useful after an update.
+     * Will reload current session.
+     * Useful after updating user's informations.
      * --
      * @return  void
      */
     public function reload()
-    {
-        if ($this->isLoggedin()) {
-            $this->userSet($this->CurrentUser['id']);
-        }
-    }
-    //-
-
-    /*  ****************************************************** *
-     *          User Methods
-     *  **************************************  */
+        { $this->has() and $this->_user_set($this->current['id']); }
 
     /**
-     * Check if user can be found, and if is active. If both is true, user will
-     * be set (logged in).
+     * Will clear all expired sessions.
      * --
-     * @param   mixed   $user       User's ID or username must be provided
-     * @param   string  $password   If you entered password, then you must provide
-     *                              username as $user, else you *must* provide id.
+     * @return  void
+     */
+    public function cleanup()
+    {
+        Database::delete(
+            Cfg::get('plugs/session/db/sessions_table'),
+            'WHERE expires < :expires',
+            array('expires' => time())
+        );
+    }
+
+    /**
+     * Check if user can be found and set info.
+     * --
+     * @param   integer  $user
      * --
      * @return  boolean
      */
-    private function userSet($user, $password=false)
+    private function _user_set($id)
     {
         # Select user
-        if ($password) {
-            $User = Database::find(Cfg::get('plugs/session/db/users_table'), array('uname' => $user));
-        }
-        else {
-            $User = Database::find(Cfg::get('plugs/session/db/users_table'), array('id' => (int)$user));
-        }
+        $user = Database::find(
+                    Cfg::get('plugs/session/db/users_table'), 
+                    array('id' => (int)$id));
 
         # Valid user?
-        if ($User->failed()) {
-            Log::inf("Invalid username/id entered, user not found: `{$user}`.");
+        if ($user->failed()) {
+            Log::inf("Invalid id, user not found: `{$id}`.");
             return false;
         }
 
-        $User = $User->as_array(0);
+        $user = $user->as_array(0);
 
-        if (!$User['active']) {
-            Log::inf("User's account is not active.");
+        if (Cfg::get('plugs/session/require_active', true) && !$user['active']) {
+            Log::inf("User's account is not active, can't continue.");
             return false;
         }
 
-        if ($password) {
-            if ($User['password'] !== vString::Hash($password, $User['password'], true)) {
-                Log::inf("Invalid password entered for: `{$user}`.");
-                return false;
-            }
-        }
-
-        Log::inf("User logged in: `{$User['uname']}`.");
-        $this->CurrentUser = $User;
-        $this->loggedIn = true;
+        Log::inf("User found by id: `{$user['id']}`.");
+        $this->current = $user;
 
         return true;
     }
-    //-
-
-    /*  ****************************************************** *
-     *          Session Methods
-     *  **************************************  */
 
     /**
      * Will seek for user's session!
@@ -264,30 +244,30 @@ class SessionDriverDb implements SessionDriverInterface
      * --
      * @return  boolean
      */
-    private function sessionDiscover()
+    private function _session_discover()
     {
         # Check if we can find session id in cookies.
-        if ($sessionId = Cookie::read(Cfg::get('plugs/session/cookie_name')))
+        if ($session_id = Cookie::read(Cfg::get('plugs/session/cookie_name')))
         {
             # Look for session
-            $SessionDetails = Database::find(
+            $session_details = Database::find(
                                     Cfg::get('plugs/session/db/sessions_table'),
-                                    array('id' => Str::clean($sessionId, 'aA1', '_', 400))
+                                    array('id' => Str::clean($session_id, 'aA1', '_', 400))
                                 );
 
             # Okey we have something, check it...
-            if ($SessionDetails->succeed())
+            if ($session_details->succeed())
             {
-                $SessionDetails = $SessionDetails->as_array(0);
-                $userId  = $SessionDetails['user_id'];
-                $expires = $SessionDetails['expires'];
-                $ip      = $SessionDetails['ip'];
-                $agent   = $SessionDetails['agent'];
+                $session_details = $session_details->as_array(0);
+                $user_id  = $session_details['user_id'];
+                $expires  = $session_details['expires'];
+                $ip       = $session_details['ip'];
+                $agent    = $session_details['agent'];
 
-                # Check if it is expired?
+                # Check if is expired?
                 if ($expires < time()) {
                     Log::inf("Session was found, but it's expired.");
-                    $this->sessionDestroy($sessionId);
+                    $this->_session_destroy($session_id);
                     return false;
                 }
 
@@ -295,78 +275,78 @@ class SessionDriverDb implements SessionDriverInterface
                 if (Cfg::get('plugs/session/require_ip')) {
                     if ($ip !== $_SERVER['REMOTE_ADDR']) {
                         Log::inf("The IP from session file: `{$ip}`, doesn't match with actual IP: `{$_SERVER['REMOTE_ADDR']}`.");
-                        $this->sessionDestroy($sessionId);
+                        $this->_session_destroy($session_id);
                         return false;
                     }
                 }
 
                 # Do we have to match agent?
                 if (Cfg::get('plugs/session/require_agent')) {
-                    $currentAgent = self::cleanAgent($_SERVER['HTTP_USER_AGENT']);
+                    $current_agent = self::_clean_agent($_SERVER['HTTP_USER_AGENT']);
 
-                    if ($agent !== $currentAgent) {
-                        Log::inf("The agent from session file: `{$agent}`, doesn't match with actual agent: `{$currentAgent}`.");
-                        $this->sessionDestroy($sessionId);
+                    if ($agent !== $current_agent) {
+                        Log::inf("The agent from session file: `{$agent}`, doesn't match with actual agent: `{$current_agent}`.");
+                        $this->_session_destroy($session_id);
                         return false;
                     }
                 }
 
                 # Try to set user now...
-                if (!$this->userSet($userId)) {
+                if (!$this->_user_set($user_id)) {
                     return false;
                 }
 
-                # Remove old session in any case
-                $this->sessionsClearExpired();
-
                 return true;
+            }
+            else {
+                Log::inf("Session found in cookies but not in database: `{$session_id}`.");
             }
         }
         else {
-            Log::inf("No session found!");
-            return false;
+            Log::inf("No session found.");
         }
     }
-    //-
 
     /**
      * Set session (set cookie, add info to sessions file)
      * --
-     * @param   string  $userId
-     * @param   boolean $rememberMe If set to false, session will expire when user
-     *                              close browser's window.
+     * @param   string  $user_id
+     * @param   boolean $expires Null for default or costume expiration in seconds,
+     *                           0, to expires when browser is closed.
+     * --
      * @return  boolean
      */
-    private function sessionSet($userId, $rememberMe=true)
+    private function _session_set($user_id, $expires=null)
     {
         # Set expires to some time in future. It 0 was set in config, then we
         # set it to expires imidietly when browser window is closed.
-        if ($rememberMe === false) {
-            $expires = 0;
-        }
-        else {
+        if ($expires === null) {
             $expires = (int) Cfg::get('plugs/session/expires');
             $expires = $expires > 0 ? $expires + time() : 0;
         }
+        else {
+            $expires = (int) $expires;
+        }
 
         # Create unique id
-        $qId  = time() . '_' . Str::random(20, 'aA1');
+        $q_id  = time() . '_' . Str::random(20, 'aA1');
 
         # Store cookie
-        Cookie::create(Cfg::get('plugs/session/cookie_name'), $qId, $expires);
+        Cookie::create(Cfg::get('plugs/session/cookie_name'), $q_id, $expires);
 
         # Set session file
-        $Session = array(
-            'id'      => $qId,
-            'user_id' => $userId,
+        $session = array(
+            'id'      => $q_id,
+            'user_id' => $user_id,
             'expires' => $expires === 0 ? time() + 60 * 60 : $expires,
             'ip'      => $_SERVER['REMOTE_ADDR'],
-            'agent'   => self::cleanAgent($_SERVER['HTTP_USER_AGENT']),
+            'agent'   => self::_clean_agent($_SERVER['HTTP_USER_AGENT']),
         );
 
-        return Database::create($Session, Cfg::get('plugs/session/db/sessions_table'))->succeed();
+        return Database::create(
+                $session, 
+                Cfg::get('plugs/session/db/sessions_table'))->succeed();
     }
-    //-
 
     /**
      * Used mostly on logout, will remove session's cookies and unset it in file.
@@ -375,29 +355,18 @@ class SessionDriverDb implements SessionDriverInterface
      * --
      * @return  boolean
      */
-    private function sessionDestroy($userId)
+    private function _session_destroy($user_id)
     {
         # Remove cookies
         Cookie::remove(Cfg::get('plugs/session/cookie_name'));
 
-        # Okay, clear session now...
-        return Database::delete(Cfg::get('plugs/session/db/sessions_table'), array('user_id' => (int) $userId))->succeed();
-    }
-    //-
+        # Cleanup
+        $this->cleanup();
 
-    /**
-     * Will clear all expired sessions.
-     * --
-     * @return  void
-     */
-    private function sessionsClearExpired()
-    {
-        Database::delete(
-            Cfg::get('plugs/session/db/sessions_table'),
-            'WHERE expires < :expires',
-            array('expires' => time())
-        );
+        # Okay, clear session now...
+        return Database::delete(
+                Cfg::get('plugs/session/db/sessions_table'), 
+                array('user_id' => (int) $user_id))->succeed();
     }
-    //-
+
 }
-//--

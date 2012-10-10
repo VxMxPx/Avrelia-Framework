@@ -1,17 +1,11 @@
 <?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 /**
- * Avrelia
- * ----
- * Interface for Session drivers
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * Session Driver Interface
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-03-25
  */
 interface SessionDriverInterface
 {
@@ -20,66 +14,84 @@ interface SessionDriverInterface
      * --
      * @return  boolean
      */
-    static function _create();
+    static function _on_enable_();
 
     /**
      * Destroy all elements created by this plug
      * --
      * @return  boolean
      */
-    static function _destroy();
+    static function _on_disable_();
+
 
     /**
-     * Login the user
+     * Create new session by id
      * --
-     * @param   string  $username
-     * @param   string  $password
-     * @param   boolean $rememberMe
+     * @param   integer $id      User's id as in DB or JSON
+     * @param   integer $expires Null for default or costume expiration in seconds,
+     *                           0, to expires when browser is closed.
      * --
      * @return  boolean
      */
-    function login($username, $password, $rememberMe=true);
+    function create($id, $expires=null);
 
     /**
-     * Will log-in user based on id.
+     * Destroy current session
      * --
-     * @param   mixed   $id
-     * @param   boolean $rememberMe
+     * @return void
+     */
+    function destroy();
+
+    /**
+     * Is session set?
      * --
      * @return  boolean
      */
-    function loginId($id, $rememberMe=true);
+    function has();
 
     /**
-     * Logout (if logged in) the user
-     * --
-     * @return  void
-     */
-    function logout();
-
-    /**
-     * Check if the user is logged in.
-     * --
-     * @return  boolean
-     */
-    function isLoggedin();
-
-    /**
-     * Will reload current user's informations; Useful after an update.
+     * Will reload current session.
+     * Useful after updating user's informations.
      * --
      * @return  void
      */
     function reload();
 
     /**
-     * Return user's informations as an array.
-     * If key is provided, only selected key will be returned, for example:
-     * $key = 'id', the $User['id'] will be returned.
+     * Will clear all expired sessions.
      * --
-     * @param   string  $key
-     * --
-     * @return  array
+     * @return  void
      */
-    function as_array($key=false);
+    public function cleanup();
+
+    /**
+     * Get particular information about user (session).
+     * --
+     * @param  string  $key
+     * @param  mixed   $default
+     * --
+     * @return mixed
+     */
+    function get($key, $default=false);
+
+    /**
+     * Return user's information as an array.
+     * --
+     * @return array
+     */
+    function as_array();
+
+    /**
+     * List all sessions.
+     * --
+     * @return array
+     */
+    function list_all();
+
+    /**
+     * Clear all sessions.
+     * --
+     * @return void
+     */
+    function clear_all();
 }
-//--

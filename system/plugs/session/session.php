@@ -1,24 +1,25 @@
 <?php namespace Avrelia\Plug; if (!defined('AVRELIA')) die('Access is denied!');
 
 use Avrelia\Core\Plug as Plug;
-use Avrelia\Core\Cfg as Cfg;
+use Avrelia\Core\Cfg  as Cfg;
 
 /**
- * Avrelia
+ * Session Class
+ * -----------------------------------------------------------------------------
+ * Session Plug, Main Class
  * ----
- * Session Component
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-01-19
  */
 class Session
 {
-    private static $Driver;         # cSessionDriverInterface   Session driver instance
+    /**
+     * Session Driver Instance
+     * @var SessionDriverInterface
+     */
+    private static $driver;
+
 
     /**
      * Cload config and apropriate driver
@@ -35,10 +36,9 @@ class Session
             false);
 
         # Create new driver instance
-        self::$Driver = new $class();
+        self::$driver = new $class();
         return true;
     }
-    //-
 
     /**
      * Enable plug
@@ -54,7 +54,7 @@ class Session
             __NAMESPACE__,
             false);
 
-        if (!$class::_create()) {
+        if (!$class::_on_enable_()) {
             Log::err("Failed to enable session driver: `{$class}`.");
             return false;
         }
@@ -62,7 +62,6 @@ class Session
             return true;
         }
     }
-    //-
 
     /**
      * Disable plug
@@ -78,7 +77,7 @@ class Session
             __NAMESPACE__,
             false);
 
-        if (!$class::_destroy()) {
+        if (!$class::_on_disable_()) {
             Log::err("Failed to disable session driver: `{$class}`.");
             return false;
         }
@@ -86,86 +85,112 @@ class Session
             return true;
         }
     }
-    //-
+
 
     /**
-     * Login the user
+     * Create new session by id
      * --
-     * @param   string  $username
-     * @param   string  $password
-     * @param   boolean $rememberMe If set to false, session will expire when user
-     *                              close browser's window.
+     * @param   integer $id      User's id as in DB or JSON
+     * @param   integer $expires Null for default or costume expiration in seconds,
+     *                           0, to expires when browser is closed.
      * --
      * @return  boolean
      */
-    public static function Login($username, $password, $rememberMe=true)
+    public static function create($id, $expires=null)
     {
-        return self::$Driver ? self::$Driver->login($username, $password, $rememberMe) : false;
+        return self::$driver 
+            ? self::$driver->create($id, $expires) 
+            : false;
     }
-    //-
 
     /**
-     * Logout the user
+     * Destroy current session
+     * --
+     * @return void
+     */
+    public static function destroy()
+    {
+        return self::$driver 
+                ? self::$driver->destroy() 
+                : false;
+    }
+
+    /**
+     * Is session set?
+     * --
+     * @return  boolean
+     */
+    public static function has()
+    {
+        return self::$driver 
+                ? self::$driver->has() 
+                : false;
+    }
+
+    /**
+     * Will reload current session.
+     * Useful after updating user's informations.
      * --
      * @return  void
      */
-    public static function Logout()
+    public static function reload()
     {
-        return self::$Driver ? self::$Driver->logout() : false;
+        if (self::is_set() && self::$driver) 
+            { self::$driver->reload(); }
     }
-    //-
 
     /**
-     * Will log-in user based on id.
-     * --
-     * @param   mixed   $id
-     * @param   boolean $rememberMe If set to false, session will expire when user
-     *                              close browser's window.
-     * --
-     * @return  boolean
-     */
-    public static function LoginId($id, $rememberMe=true)
-    {
-        return self::$Driver ? self::$Driver->loginId($id, $rememberMe) : false;
-    }
-    //-
-
-    /**
-     * Is User logged in?
-     * --
-     * @return  boolean
-     */
-    public static function IsLoggedin()
-    {
-        return self::$Driver ? self::$Driver->isLoggedin() : false;
-    }
-    //-
-
-    /**
-     * Will reload current user's informations; Useful after you're doing an update.
+     * Will clear all expired sessions.
      * --
      * @return  void
      */
-    public static function Reload()
-    {
-        if (self::IsLoggedin()) {
-            self::$Driver->reload();
-        }
-    }
-    //-
+    public function cleanup()
+        { self::$driver and self::$driver->cleanup(); }
 
     /**
-     * Return user's information as an array. If key provided, then only particular
-     * info can be returned. For example $key = uname
+     * Get particular information about user (session).
      * --
-     * @param   string  $key
+     * @param  string  $key
+     * @param  mixed   $default
      * --
-     * @return  mixed
+     * @return mixed
      */
-    public static function as_array($key=false)
+    public static function get($key, $default=false)
     {
-        return self::$Driver ? self::$Driver->as_array($key) : false;
+        return self::$driver
+                ? self::$driver->get($key, $default)
+                : $default;
     }
-    //-
+
+    /**
+     * Return user's information as an array.
+     * --
+     * @return array
+     */
+    public static function as_array()
+    {
+        return self::$driver 
+                ? self::$driver->as_array() 
+                : array();
+    }
+
+    /**
+     * List all sessions.
+     * --
+     * @return array
+     */
+    public static function list_all()
+    {
+        return self::$driver
+                ? self::$driver->list_all()
+                : array();
+    }
+
+    /**
+     * Clear all sessions.
+     * --
+     * @return void
+     */
+    public static function clear_all()
+        { self::$driver and self::$driver->clear_all(); }
 }
-//--

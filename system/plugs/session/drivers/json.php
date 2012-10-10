@@ -5,30 +5,52 @@ use Avrelia\Core\Json       as Json;
 use Avrelia\Core\Cfg        as Cfg;
 use Avrelia\Core\Str        as Str;
 use Avrelia\Core\vString    as vString;
-use Avrelia\Core\Log as Log;
+use Avrelia\Core\Log        as Log;
 
 /**
- * Avrelia
- * ----
- * Json Session Driver Class
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * Session Driver Json Class
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2012-01-20
  */
 class SessionDriverJson implements SessionDriverInterface
 {
-    private $fnameUsers;        # string    Full path to the users file
-    private $fnameSessions;     # string    Full path to the sessions file
-    private $Users;             # array     All users
-    private $Sessions;          # array     All sessions
-    private $CurrentUser;       # array     Current User's Data
-    private $CurrentSession;    # array     Current Session's Data
-    private $loggedIn = false;  # boolean   Do we have user logged in?
+    /**
+     * Full path to the users file.
+     * @var string
+     */
+    protected $file_users;
+
+    /**
+     * Full path to the sessions file.
+     * @var [type]string
+     */
+    protected $file_sessions;
+
+    /**
+     * All users.
+     * @var array
+     */
+    protected $data_users;
+
+    /**
+     * All sessions.
+     * @var array
+     */
+    protected $data_sessions;
+
+    /**
+     * Current user's data
+     * @var array
+     */
+    protected $current_user = false;
+
+    /**
+     * Current session's data
+     * @var array
+     */
+    protected $current_session = false;
 
 
     /**
@@ -39,60 +61,64 @@ class SessionDriverJson implements SessionDriverInterface
     public function __construct()
     {
         # Set data filenames
-        $this->fnameUsers    = Cfg::get('plugs/session/json/users_filename');
-        $this->fnameSessions = Cfg::get('plugs/session/json/sessions_filename');
+        $this->file_users    = Cfg::get('plugs/session/json/users_filename');
+        $this->file_sessions = Cfg::get('plugs/session/json/sessions_filename');
 
         # Load Users And Sessions
-        $this->usersFetch();
-        $this->sessionsFetch();
+        $this->_users_fetch();
+        $this->_sessions_fetch();
 
         # Try to find sessions
-        $this->sessionDiscover();
+        $this->_session_discover();
     }
-    //-
 
     /**
      * Create all files / tables required by this plug to work
      * --
      * @return  boolean
      */
-    public static function _create()
+    public static function _on_enable_()
     {
+        // Do not create things on enable...
+        if (Cfg::get('plugs/session/create_on_enable', false) === false) { return true; }
+
         FileSystem::Write(Json::encode(array()), Cfg::get('plugs/session/json/users_filename'),    false, 0777);
         FileSystem::Write(Json::encode(array()), Cfg::get('plugs/session/json/sessions_filename'), false, 0777);
 
         # Default users
-        $Users = array();
+        $users = array();
 
-        $Defaults = Cfg::get('plugs/session/defaults');
+        $defaults = Cfg::get('plugs/session/defaults');
 
-        foreach ($Defaults as $DefUser)
+        foreach ($defaults as $default_user)
         {
-            $User['id']       = self::unameToId($DefUser['uname']);
-            $User['uname']    = $DefUser['uname'];
-            $User['password'] = vString::Hash($DefUser['password'], false, true);
-            $User['active']   = true;
+            $user['id']       = self::_uname_to_id($default_user['uname']);
+            $user['uname']    = $default_user['uname'];
+            $user['password'] = vString::Hash($default_user['password'], false, true);
+            $user['active']   = true;
 
-            $Users[$User['id']] = $User;
+            $users[$user['id']] = $user;
         }
 
-        return Json::encode_file(Cfg::get('plugs/session/json/users_filename'), $Users);
+        return Json::encode_file(Cfg::get('plugs/session/json/users_filename'), $users);
     }
-    //-
 
     /**
      * Destroy all elements created by this plug
      * --
      * @return  boolean
      */
-    public static function _destroy()
+    public static function _on_disable_()
     {
+        // Do not drop it when disabled!
+        if (Cfg::get('plugs/session/drop_on_disable', false) === false) { return true; }
+
         $r1 = FileSystem::Remove(Cfg::get('plugs/session/json/users_filename'));
         $r2 = FileSystem::Remove(Cfg::get('plugs/session/json/sessions_filename'));
 
         return $r1 && $r2;
     }
-    //-
+
 
     /**
      * Converts username to id.
@@ -101,14 +127,12 @@ class SessionDriverJson implements SessionDriverInterface
      * --
      * @return  string
      */
-    private static function unameToId($username)
+    protected static function _uname_to_id($username)
     {
         return Str::clean(
                     Str::symbols_to_words($username), 
-                    'aA1'
-                );
+                    'aA1');
     }
-    //-
 
     /**
      * Will process (clean) user's agent.
@@ -117,220 +141,196 @@ class SessionDriverJson implements SessionDriverInterface
      * --
      * @return  string
      */
-    private static function cleanAgent($agent)
+    protected static function _clean_agent($agent)
     {
         return Str::clean(
                     str_replace(' ', '_', $agent), 
                     'aA1', 
-                    '_'
-                );
+                    '_');
     }
-    //-
-
-    /*  ****************************************************** *
-     *          Login / Logout / isLoggedin
-     *  **************************************  */
 
     /**
-     * Will login the user (create new session from input)
+     * List all sessions currently set.
      * --
-     * @param   string  $username
-     * @param   string  $password
-     * @param   boolean $rememberMe If set to false, session will expire when user
-     *                              close browser's window.
-     * --
-     * @return  boolean
+     * @return array
      */
-    public function login($username, $password, $rememberMe=true)
+    public function list_all()
+        { return $this->data_sessions; }
+
+    /**
+     * Clear all sessions.
+     * --
+     * @return void
+     */
+    public function clear_all()
     {
-        $id = self::unameToId($username);
-
-        # Do we have valid user?
-        if (!$User = $this->userValid($id)) {
-            return false;
-        }
-
-        # Password match?
-        if ($User['password'] !== vString::Hash($password, $User['password'], true)) {
-            Log::inf("Invalid password for: `{$username}`.");
-            return false;
-        }
-
-        # Okay, set session and current user
-        $this->userSet($User['id']);
-        $this->sessionSet($User['id'], $rememberMe);
-
-        return true;
+        $this->destroy();
+        $this->data_sessions = array();
+        return $this->_session_write();
     }
-    //-
 
     /**
      * Will log-in user based on id.
      * --
      * @param   integer $id
-     * @param   boolean $rememberMe
+     * @param   boolean $expires
      * --
      * @return  boolean
      */
-    public function loginId($id, $rememberMe=true)
+    public function create($id, $expires=null)
     {
+        $user = $this->_is_valid_user($id);
+
         # Do we have valid user?
-        if (!$User = $this->userValid($id)) {
-            return false;
-        }
+        if (!$user) { return false; }
 
         # Okay, set session and current user
-        $this->userSet($User['id']);
-        $this->sessionSet($User['id'], $rememberMe);
+        $this->_user_set($user['id']);
+        $this->_session_set($user['id'], $expires);
 
         return true;
     }
-    //-
 
     /**
      * Will logout current user
      * ---
      * @return  void
      */
-    public function logout()
+    public function destroy()
     {
-        if ($this->loggedIn) {
-            $this->sessionDestroy($this->CurrentSession['id']);
-            $this->CurrentSession = false;
-            $this->CurrentUser    = false;
-            $this->loggedIn       = false;
+        if ($this->current_user) {
+            $this->_session_destroy($this->current_session['id']);
+            $this->current_session = false;
+            $this->current_user    = false;
         }
     }
-    //-
 
     /**
      * Is user logged in?
      * ---
      * @return  boolean
      */
-    public function isLoggedin()
-    {
-        # All this must be true.
-        return $this->CurrentSession && $this->CurrentUser && $this->loggedIn;
-    }
-    //-
+    public function has()
+        { return $this->current_session && $this->current_user; }
 
 
     /**
-     * Will reload current user's informations; Useful after an update.
+     * Will reload current session.
+     * Useful after updating user's informations.
      * --
      * @return  void
      */
     public function reload()
     {
-        if ($this->isLoggedin()) {
-            $this->usersFetch();
-            $this->userSet($this->CurrentUser['id']);
+        if ($this->has()) {
+            $this->_users_fetch();
+            $this->_user_set($this->current_user['id']);
         }
     }
-    //-
 
     /**
-     * Return user's information as an array. If key provided, then only particular
-     * info can be returned. For example $key = uname
+     * Will clear all expired sessions, and return the amount of removed items.
      * --
-     * @param   string  $key
-     * --
-     * @return  mixed
+     * @return  integer
      */
-    public function as_array($key=false)
+    public function cleanup()
     {
-        if (!$key) {
-            return $this->CurrentUser;
-        }
-        else {
-            return isset($this->CurrentUser[$key]) ? $this->CurrentUser[$key] : false;
-        }
-    }
-    //-
+        $removed = 0;
 
-    /*  ****************************************************** *
-     *          User Methods
-     *  **************************************  */
+        foreach ($this->data_sessions as $id => $session)
+        {
+            if ($session['expires'] < time()) {
+                unset($this->data_sessions[$id]);
+                $removed++;
+            }
+        }
+
+        if ($removed > 0) {
+            $this->_session_write();
+        }
+
+        return $removed;
+    }
+
+    /**
+     * Return user's information as an array.
+     * --
+     * @return  array
+     */
+    public function as_array()
+        { return $this->current_user; }
+
+    /**
+     * Get particular information about user (session).
+     * --
+     * @param  string  $key
+     * @param  mixed   $default
+     * --
+     * @return mixed
+     */
+    public function get($key, $default=false)
+        { return Arr::element($key, $this->current_user, $default); }
 
     /**
      * Set user (set all user's data)
      * --
-     * @param   string  $userId
+     * @param   string  $user_id
      * --
      * @return  boolean
      */
-    private function userSet($userId)
+    protected function _user_set($user_id)
     {
-        if (!isset($this->Users[$userId])) {
-            Log::war("Can't set user, not found: `{$userId}`.");
+        if (!isset($this->data_users[$user_id])) {
+            Log::war("Can't set user, not found: `{$user_id}`.");
             return false;
         }
 
-        $this->CurrentUser = $this->Users[$userId];
-        $this->loggedIn    = true;
+        $this->current_user = $this->data_users[$user_id];
         return true;
     }
-    //-
 
     /**
-     * Check if user can be found, and if is active. If both is true,
-     * the User array will be returned, else false.
+     * Check if user can be found, array or false will be returned.
      * --
-     * @param   string  $userId
+     * @param   string  $user_id
      * --
      * @return  mixed
      */
-    private function userValid($userId)
+    protected function _is_valid_user($user_id)
     {
         # Can we find this user?
-        if (!isset($this->Users[$userId])) {
+        if (!isset($this->data_users[$user_id])) {
             Log::inf("User with this ID was not found: `{$id}`");
             return false;
         }
 
         # Is active?
-        if (!isset($this->Users[$userId]['active']) || $this->Users[$userId]['active'] !== true) {
-            Log::inf("User's account isn't active: `{$userId}`.");
-            return false;
+        if (Cfg::get('plugs/session/require_active', true)) {
+            if (!isset($this->data_users[$user_id]['active']) || $this->data_users[$user_id]['active'] !== true) {
+                Log::inf("User's account isn't active: `{$user_id}`.");
+                return false;
+            }
         }
 
-        return $this->Users[$userId];
+        return $this->data_users[$user_id];
     }
-    //-
 
     /**
      * Will fetch all users (return true if successful and false if not)
      * --
      * @return  boolean
      */
-    private function usersFetch()
+    protected function _users_fetch()
     {
-        if (file_exists($this->fnameUsers)) {
-            $this->Users = Json::decode_file($this->fnameUsers, true);
-            if (is_array($this->Users) && !empty($this->Users)) {
+        if (file_exists($this->file_users)) {
+            $this->data_users = Json::decode_file($this->file_users, true);
+            if (is_array($this->data_users) && !empty($this->data_users)) {
                 return true;
             }
         }
 
         return false;
     }
-    //-
-
-    /**
-     * Will write all users to file, and return true if successful.
-     * --
-     * @return  boolean
-     */
-    private function usersWrite()
-    {
-        return Json::encode_file($this->fnameUsers, $this->Users);
-    }
-    //-
-
-    /*  ****************************************************** *
-     *          Session Methods
-     *  **************************************  */
 
     /**
      * Will seek for user's session!
@@ -339,29 +339,27 @@ class SessionDriverJson implements SessionDriverInterface
      * --
      * @return  boolean
      */
-    private function sessionDiscover()
+    protected function _session_discover()
     {
         # Check if we can find session id in cookies.
-        if ($sessionId = Cookie::read(Cfg::get('plugs/session/cookie_name')))
+        if ($session_id = Cookie::read(Cfg::get('plugs/session/cookie_name')))
         {
             # Okey we have something, check it...
-            if (isset($this->Sessions[$sessionId]))
+            if (isset($this->data_sessions[$session_id]))
             {
-                $SessionDetails = $this->Sessions[$sessionId];
-                $userId  = $SessionDetails['user_id'];
-                $expires = $SessionDetails['expires'];
-                $ip      = $SessionDetails['ip'];
-                $agent   = $SessionDetails['agent'];
+                $session_details = $this->data_sessions[$session_id];
+                $user_id  = $session_details['user_id'];
+                $expires  = $session_details['expires'];
+                $ip       = $session_details['ip'];
+                $agent    = $session_details['agent'];
 
                 # For sure this user must exists and must be valid!
-                if (!$this->userValid($userId)) {
-                    return false;
-                }
+                if (!$this->_is_valid_user($user_id)) { return false; }
 
                 # Check if it is expired?
                 if ($expires < time()) {
                     Log::inf("Session was found, but it's expired.");
-                    $this->sessionDestroy($sessionId);
+                    $this->_session_destroy($session_id);
                     return false;
                 }
 
@@ -369,30 +367,33 @@ class SessionDriverJson implements SessionDriverInterface
                 if (Cfg::get('plugs/session/require_ip')) {
                     if ($ip !== $_SERVER['REMOTE_ADDR']) {
                         Log::inf("The IP from session file: `{$ip}`, doesn't match with actual IP: `{$_SERVER['REMOTE_ADDR']}`.");
-                        $this->sessionDestroy($sessionId);
+                        $this->_session_destroy($session_id);
                         return false;
                     }
                 }
 
                 # Do we have to match agent?
                 if (Cfg::get('plugs/session/require_agent')) {
-                    $currentAgent = self::cleanAgent($_SERVER['HTTP_USER_AGENT']);
+                    $current_agent = self::_clean_agent($_SERVER['HTTP_USER_AGENT']);
 
-                    if ($agent !== $currentAgent) {
-                        Log::inf("The agent from session file: `{$agent}`, doesn't match with actual agent: `{$currentAgent}`.");
-                        $this->sessionDestroy($sessionId);
+                    if ($agent !== $current_agent) {
+                        Log::inf("The agent from session file: `{$agent}`, doesn't match with actual agent: `{$current_agent}`.");
+                        $this->_session_destroy($session_id);
                         return false;
                     }
                 }
 
                 # Remove old session in any case
-                $this->sessionDestroy($sessionId);
+                $this->_session_destroy($session_id);
 
                 # Setup new user!
-                Log::inf("Session was found for `{$userId}`, user will be set!");
-                $this->userSet($userId);
-                $this->sessionSet($userId);
+                Log::inf("Session was found for `{$user_id}`, user will be set!");
+                $this->_user_set($user_id);
+                $this->_session_set($user_id);
                 return true;
+            }
+            else {
+                Log::inf("Session found in cookies but not in database: `{$session_id}`.");
             }
         }
         else {
@@ -400,128 +401,98 @@ class SessionDriverJson implements SessionDriverInterface
             return false;
         }
     }
-    //-
 
     /**
      * Set session (set cookie, add info to sessions file)
      * --
-     * @param   string  $userId
-     * @param   boolean $rememberMe If set to false, session will expire when user
-     *                              close browser's window.
+     * @param   string  $user_id
+     * @param   boolean $expires Null for default or costume expiration in seconds,
+     *                           0, to expires when browser is closed.
      * --
      * @return  boolean
      */
-    private function sessionSet($userId, $rememberMe=true)
+    protected function _session_set($user_id, $expires=null)
     {
         # Set expires to some time in future. It 0 was set in config, then we
         # set it to expires imidietly when browser window is closed.
-        if ($rememberMe === false) {
-            $expires = 0;
-        }
-        else {
+        if ($expires === null) {
             $expires = (int) Cfg::get('plugs/session/expires');
             $expires = $expires > 0 ? $expires + time() : 0;
         }
+        else {
+            $expires = (int) $expires;
+        }
 
         # Create unique id
-        $qId  = time() . '_' . Str::random(20, 'aA1');
+        $q_id  = time() . '_' . Str::random(20, 'aA1');
 
         # Store cookie
-        Cookie::create(Cfg::get('plugs/session/cookie_name'), $qId, $expires);
+        Cookie::create(Cfg::get('plugs/session/cookie_name'), $q_id, $expires);
 
         # Set session file
-        $this->Sessions[$qId] = array(
-            'id'      => $qId,
-            'user_id' => $userId,
+        $this->data_sessions[$q_id] = array(
+            'id'      => $q_id,
+            'user_id' => $user_id,
             'expires' => $expires === 0 ? time() + 60 * 60 : $expires,
             'ip'      => $_SERVER['REMOTE_ADDR'],
-            'agent'   => self::cleanAgent($_SERVER['HTTP_USER_AGENT']),
+            'agent'   => self::_clean_agent($_SERVER['HTTP_USER_AGENT']),
         );
 
-        $this->CurrentSession = $this->Sessions[$qId];
-        return $this->sessionsWrite();
+        $this->current_session = $this->data_sessions[$q_id];
+        return $this->_session_write();
     }
-    //-
 
     /**
      * Used mostly on logout, will remove session's cookies and unset it in file.
      * --
-     * @param   string  $sessionId
+     * @param   string  $session_id
      * --
      * @return  boolean
      */
-    private function sessionDestroy($sessionId)
+    protected function _session_destroy($session_id)
     {
         # Remove cookies
         Cookie::remove(Cfg::get('plugs/session/cookie_name'));
 
         # Okay, deal with session file now...
-        if (isset($this->Sessions[$sessionId])) {
-            unset($this->Sessions[$sessionId]);
+        if (isset($this->data_sessions[$session_id])) {
+            unset($this->data_sessions[$session_id]);
 
-            # Write changes to file
-            return $this->sessionsWrite();
+            $this->cleanup();
+
+            return $this->_session_write();
         }
         else {
-            Log::war("Session wasn't set anyway, can't unset it: `{$sessionId}`.");
+            Log::war("Session wasn't set, can't unset it: `{$session_id}`.");
             return true;
         }
     }
-    //-
-
-    /**
-     * Will clear all expired sessions, and return the amount of removed items.
-     * --
-     * @return  integer
-     */
-    private function sessionsClearExpired()
-    {
-        $removed = 0;
-
-        foreach ($this->Sessions as $id => $Session)
-        {
-            if ($Session['expires'] < time()) {
-                unset($this->Sessions[$id]);
-                $removed++;
-            }
-        }
-
-        if ($removed > 0) {
-            $this->sessionsWrite();
-        }
-
-        return $removed;
-    }
-    //-
 
     /**
      * Will fetch all sessions (return true if successful and false if not)
      * --
      * @return  boolean
      */
-    private function sessionsFetch()
+    protected function _sessions_fetch()
     {
-        if (file_exists($this->fnameSessions)) {
-            $this->Sessions = Json::decode_file($this->fnameSessions, true);
-            if (is_array($this->Sessions) && !empty($this->Sessions)) {
+        if (file_exists($this->file_sessions)) {
+            $this->data_sessions = Json::decode_file($this->file_sessions, true);
+            if (is_array($this->data_sessions) && !empty($this->data_sessions)) {
                 return true;
             }
         }
 
         return false;
     }
-    //-
 
     /**
      * Will write all users to file, and return true if successful.
      * --
      * @return  boolean
      */
-    private function sessionsWrite()
+    protected function _session_write()
     {
-        return Json::encode_file($this->fnameSessions, $this->Sessions);
+        return Json::encode_file($this->file_sessions, $this->data_sessions);
     }
-    //-
 
 }
-//--
