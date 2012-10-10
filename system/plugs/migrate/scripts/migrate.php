@@ -10,12 +10,12 @@ class Migrate_Cli
         $this->model = new Migrate; 
 
         // Subscribe to successful events...
-        Event::watch('/plug/avrelia/migrate/to/success', function($message) {
+        Event::on('/plug/avrelia/migrate/to/success', function($message) {
             Dot::ok($message);
         });
 
         // Subscribe to successful events...
-        Event::watch('/plug/avrelia/migrate', function($message) {
+        Event::on('/plug/avrelia/migrate', function($message) {
             Dot::inf($message);
         });
     }

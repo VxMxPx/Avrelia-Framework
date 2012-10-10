@@ -33,7 +33,7 @@ class Debug
             '</style>', 
             'Avrelia/Plug/Debug');
 
-        Event::watch('/plug/html/get_footers', function() {
+        Event::on('/plug/html/get_footers', function() {
             Log::add_benchmarks();
 
             HTML::add_footer(

@@ -18,9 +18,10 @@ class Event
      * @param   string  $event      Name of the event you're waiting for
      * @param   mixed   $call       Can be name of the function, or array('className', 'methodName')
      * @param   boolean $in_front   Should be event added to the front of the list?
+     * --
      * @return  void
      */
-    public static function watch($event, $call, $in_front=false)
+    public static function on($event, $call, $in_front=false)
     {
         if (!isset(self::$waiting[$event]) || !is_array(self::$waiting[$event])) {
             self::$waiting[$event] = array();
@@ -34,6 +35,14 @@ class Event
         }
     }
 
+    /**
+     * Shortcuts to message events.
+     * --
+     * @param  string $event
+     * @param  string $message
+     * --
+     * @return integer
+     */
     public static function inf($event, $message)
         { return self::_log('inf', $event, $message); }
     public static function err($event, $message)
