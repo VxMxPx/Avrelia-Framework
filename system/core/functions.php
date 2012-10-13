@@ -289,7 +289,7 @@ function lu()
 /**
  * Make list (array) of HTML elements, to be used in translations.
  * Each element can be passed in zen-like formatt: span.dark || strong em
- * For links, with url use: a(uri//url).class#id strong.class em
+ * For links, with url use: a(uri or url).class#id strong.class em
  */
 function lh()
 {

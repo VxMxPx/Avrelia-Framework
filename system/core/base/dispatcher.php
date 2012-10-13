@@ -449,7 +449,7 @@ class Dispatcher
      */
     protected function _get_controller($class_name)
     {
-        if (!$this->controllers[$class_name]) {
+        if (!isset($this->controllers[$class_name]) || !$this->controllers[$class_name]) {
             if (!class_exists($class_name, false)) {
                 if (!Loader::get_controller($class_name)) {
                     $this->controllers[$class_name] = false;

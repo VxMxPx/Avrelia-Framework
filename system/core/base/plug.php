@@ -131,7 +131,12 @@ class Plug
         $class_name = $plug;
 
         if (!class_exists($class_name, false)) {
-            include ds($plug_path, self::get_file($plug).'.php');
+            $try_filename = ds($plug_path, self::get_file($plug).'.php');
+
+            if (file_exists($try_filename)) 
+                { include $try_filename; }
+            else
+                { return Log::war("File not found: `{$try_filename}` for `{$plug}`."); }
         }
 
         if (!class_exists($class_name, false)) {

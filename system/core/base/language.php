@@ -47,6 +47,26 @@ class Language
     }
 
     /**
+     * Return language expressions in json format
+     * --
+     * @return string
+     */
+    public static function as_json()
+    {
+        return Json::encode(self::$dictionary);
+    }
+
+    /**
+     * Return language expressions as an array
+     * --
+     * @return array
+     */
+    public static function as_array()
+    {
+        return self::$dictionary;
+    }
+
+    /**
      * Set list of default languages
      * --
      * @param   array   $defaults
@@ -65,72 +85,16 @@ class Language
      *         path (must be with file extension! .lng)
      *     - enter % in filename, to auto set the language 
      *         based on languages list
-     * @param  boolean $get_fist_default Get first default language found, 
-     *     in chase if we can't find requested, for example:
-     *     our request is, to get English or Russian, but none of them 
-     *     can be found, but there is Ukrainian language available, in case 
-     *     $get_fist_default the Ukrainian will be loaded
+     * --
      * @return boolean
      */
-    public static function load($file, $get_fist_default=false)
+    public static function load($file)
     {
-        # Does it have % in it, meaning default languages?
-        if (strpos($file, '%') !== false) 
-        {
-            $def_get_first_default = $get_fist_default;
-            $get_fist_default      = false;
+        $full_path = self::_get_filename($file);
 
-            foreach (self::$defaults as $k => $lng) 
-            {
-                $new_file = str_replace('%', $lng, $file);
+        if (!$full_path) { return false; }
 
-                if ($k == (count(self::$defaults)-1)) 
-                    { $get_fist_default = $def_get_first_default; }
-
-                if (self::load($new_file, $get_fist_default)) 
-                    { return true; }
-            }
-            return false;
-        }
-
-        # is full path or only filename
-        if (substr($file,-4,4) !== '.lng') 
-            { $file = app_path("languages/{$file}.lng"); }
-
-        # Check if file was already loaded
-        if (in_array($file, self::$loaded)) {
-            Log::inf("File is already loaded, won't load it twice: `{$file}`.");
-            return true;
-        }
-        else {
-            self::$loaded[] = $file;
-        }
-
-        # Is valid path?
-        if (!file_exists($file)) {
-            if ($get_fist_default) {
-                $dir   = dirname($file);
-                $fileN = basename($file);
-                $fileN = explode('.', $fileN, 2);
-                $fileN = $fileN[0];
-                $Files = scandir($dir);
-                foreach ($Files as $fileName) {
-                    if (substr($fileName, 0, strlen($fileN)) == $fileN) {
-                        $fileNameNew = ds("{$dir}/{$fileName}");
-                        if (self::load($fileNameNew)) {
-                            $file = $fileNameNew;
-                            break;
-                        }
-                    }
-                }
-                return false;
-            }
-            else {
-                return false;
-            }
-        }
-
-        $result = self::_process($file);
+        $result = self::_process($full_path);
 
         if (is_array($result)) {
             self::$dictionary = array_merge(self::$dictionary, $result);
@@ -175,6 +139,146 @@ class Language
         }
 
         return $result;
+    }
+
+    /**
+     * Will get filename for particular language
+     * --
+     * @param  string  $file  Following options:
+     *     - enter short name: "my_lang", and the path will be calculated 
+     *         automatically: APPPATH/languages/my_lang.lng
+     *     - enter full path: SYSPATH.'/languages/my_lang.lng', to load full 
+     *         path (must be with file extension! .lng)
+     *     - enter % in filename, to auto set the language 
+     *         based on languages list
+     * --
+     * @return string
+     */
+    protected static function _get_filename($file)
+    {
+        # Does it have % in it, meaning default languages?
+        if (strpos($file, '%') !== false) 
+        {
+            foreach (self::$defaults as $lng) 
+            {
+                $new_file = str_replace('%', $lng, $file);
+                $new_file = self::_get_filename($new_file);
+                if ($new_file) 
+                    { return $new_file; }
+            }
+            return false;
+        }
+
+        # is full path or only filename
+        if (substr($file,-4,4) !== '.lng' && substr($file, -9, 9) !== '.lng.html') 
+            { $file = app_path("languages/{$file}.lng"); }
+
+        # Check if file was already loaded
+        if (in_array($file, self::$loaded)) {
+            Log::inf("File is already loaded, won't load it twice: `{$file}`.");
+            return $file;
+        }
+        else {
+            self::$loaded[] = $file;
+        }
+
+        # Is valid path?
+        if (!file_exists($file)) {
+
+            $file = $file.'.html';
+
+            if (!file_exists($file)) { return false; }
+        }
+
+        return $file;
+    }
+
+    /**
+     * Will load particular language file and send it to view. This is not to
+     * load dictionary definitions, but rather to load full html file.
+     * --
+     * @param  string  $file  Following options:
+     *     - enter short name: "my_lang", and the path will be calculated 
+     *         automatically: APPPATH/languages/my_lang.lng
+     *     - enter full path: SYSPATH.'/languages/my_lang.lng', to load full 
+     *         path (must be with file extension! .lng)
+     *     - enter % in filename, to auto set the language 
+     *         based on languages list
+     * @param  mixed $params
+     * --
+     * @return object
+     */
+    public static function as_view($file, $params)
+    {
+        $contents = self::as_html($file, $params);
+
+        $output_key = 'AvreliaView.lang.'.$file;
+        Output::set($output_key, $contents);
+        return new ViewAssign($contents, $output_key);        
+    }
+
+    /**
+     * Return file's content as string, this doesn't take regular .lng files,
+     * but .lng.html files, which are without !KEY:Value syntax
+     * --
+     * @param  string  $file  Following options:
+     *     - enter short name: "my_lang", and the path will be calculated 
+     *         automatically: APPPATH/languages/my_lang.lng
+     *     - enter full path: SYSPATH.'/languages/my_lang.lng', to load full 
+     *         path (must be with file extension! .lng)
+     *     - enter % in filename, to auto set the language 
+     *         based on languages list
+     * @param  mixed $params
+     * --
+     * @return string
+     */
+    public static function as_string($file, $params)
+    {
+        $full_path = self::_get_filename($file);
+
+        if (!$full_path) { return Log::war("Error loading language as view: `{$full_path}`."); }
+
+        $contents = FileSystem::Read($full_path);
+
+        # Check for any variables {1}, ...
+        if ($params) {
+            if (!is_array($params)) { $params = array($params); }
+
+            foreach ($params as $key => $param) {
+                $key = $key + 1;
+                $contents = preg_replace(
+                            '/{'.$key.' ?(.*?)}/', 
+                            str_replace('{?}', '$1', $param), 
+                            $contents);
+            }
+        }
+
+        return $contents;
+    }
+
+    /**
+     * Return file's content as string, this doesn't take regular .lng files,
+     * but .lng.html files, which are without !KEY:Value syntax
+     *
+     * This will convert \n in your file to <br />
+     * --
+     * @param  string  $file  Following options:
+     *     - enter short name: "my_lang", and the path will be calculated 
+     *         automatically: APPPATH/languages/my_lang.lng
+     *     - enter full path: SYSPATH.'/languages/my_lang.lng', to load full 
+     *         path (must be with file extension! .lng)
+     *     - enter % in filename, to auto set the language 
+     *         based on languages list
+     * @param  mixed $params
+     * --
+     * @return string
+     */
+    public static function as_html($file, $params)
+    {
+        $contents = self::as_string($file, $params);
+        $contents = nl2br( Str::standardize_line_endings($contents) );
+
+        return $contents;
     }
 
     /**
