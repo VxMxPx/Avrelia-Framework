@@ -242,7 +242,7 @@ class Mailer
      */
     public function message_html($message)
     {
-        $this->body_html = stripslashes(rtrim(str_replace(array("\r", "\n"), array('', '<br />'), $message)));
+        $this->body_html = stripslashes(rtrim($message));
         return $this;
     }
 

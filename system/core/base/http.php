@@ -56,7 +56,8 @@ class Http
         { self::header("HTTP/1.1 200 OK"); }
 
     /**
-     * The server successfully processed the request, but is not returning any content.
+     * The server successfully processed the request, 
+     * but is not returning any content.
      * --
      * @return  void
      */
