@@ -304,7 +304,7 @@ class HTML
 
             # Positive
             if ($topPage) {
-                for($i=1; $i < $display_num; $i++) {
+                for($i=1; $i <= $display_num; $i++) {
                     $current = $now + $i;
                     if ($topPage AND $current <= $topPage) {
                         $u = str_replace('%current_page%', $current, $url);
