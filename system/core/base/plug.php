@@ -160,7 +160,19 @@ class Plug
             $files = scandir(ds($plug_path,'scripts'));
             foreach ($files as $file) {
                 if (substr($file, -4, 4) === '.php') {
-                    $has_scripts[substr($file, 0, -4)] = ds($plug_path,'scripts',$file);
+                    // Get full absolute script path
+                    $script_path = ds($plug_path,'scripts',$file);
+
+                    // Check if is in application folder or system
+                    if (strpos($script_path, sys_path()) !== false) {
+                        $script_path = 'SYS::' . substr($script_path, strlen(sys_path()));
+                    }
+                    elseif (strpos($script_path, app_path()) !== false) {
+                        $script_path = 'APP::' . substr($script_path, strlen(app_path()));
+                    }
+
+
+                    $has_scripts[substr($file, 0, -4)] = $script_path;
                 }
             }
             if (empty($has_scripts))
@@ -348,6 +360,17 @@ class Plug
             foreach (self::$available as $plug) {
                 if (isset($plug['has_scripts']) && is_array($plug['has_scripts'])) {
                     foreach ($plug['has_scripts'] as $script_id => $script_path) {
+
+                        switch (substr($script_path, 0, 5)) {
+                            case 'SYS::':
+                                $script_path = sys_path(substr($script_path, 5));
+                                break;
+
+                            case 'APP::':
+                                $script_path = app_path(substr($script_path, 5));
+                                break;
+                        }
+
                         $result[$script_id] = $script_path;
                     }
                 }

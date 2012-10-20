@@ -1,6 +1,6 @@
 <?php if (!defined('AVRELIA')) die('Access is denied!');
 
-class Minify_Cli
+class minify_Cli
 {
     /**
      * Will run new command (new process) and output the results
