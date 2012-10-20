@@ -73,14 +73,17 @@ class Avrelia
          */
         include(sys_path('core/initializer.php'));
 
+        # Default timezone
+        date_default_timezone_set(Cfg::get('system/timezone', 'UTC'));
+
         # Register autoloader
         spl_autoload_register('Loader::get');
 
-        # Default timezone
-        date_default_timezone_set(Cfg::get('system/timezone', 'GMT'));
-
         # Set Timer...
         Benchmark::set_timer('system');
+
+        # First Log Entry...
+        Log::inf('PHP version: ' . PHP_VERSION . ' | Framework version: ' . self::VERSION);
 
         # Now scan and autoload plugs
         if (Cfg::get('plug/enabled')) 

@@ -74,9 +74,6 @@ class Log
         self::$types             = Cfg::get('log/types');
         self::$write_individual  = Cfg::get('log/write_individual');
         self::$enabled           = Cfg::get('log/enabled');
-
-        # First Log Entry...
-        self::inf('PHP version: ' . PHP_VERSION . ' | Framework version: ' . \Avrelia::VERSION);
     }
 
     /**
