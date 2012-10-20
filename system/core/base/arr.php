@@ -271,26 +271,46 @@ class Arr
      * Get particular elements out of array, or return default if element doesn't
      * exists, or if passed in array is not valid. This will build new array,
      * with required keys in it.
-     * @param  mixed   $keys        Can be array or string with comma separated keys.
-     * @param  array   $input_array
-     * @param  boolean $default
+     * --
+     * @param  mixed $keys        Can be array or string with comma separated keys.
+     * @param  array $input_array
+     * @param  mixed $default     Can be string or an array to set default for 
+     *                            each key.
+     * --
      * @return array
      */
     public static function elements($keys, $input_array, $default=false)
     {
-        if (!is_array($keys)) {
-            $keys = Str::explode_trim(',', $keys);
-        }
+        // If we have string we can covert it to an array
+        if (!is_array($keys)) { $keys = Str::explode_trim(',', $keys); }
 
+        // If nothing in array, then we'll just return default
         if (self::is_empty($keys)) { return $default; }
-        if (!is_array($input_array)) { $input_array = array(); }
+        
+        // Do we have any input and is it an array?
+        if (!is_array($input_array)) { $input_array = array($input_array); }
+
+        // Set empty results
         $result = array();
 
-        foreach ($keys as $key) {
+        // Check each key, to see if is set, - if not we'll return default
+        foreach ($keys as $i => $key) {
+
+            // If we're having default values as array, we'll check them now
+            if (is_array($default)) {
+                $default_current = isset($default[$i])
+                                        ? $default[$i]
+                                        : false;
+            }
+            else {
+                $default_current = $default;
+            }
+            
+            // Set result
             $result[$key] =
                 isset($input_array[$key])
                     ? $input_array[$key]
-                    : $default;
+                    : $default_current;
         }
 
         return $result;
