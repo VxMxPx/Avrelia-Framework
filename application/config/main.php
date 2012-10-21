@@ -24,14 +24,14 @@ $avrelia_config['system']['routes'] = array
 
 # List of enabled plugs + map
 $avrelia_config['plug']['enabled']   = array(
-    'Avrelia\\Plug\\HTML',
-    'Avrelia\\Plug\\JQuery',
-    'Avrelia\\Plug\\Debug'
+    'Plug\\Avrelia\\HTML',
+    'Plug\\Avrelia\\JQuery',
+    'Plug\\Avrelia\\Debug'
 );
 
 # List of plugs which will be auto-loaded
 $avrelia_config['plug']['auto_load'] = array(
-    'Avrelia\\Plug\\Debug'
+    'Plug\\Avrelia\\Debug'
 );
 
 # For more configurations see system/config/main.php

@@ -6,7 +6,7 @@
 if (!defined('APPPATH')) define('APPPATH', realpath(dirname(__FILE__).'/../'));
 if (!defined('PUBPATH')) define('PUBPATH', realpath(APPPATH.'/public'));
 if (!defined('DATPATH')) define('DATPATH', realpath(APPPATH.'/database'));
-if (!defined('SYSPATH')) define('SYSPATH', realpath(APPPATH.'/../system'));
+if (!defined('SYSPATH')) define('SYSPATH', realpath(APPPATH.'/../avrelia'));
 
 /* -----------------------------------------------------------------------------
  * Turn off when in production version
