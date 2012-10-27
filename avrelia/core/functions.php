@@ -49,34 +49,40 @@ function plg_path($path=null) { return ds(PLGPATH.'/'.$path); }
 
 /**
  * Output variable as: <pre>print_r($variable)</pre> (this is only for debuging)
+ * This will die after dumpign variables on screen.
+ */
+function dump()
+{
+    die(call_user_func_array('dump_r', func_get_args()));
+}
+
+/**
+ * Dump, but don't die - return results instead.
  * --
- * @param  mixed   $variable
- * @param  boolean $die        Do you wanna -stop- system after output?
- * @param  boolean $return     Should function return or echo results?
  * @return string
  */
-function dump($variable, $die=true, $return=false)
+function dump_r()
 {
-    if (is_bool($variable)) {
-        $bool = $variable ? 'true' : 'false';
+    $arguments = func_get_args();
+    $result = '';
+
+    foreach ($arguments as $variable) 
+    {
+        if (is_bool($variable)) {
+            $bool = $variable ? 'true' : 'false';
+        }
+        else {
+            $bool = false;
+        }
+
+        $result .= (!is_cli()) ? "\n<pre>\n" : "\n";
+        $result .= '' . gettype($variable);
+        $result .= (is_string($variable) ? '['.strlen($variable).']' : '');
+        $result .=  ': ' . (is_bool($variable) ? $bool : print_r($variable, true));
+        $result .= (!is_cli()) ? "\n</pre>\n" : "\n";
     }
 
-    //$result  = (!is_cli()) ? "\n<pre>\n" : "\n";
-    //$result .=  var_export($variable, true);
-    //$result .= (!is_cli()) ? "\n</pre>\n" : "\n";
-
-    $result  = (!is_cli()) ? "\n<pre>\n" : "\n";
-    $result .= '' . gettype($variable);
-    $result .= (is_string($variable) ? '['.strlen($variable).']' : '');
-    $result .=  ': ' . (is_bool($variable) ? $bool : print_r($variable, true));
-    $result .= (!is_cli()) ? "\n</pre>\n" : "\n";
-
-    if ($return)
-        { return $result; }
-    else
-        { echo $result; }
-
-    if ($die) { die; }
+    return $result;
 }
 
 /**
