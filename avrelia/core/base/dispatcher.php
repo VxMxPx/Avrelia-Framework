@@ -309,6 +309,9 @@ class Dispatcher
         }
 
         foreach ($parameters as $param) {
+            # Trim it
+            $param = trim($param);
+
             # Check if we need to convert it
             $convert = false;
             if (substr($param, 1, 4) === 'str ') { $convert = 'string'; }
@@ -392,7 +395,6 @@ class Dispatcher
 
             $params_values[] = $current_val;
         }
-
         # Return params-values
         return $params_values;
     }
