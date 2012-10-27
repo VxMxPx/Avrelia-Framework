@@ -15,7 +15,7 @@
  * --
  * @return boolean
  */
-function is_cli() { return php_sapi_name() === 'cli'; }
+function is_cli() { return php_sapi_name() === 'cli' || defined('STDIN'); }
 
 /**
  * Correct Directory Separators

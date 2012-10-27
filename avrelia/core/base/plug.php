@@ -110,6 +110,11 @@ class Plug
             return true;
         }
 
+        # If doesn't have Plug\ in the name, try to get it
+        if (strpos($name, 'Plug\\') === false) {
+            $name = self::_get_class_by_alias($name);
+        }
+
         return 
             isset(self::$available[$name]) && self::$available[$name] 
                 ? true 

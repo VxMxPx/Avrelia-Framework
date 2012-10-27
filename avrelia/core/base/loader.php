@@ -35,7 +35,7 @@ class Loader
             // UTIL ------------------------------------------------------------
             return self::get_util($class_name); 
         }
-        else if (substr($class_name, 0, 5) === 'Plug\\') {
+        else if (Plug::has($class_name)) {
             // PLUG ------------------------------------------------------------
             return self::get_plug($class_name); 
         }
