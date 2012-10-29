@@ -11,10 +11,13 @@
 
     <div class="content input">
         <div class="spacer">
-            $_POST: <?php dump($_POST, false); ?>
+            $_POST: <?php echo dump_r($_POST); ?>
         </div>
         <div class="spacer">
-            Input::get_request_uri: <?php dump(Input::get_request_uri(), false); ?>
+            $_GET: <?php echo dump_r($_GET); ?>
+        </div>
+        <div class="spacer">
+            Path Info: <?php echo dump_r(Input::get_path_info()); ?>
         </div>
     </div>
 

@@ -97,7 +97,7 @@ class Image
         );
 
         Log::inf("Watermark with following properties will be added to image: ".
-                    dump($this->Destination['Watermark'], false, true));
+                    dump_r($this->Destination['Watermark']));
 
         return $this;
     }

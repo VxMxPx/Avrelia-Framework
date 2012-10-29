@@ -46,9 +46,44 @@ class Loader
     }
 
     /**
+     * Will load core-class.
+     * --
+     * @param  string $class_name
+     * --
+     * @return boolean
+     */
+    public static function get_core($class_name)
+    {
+        $file_name = strtolower($class_name);
+        $file_name = sys_path("core/base/{$file_name}.php");
+        $ns_class  = "Avrelia\\Core\\{$class_name}";
+
+        if (class_exists($ns_class, false) || class_exists($class_name, false)) {
+            Log::war("Class already loaded: `{$ns_class}`.");
+            return true;
+        }
+
+        if (!file_exists($file_name)) {
+            trigger_error("Core file not found: `{$file_name}`.", E_USER_ERROR);
+        }
+
+        include $file_name;
+
+        class_alias($ns_class, $class_name);
+
+        // Will execute on include method if exits.
+        if (method_exists($ns_class, '_on_include_')) { 
+            call_user_func(array($ns_class, '_on_include_')); 
+        }
+
+        return true;
+    }
+
+    /**
      * Will load plug's class
      * --
      * @param   string  $class_name
+     * --
      * @return  boolean
      */
     public static function get_plug($class_name)
@@ -93,7 +128,9 @@ class Loader
 
     /**
      * Loads application's model
+     * --
      * @param  string $class_name
+     * --
      * @return boolean
      */
     public static function get_model($class_name)
@@ -103,8 +140,10 @@ class Loader
 
     /**
      * Loads application's controller
+     * --
      * @param  string $class_name
-     * @return boolean
+     * --
+     * @return void
      */
     public static function get_controller($class_name)
     {
@@ -115,7 +154,8 @@ class Loader
      * Will load application's model or controllers
      * --
      * @param   string  $class_name
-     * @return  boolean
+     * --
+     * @return  void
      */
     protected static function _get_mc($class_name, $type)
     {

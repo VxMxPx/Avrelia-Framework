@@ -22,7 +22,7 @@ class Avrelia
      * Will, as name suggest, initialize core framework. After that dispatcher
      * will be returned, and `boot` method can be called.
      * ---
-     * @return object Dispatcher
+     * @return object $this
      */
     public function initialize()
     {
@@ -92,7 +92,38 @@ class Avrelia
         # Trigger event after framework initialization
         Event::trigger('/core/avrelia/initialize');
 
-        return new Dispatcher();
+        return $this;
+    }
+
+    /**
+     * Boot the system - will find particular route and execute it.
+     * --
+     * @return object $this
+     */
+    public function boot()
+    {
+        Loader::get_core('Dispatcher');
+        Loader::get_core('Route');
+
+        // Check if application is offline
+        if (Cfg::get('system/offline')) {
+            Route::trigger('@OFFLINE');
+        }
+        else {
+            Route::trigger(Input::get_path_info());
+        }
+
+        return $this;
+    }
+
+    /**
+     * Return otuput.
+     * --
+     * @return string
+     */
+    public function output()
+    {
+        return Output::get();
     }
 
     /**

@@ -4,31 +4,31 @@ system/core/str
 <?php
 include('../../../init.php');
 
-dump(Str::tokenize(
+echo dump_r(Str::tokenize(
         'a href="http://google.com" class="blue small" title="This is google!"',
         CHAR_SPACE, CHAR_QUOTE), false, false);
 
-dump(Str::tokenize(
+echo dump_r(Str::tokenize(
         '(one,two,three),(four,five,six),()',
         ',', array('(', ')')), false, false);
 
-dump(Str::tokenize(
+echo dump_r(Str::tokenize(
         'hello "world how are you?',
         ' ', CHAR_QUOTE), false, false);
 
-dump(Str::tokenize(
+echo dump_r(Str::tokenize(
         'hi\ there\ how\ \"are you\ today\"?',
         ' ', CHAR_QUOTE), false, false);
 
-dump(Str::tokenize(
+echo dump_r(Str::tokenize(
         '<?php script1(); ?>,<?php script2(); ?>',
         ',', array('<?php', '?>')), false, false);
 
-dump(Str::tokenize(
+echo dump_r(Str::tokenize(
         'hello!"this is "some quote"!"and some "!"more',
         '!"', CHAR_QUOTE), false, false);
 
-dump(Str::tokenize(
+echo dump_r(Str::tokenize(
         'home\user\Documents',
         CHAR_BACKSLASH, CHAR_QUOTE), false, false);
 ?>

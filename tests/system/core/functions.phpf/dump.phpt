@@ -4,15 +4,15 @@ system/core/functions
 <?php
 include('../../../init.php');
 
-dump(0, false);
-dump(1.2, false);
-dump('Hello kitty!', false);
-dump(-1, false);
-dump(false, false);
-dump(array('-1', -2, false), false);
-dump(dump(true, false, true), false);
-echo dump(42, false, true);
-dump(-12, true);
+echo dump_r(0);
+echo dump_r(1.2);
+echo dump_r('Hello kitty!');
+echo dump_r(-1);
+echo dump_r(false);
+echo dump_r(array('-1', -2, false));
+echo dump_r(dump_r(true));
+echo dump_r(42);
+dump(-12);
 echo 'NOT VISIBLE';
 ?>
 --EXPECT--

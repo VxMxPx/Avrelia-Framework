@@ -39,11 +39,6 @@ $avrelia_config = array
         # Is application off-line?
         'offline'           => false,
 
-        # If application is off-line, what kind of message do we want to send 
-        # to our users? This can be any string, or view:view_name, 
-        # will be loaded from application/views folder.
-        'offline_message'   => 'view:offline',
-
         # Default System Timezone.
         'timezone'         => 'GMT',
 
@@ -75,6 +70,36 @@ $avrelia_config = array
 
         # Which editor do you wanna use when edit tests
         'tests_editor' => 'sublime-text %s &',
+
+        // Will set /segment=key/ => ?segment=key
+        'input_eq_segments_to_get' => true,
+
+        // Will not use get in segments
+        'input_ignore_get' => true,
+
+        # When set to array [key, value], the GET request will be threated
+        # as being DELETE. For example: 
+        # Using: ['_method', 'delete']
+        # ----> users/1?_method=delete become DELETE request.
+        # 
+        # Set to false to turn off this functionality.
+        'input_method_delete_from_get'       => array('_method', 'delete'),
+
+        # When set to array [key, value], the POST request will be threated
+        # as being DELETE. For example:
+        # Using: ['_method', 'delete']
+        # ----> <input name="_method" value="delete"> become DELETE request.
+        # 
+        # Set to false to turn off this functionality.
+        'input_method_delete_from_post'      => array('_method', 'delete'),
+
+        # When set to array [key, value], the POST request will be threated
+        # as being PUT. For example:
+        # Using: ['_method', 'put']
+        # ----> <input name="_method" value="post"> become PUT request.
+        # 
+        # Set to false to turn off this functionality.
+        'input_method_put_from_post'         => array('_method', 'put'),
     ),
 
     # Plugs settings.

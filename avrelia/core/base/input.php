@@ -9,14 +9,17 @@
  */
 class Input
 {
-    # List Of All URI segments (segment0/segment1) ('segment0', 'segment1')
-    protected static $uri_segments = array();
+    # Request methods types
+    const METHOD_GET    = 'GET';
+    const METHOD_POST   = 'POST';
+    const METHOD_PUT    = 'PUT';
+    const METHOD_DELETE = 'DELETE';
 
-    # List Of All Actions (action=value)
-    protected static $uri_actions  = array();
+    # List of all url segments
+    protected static $segments = array();
 
-    # Build uri segements
-    protected static $build_uri    = array();
+    # Get segments
+    protected static $get      = array();
 
     /**
      * Get Rid Of Globals & Set Uri Segment
@@ -26,179 +29,115 @@ class Input
      */
     public static function _on_include_()
     {
-        if (ini_get('register_globals'))
-        {
-            Log::inf("We'll dispel globals now.");
+        // Set get segments
+        self::$get = $_GET;
 
-            # Might want to change this perhaps to a nicer error
-            if (isset($_REQUEST['GLOBALS'])) {
-                trigger_error('GLOBALS overwrite attempt detected.', E_USER_ERROR);
-            }
+        // Set list of segments
+        $segments = Str::explode_trim('/', self::get_path_info());
 
-            # Variables that shouldn't be unset
-            $no_unset = array('GLOBALS', 'GET', 'POST', '_COOKIE', '_SERVER', '_ENV', '_FILES');
-
-            $input = array_merge(
-                $_GET, 
-                $_POST, 
-                $_COOKIE, 
-                $_SERVER, 
-                $_ENV, 
-                $_FILES, 
-                isset($_SESSION) ? (array)$_SESSION : array());
-
-            foreach ($input as $k => $v) {
-                if (!in_array($k, $no_unset) && isset($GLOBALS[$k])) {
-                    unset($GLOBALS[$k]);
+        // Register segments containing equal sign, to get
+        foreach ($segments as $segment) {
+            if (Cfg::get('input_eq_segments_to_get')) {
+                if (strpos($segment, '=') !== false) {
+                    $segment_get = Str::explode_trim('=', $segment, 2);
+                    self::$get[$segment_get[0]] = $segment_get[1];
+                    continue;
                 }
             }
+            self::$segments[] = $segment;
         }
-
-        # Set Get Actions And Segments
-        $uri = self::server('REQUEST_URI');
-        $uri = Str::clean_regex($uri, Cfg::get('system/input_get_filter', '/[^a-z0-9_]/'));
-
-        # Shouldn't Be Empty
-        if ($uri == '') { return false; }
-
-        # Get Array Of Segments
-        $uri_segments = explode('/', $uri);
-
-        # It Should Be Array, And Shouldn't Be Empty!
-        if (!is_array($uri_segments) && !empty($uri_segments)) { return false; }
-
-        # We'll have 120 values in array
-        $uri_segments = array_slice($uri_segments, 0, 120);
-
-        # Main Loop
-        foreach($uri_segments as $segment)
-        {
-            # Check If It's An Action Or Segment
-            if (strpos($segment, '='))
-            {
-                # Is it action?
-                $action = '';
-                $action = explode('=', $segment, 2);
-                $value  = (isset($action[1]) ? trim($action[1]) : '');
-                $action = (isset($action[0]) ? trim($action[0]) : '');
-                if ($action != '') {
-                    # This Is Clean, since we clean whole segment
-                    $action = strtolower($action);
-                    self::$uri_actions[$action] = $value;
-                }
-            }
-            else {
-                // Is it segment?
-                if (strlen(trim($segment)) > 0) {
-                    # This Is Clean, since we clean whole segment
-                    self::$uri_segments[] = substr($segment, 0, 400);
-                }
-            }
-        }
-
-        return true;
     }
 
     /**
-     * Get the request uri (example /edit/me/now)
+     * Get server's path info.
      * --
-     * @param  boolean $include_actions
      * @return string
      */
-    public static function get_request_uri($include_actions=true)
+    public static function get_path_info() 
     {
-        return $include_actions 
-                ? $_SERVER['REQUEST_URI'] 
-                : implode('/', self::$uri_segments);
+        return Cfg::get('input_ignore_get') 
+                ? $_SERVER['PATH_INFO']
+                : $_SERVER['REQUEST_URI'];
     }
 
     /**
-     * This will build url (by replacing existing) from segments / actions.
+     * Return particular uri segment if set, otherwise return default value.
      * --
-     * @param   array   $uri             Examples: array(
-     *                                       0 => 'segment', 
-     *                                       1 => 'segment1', 
-     *                                       'action' => 'value')
-     * @param   boolean $update_current  Will keep current uri's 
-     *                                      segments / actions and update them.
-     * @return  string
-     */
-    public static function build_uri($uri, $update_current=true)
-    {
-        if (!is_array($uri)) { $uri = array($uri); }
-
-        if (!empty(self::$build_uri)) {
-            foreach (self::$build_uri as $id => $segment) {
-                if (!isset($uri[$id])) { $uri[$id] = $segment; }
-            }
-        }
-        ksort($uri);
-        $final_uri = '';
-
-        # Update Current Url
-        if ($update_current)
-        {
-            foreach (self::$uri_segments as $num => $value)
-            {
-                if (isset($uri[$num])) {
-                    $final_uri .= $uri[$num] . '/';
-                    unset($uri[$num]);
-                }
-                else {
-                    $final_uri .= $value . '/';
-                }
-            }
-
-            foreach (self::$uri_actions as $num => $value)
-            {
-                if (isset($uri[$num])) {
-                    if ($uri[$num] === false) { continue; }
-
-                    $final_uri .= "{$num}=".$uri[$num]."/";
-                    unset($uri[$num]);
-                }
-                elseif ($value !== false) {
-                    $final_uri .= "{$num}={$value}/";
-                }
-            }
-        }
-
-        # Add All New Segments
-        foreach ($uri as $num => $value) {
-            if (is_numeric($num))
-                { $final_uri .= $value . '/'; }
-            elseif ($value !== false)
-                { $final_uri .= "{$num}={$value}/"; }
-        }
-
-        return trim($final_uri, '/');
-    }
-
-    /**
-     * Fetch an item from the POST array
+     * @param  integer  $number
+     * @param  mixed    $defult
      * --
-     * @param  mixed   $key      If key is empty, then we'll return whole post!
-     * @param  mixed   $default  Default if variable isn't set....
      * @return mixed
      */
-    public static function post($key=false, $default=false)
+    public static function segment($number, $defult=false) 
     {
-        if (!$key) {
-            return !empty($_POST) ? $_POST : $default;
-        }
-        elseif (is_array($key)) {
-            $new_array = array();
-            foreach ($key as $id => $sel) {
-                $id = is_integer($id) ? $sel : $id;
-                $new_array[$id] = isset($_POST[$sel]) ? $_POST[$sel] : $default;
-            }
-            return $new_array;
-        }
-        elseif (!isset($_POST[$key])) {
-            return $default;
+        return isset(self::$segments[$number]) 
+                ? self::$segments[$number]
+                : $default;
+    }
+
+    /**
+     * Return list all segments currently set.
+     * --
+     * @return array
+     */
+    public static function segments()
+    {
+        return self::$segments;
+    }
+
+    /**
+     * Set entirely new list of segments.
+     * --
+     * @param array $list
+     * --
+     * return null
+     */
+    public static function set_segments($list) 
+    {
+        self::$segments = $list;
+    }
+
+    /**
+     * Get URI _GET segment.
+     * @param  mixed   $key    Following options are available:
+     *                             false:  return all keys
+     *                             string: return particular key if exists
+     *                             array:  return keys specified in array
+     * @param  mixed   $defult Default value(s) when key not found
+     * --
+     * @return mixed
+     */
+    public static function get($key=false, $defult=false) 
+    {
+        if (!$key) { return self::$get; }
+
+        if (is_array($key)) {
+            return Arr::elements($key, self::$get, $default);
         }
         else {
-            return $_POST[$key];
+            return Arr::element($key, self::$get, $default);
+        }
+    }
+
+    /**
+     * Get _POST segment.
+     * @param  mixed   $key    Following options are available:
+     *                             false:  return all keys
+     *                             string: return particular key if exists
+     *                             array:  return keys specified in array
+     * @param  mixed   $defult Default value(s) when key not found
+     * --
+     * @return mixed
+     */
+    public static function post($key=false, $default=false) 
+    {
+        if (!$key) { return $_POST; }
+
+        if (is_array($key)) {
+            return Arr::elements($key, $_POST, $default);
+        }
+        else {
+            return Arr::element($key, $_POST, $default);
         }
     }
 
@@ -215,13 +154,13 @@ class Input
         else
             { return !empty($_POST); }
     }
-    //-
 
     /**
      * Return current url, if withQuery is set to true, it will return full url,
      * query included.
      * --
      * @param   boolean $with_query
+     * --
      * @return  string
      */
     public static function get_url($with_query=false)
@@ -240,59 +179,51 @@ class Input
     }
 
     /**
-     * Fetch an item from the GET array
-     *
-     * @param  mixed $key - enter one of the following values:
-     *     false:   return whole url
-     *     integer: for segment (example: 0 - will get segment 0)
-     *     string:  for action (example: `my_action` - will get `some_action` 
-     *              from: `my_uri/my_action=some_action`)
-     *     string (? prefix): for regular get (example: `?my_action` will get 
-     *                        `some_action` from `my_uri?my_action=some_action`)
-     *
-     * @param  mixed $default - Default value (if request isn't set)
-     * @return mixed
-     */
-    public static function get($key, $default=false)
-    {
-        if ($key === false) { return self::server('REQUEST_URI'); }
-
-        if (is_numeric($key)) {
-            if (isset(self::$uri_segments[$key]))
-                { return self::$uri_segments[$key]; }
-            else
-                { return $default; }
-        }
-        else {
-            if (substr($key, 0, 1) === '?') {
-                $key = substr($key, 1);
-                return isset($_GET[$key]) ? $_GET['key'] : $default;
-            }
-            else {
-                if (isset(self::$uri_actions[$key]))
-                    { return self::$uri_actions[$key]; }
-                else
-                    { return $default; }
-            }
-        }
-    }
-
-    /**
      * Will get current domain
      * --
      * @return string
      */
-    public static function get_domain() { return $_SERVER['SERVER_NAME']; }
+    public static function get_domain() 
+    { 
+        return $_SERVER['SERVER_NAME']; 
+    }
 
     /**
-     * Fetch an item from the SERVER array
+     * Get request method: Input::METHOD_GET, Input::METHOD_POST, 
+     *                     Input::METHOD_PUT, Input::METHOD_DELETE
      * --
-     * @param  string $key
-     * @return string
+     * @return integer
      */
-    public static function server($key='')
+    public static function get_method() 
     {
-        if (!isset($_SERVER[$key])) { return false; }
-        return vString::EncodeEntities($_SERVER[$key]);
+        // Is it put?
+        if (is_array(Cfg::get('input_method_put_from_post'))) {
+            list($method, $value) = Cfg::get('input_method_put_from_post');
+            if (self::post($method) === $value) {
+                return self::METHOD_PUT;
+            }
+        }
+
+        // Is it delete?
+        if (is_array(Cfg::get('input_method_delete_from_post'))) {
+            list($method, $value) = Cfg::get('input_method_delete_from_post');
+            if (self::post($method) === $value) {
+                return self::METHOD_DELETE;
+            }
+        }
+        if (is_array(Cfg::get('input_method_delete_from_get'))) {
+            list($method, $value) = Cfg::get('input_method_delete_from_get');
+            if (self::get($method) === $value) {
+                return self::METHOD_DELETE;
+            }
+        }
+
+        // Is it post?
+        if (self::has_post()) {
+            return self::METHOD_POST;
+        }
+
+        // It must be get.
+        return self::METHOD_GET;
     }
 }

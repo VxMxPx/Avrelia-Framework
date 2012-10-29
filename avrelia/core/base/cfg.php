@@ -98,9 +98,9 @@ class Cfg
         $configs = htmlspecialchars(print_r(self::$configs, true));
         
         return
-            'Cache ' . dump($cache, false, true) .
+            'Cache ' . dump_r($cache) .
             "\n" .
-            'Config ' . dump($configs, false, true);
+            'Config ' . dump_r($configs);
     }
 
     /**

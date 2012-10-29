@@ -39,20 +39,6 @@ function _call_include_method_($class_name)
 }
 
 /* -----------------------------------------------------------------------------
- * We'll load all base (files) classes now, and make them available
- */
-$base_classes = scandir(sys_path('core/base'));
-
-if (empty($base_classes)) { 
-    trigger_error("Couldn't find any class in: {$base_classes}", E_USER_ERROR); 
-}
-
-foreach ($base_classes as $base_file) {
-    if (substr($base_file, -4, 4) !== '.php') { continue; }
-    include sys_path("core/base/{$base_file}");
-}
-
-/* -----------------------------------------------------------------------------
  * Classes map
  */
 $classes_map = array(
@@ -65,7 +51,6 @@ $classes_map = array(
     'Avrelia\\Core\\Benchmark'   => 'Benchmark',
     'Avrelia\\Core\\Cfg'         => 'Cfg',
     'Avrelia\\Core\\Log'         => 'Log',
-    'Avrelia\\Core\\Dispatcher'  => 'Dispatcher',
     'Avrelia\\Core\\Event'       => 'Event',
     'Avrelia\\Core\\FileSystem'  => 'FileSystem',
     'Avrelia\\Core\\Http'        => 'Http',
@@ -75,16 +60,16 @@ $classes_map = array(
     'Avrelia\\Core\\Output'      => 'Output',
     'Avrelia\\Core\\Util'        => 'Util',
     'Avrelia\\Core\\View'        => 'View',
-    'Avrelia\\Core\\ViewAssign'  => 'ViewAssign',
     'Avrelia\\Core\\Plug'        => 'Plug',
-    'Avrelia\\Core\\Route'       => 'Route',
-    'Avrelia\\Core\\RouteAssign' => 'RouteAssign',
     'Avrelia\\Core\\Dot'         => 'Dot',
 );
 
 // Will set aliases for all core classes and run on include function...
 foreach ($classes_map as $class => $alias)
 {
+    $base_file = to_underscore($alias) . '.php';
+    include sys_path("core/base/{$base_file}");
+
     class_alias($class, $alias);
     _call_include_method_($alias);
 }

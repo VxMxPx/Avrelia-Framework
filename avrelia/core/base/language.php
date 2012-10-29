@@ -39,11 +39,11 @@ class Language
     {
         return
             "\nLoaded: \n".
-            dump(self::$loaded, false, true).
+            dump_r(self::$loaded).
             "\nDefaults: \n".
-            dump(self::$defaults, false, true).
+            dump_r(self::$defaults).
             "\nDictionary: \n".
-            dump(self::$dictionary, false, true);
+            dump_r(self::$dictionary);
     }
 
     /**

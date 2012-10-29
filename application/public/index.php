@@ -82,8 +82,8 @@ else {
 
 
 /* -----------------------------------------------------------------------------
- * First we initialize the core framework, this will return dispatcher,
- * which we can use if we wanna boot the system (check routes, use MVC).
+ * First we initialize the core framework, then we boot the system 
+ * (check routes, use MVC).
  */
 $avrelia_framework = new Avrelia();
 $avrelia_framework
@@ -92,9 +92,6 @@ $avrelia_framework
 
 
 /* -----------------------------------------------------------------------------
- * No matter what happened, error, JSON request, we use the `Output::get` method
- * to display / return it.
- * 
- * Also this is out last action, so we exit here.
+ * Output results to the screen and exit the applciation.
  */
-exit(Output::get());
+exit($avrelia_framework->output());

@@ -227,29 +227,6 @@ function url($uri=null, $prefix_zero=false)
 function urle($uri=null, $prefix_zero=false) { echo url($uri, $prefix_zero); }
 
 /**
- * Build url (by replacing existing) from segments / actions.
- * --
- * @param  array   $uri             Examples: array(0 => 'segment', 1 => 'segment1', 'action' => 'value')
- * @param  boolean $update_current  Will keep current uri's segments / actions and update them
- * @return string
- */
-function url_b($uri, $update_current=true)
-{
-    $uri = Input::build_uri($uri, $update_current);
-    return url($uri);
-}
-
-/**
- * Build url (by replacing existing) from segments / actions, 
- * and echo the result.
- * --
- * @param  array   $uri            Examples: array(0 => 'segment', 1 => 'segment1', 'action' => 'value')
- * @param  boolean $update_current  Will keep current uri's segments / actions and update them
- * @return void
- */
-function url_be($uri, $update_current=true) { echo urlB($uri, $update_current); }
-
-/**
  * Language helper
  * --
  * @param  string  $string

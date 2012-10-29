@@ -32,7 +32,7 @@ class avr_Cli
                     (substr($stdin,-1,1) == ';' 
                         ? $stdin 
                         : $stdin . ';') . 
-                    ' echo dump($val, false, true);');
+                    ' echo dump_r($val);');
                 echo "\n";
             }
         } while($continue == true);
