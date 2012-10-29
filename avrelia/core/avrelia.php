@@ -117,16 +117,6 @@ class Avrelia
     }
 
     /**
-     * Return otuput.
-     * --
-     * @return string
-     */
-    public function output()
-    {
-        return Output::get();
-    }
-
-    /**
      * Executed at the very end of everything
      * --
      * @return void

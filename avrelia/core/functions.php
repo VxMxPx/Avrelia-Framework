@@ -327,6 +327,24 @@ function lh()
     return $list;
 }
 
+/**
+ * Will add particular string to the output. Will echo it out if output doesn't
+ * exists yet.
+ * --
+ * @param  string $content
+ * @param  mixed  $key
+ * --
+ * @return void
+ */
+function out($content, $key=false)
+{
+    if (class_exists('Avrelia\\Core\\Output', false)) {
+        Output::add($content, $key);
+    }
+    else {
+        echo $content;
+    }
+}
 
 /**
  * The same as substr for string, only that work with paths. 

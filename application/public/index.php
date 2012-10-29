@@ -94,4 +94,5 @@ $avrelia_framework
 /* -----------------------------------------------------------------------------
  * Output results to the screen and exit the applciation.
  */
-exit($avrelia_framework->output());
+Http::apply_headers();
+exit(Output::as_string());

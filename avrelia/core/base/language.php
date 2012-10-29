@@ -213,7 +213,7 @@ class Language
         $contents = self::as_html($file, $params);
 
         $output_key = 'AvreliaView.lang.'.$file;
-        Output::set($output_key, $contents);
+        Output::add($contents, $output_key);
         return new ViewAssign($contents, $output_key);        
     }
 

@@ -16,95 +16,111 @@ class Output
     protected static $output_cache = array();
 
     /**
-     * Set Output
+     * Add output string.
      * --
-     * @param   string  $name       Name the item
-     * @param   string  $output     Content to output
-     * @param   boolean $replace    Replace existing output (else will add to it)
-     * @return  void
+     * @param string  $contents
+     * @param mixed   $key      Either false for automatic, or particular key.
      */
-    public static function set($name, $output, $replace=false)
+    public static function add($contents, $key=false) 
     {
-        if (isset(self::$output_cache[$name])) {
-            if ($replace)
-                { self::$output_cache[$name] = $output; }
-            else
-                { self::$output_cache[$name] = self::$output_cache[$name] . $output; }
+        if (!$key) {
+            self::$output_cache[] = $contents;
         }
         else {
-            self::$output_cache[$name] = $output;
+            if (isset(self::$output_cache[$key])) {
+                $contents = self::$output_cache[$key] . $contents;
+            }
+
+            self::$output_cache[$key] = $contents;
         }
+    }
+
+    /**
+     * Replace output if exists, otherwise just add it.
+     * --
+     * @param  string $key
+     * @param  string $contents
+     * --
+     * @return void
+     */
+    public static function replace($contents, $key) 
+    {
+        self::$output_cache[$key] = $contents;
     }
 
     /**
      * Will take particular output (it will return it, and then erase it)
      * --
-     * @param   string  $particular Get particular output item.
-     *                              If set to false, will get all.
+     * @param   string  $key Get particular output item.
+     *                       If set to false, will get all.
+     * --
      * @return  mixed
      */
-    public static function take($particular=false)
+    public static function take($key=false) 
     {
-        $return = self::Get($particular, false);
-        self::clear($particular);
-        return $return;
+        $output = self::as_string($key);
+        self::clear($key);
+
+        return $output;
     }
 
     /**
-     * Return Output
+     * Return one par of whole output as a string.
      * --
-     * @param   boolean $particular Get particular output item.
-     *                              If set to false, will get all.
-     * @param   boolean $as_array   Return all items as an array, or join them 
-     *                              together and return string?
-     * @return  mixed
+     * @param  mixed $key
+     * --
+     * @return string
      */
-    public static function get($particular=false, $as_array=false)
+    public static function as_string($key=false) 
     {
-        # Before get
-        Event::trigger('/core/output/get', self::$output_cache);
-
-        if ($particular) {
-            if (isset(self::$output_cache[$particular])) 
-                { return self::$output_cache[$particular]; }
-            else
-                { return false; }
-        }
-        else {
-            # Before get all
-            Event::trigger('/core/output/get_all', self::$output_cache);
-
-            if ($as_array)
-                { return self::$output_cache; }
-            else
-                { return implode("\n", self::$output_cache); }
-        }
+        if (!$key) { return implode("\n", self::$output_cache); }
+        return Arr::element($key, self::$output_cache, null);
     }
 
     /**
-     * Do we have particular key?
+     * Do we have particular key? Or any output at all?
      * --
-     * @param   string  $what
+     * @param   string  $key
+     * --
      * @return  boolean
      */
-    public static function has($what) 
-        { return isset(self::$output_cache[$what]); }
+    public static function has($key=false)
+    {
+        if (!$key) {
+            return is_array(self::$output_cache) && !empty(self::$output_cache);
+        }
+        else {
+            return isset(self::$output_cache[$key]);
+        }
+    }
 
     /**
-     * Clear Output
+     * Clear Output. If key is provided only particular item will be cleared.
+     * Otherwise all cache will be cleared.
      * --
-     * @param   string  $particular Do you wanna clear particular output?
+     * @param   string  $key
+     * --
      * @return  void
      */
-    public static function clear($particular=false)
+    public static function clear($key=false)
     {
-        if (!$particular) {
+        if (!$key) {
             self::$output_cache = array();
         }
         else {
-            if (isset(self::$output_cache[$particular])) {
-                unset(self::$output_cache[$particular]);
+            if (isset(self::$output_cache[$key])) {
+                unset(self::$output_cache[$key]);
             }
         }
+    }
+
+    /**
+     * Return all output items as an array.
+     * --
+     * @return array
+     */
+    public static function as_array() 
+    {
+        return self::$output_cache;
     }
 }

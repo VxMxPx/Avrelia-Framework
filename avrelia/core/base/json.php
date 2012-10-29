@@ -117,6 +117,6 @@ class Json
         if ($die) 
             { die($message); }
         else 
-            { Output::set('AvreliaHTTP.JsonResponse', $message); }
+            { Output::add($message, 'AvreliaHTTP.JsonResponse'); }
     }
 }

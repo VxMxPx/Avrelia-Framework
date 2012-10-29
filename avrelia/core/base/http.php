@@ -9,6 +9,71 @@
  */
 class Http
 {
+    protected static $headers = '';
+
+
+    public static function _on_include_()
+    {
+        self::status_200_ok();
+        return true;
+    }
+
+    /**
+     * Will apply headers.
+     * --
+     * @return void
+     */
+    public static function apply_headers()
+    {
+        if (headers_sent($file, $line)) {
+            Log::err("Output was already started: in file : `{$file}`, on line: `{$line}`.");
+            return false;
+        }
+
+        foreach (self::$headers as $header) {
+            header($header);
+        }
+    }
+
+    /**
+     * Add header to the list of existing headers.
+     * --
+     * @param  mixed $header -- Array or string
+     * --
+     * @return void
+     */
+    public static function header($header)
+    {
+        if (!is_array($header)) { $header = array($header); }
+
+        foreach ($header as $hdr) {
+            self::$headers[] = $hdr;
+        }
+    }
+
+    /**
+     * Will replace all headers.
+     * --
+     * @param  mixed $headers String or array.
+     * --
+     * @return void
+     */
+    public static function header_replace($headers)
+    {
+        if (!is_array($headers)) { $headers = array($headers); }
+        self::$headers = $headers;
+    }
+
+    /**
+     * Return currently set headers as array.
+     * --
+     * @return array
+     */
+    public static function as_array()
+    {
+        return self::$headers;
+    }
+
     /**
      * Will redirect (if possible/allowed) withour any special status code.
      * ---
@@ -23,29 +88,14 @@ class Http
         # Trigger Event Before Redirect
         Event::trigger('/core/http/redirect', $url);
 
-        if (headers_sent($file, $line)) {
-            trigger_error(
-                "Sorry: Can't redirect to: `{$url}`, since output has already ". 
-                "started in file: `{$file}`, on line: `{$line}`.", E_USER_WARNING);
-            die();
-        }
-
-        header('Expires: Mon, 16 Apr 1984 02:40:00 GMT');
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-        header('Cache-Control: no-cache, must-revalidate, max-age=0');
-        header('Pragma: no-cache');
-        header("Location: $url");
-        die();
+        self::header_replace(array(
+            'Expires: Mon, 16 Apr 1984 02:40:00 GMT',
+            'Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT',
+            'Cache-Control: no-cache, must-revalidate, max-age=0',
+            'Pragma: no-cache',
+            "Location: $url",
+        ));
     }
-
-    /**
-     * Set costum header code.
-     * --
-     * @param   string  $code
-     * @return  void
-     */
-    public static function header($code)
-        { header($code); }
 
     /**
      * Standard response for successful HTTP requests.
@@ -53,7 +103,7 @@ class Http
      * @return  void
      */
     public static function status_200_ok()
-        { self::header("HTTP/1.1 200 OK"); }
+        { self::header_replace("HTTP/1.1 200 OK"); }
 
     /**
      * The server successfully processed the request, 
@@ -62,7 +112,7 @@ class Http
      * @return  void
      */
     public static function status_204_no_content()
-        { self::header("HTTP/1.1 204 No Content"); }
+        { self::header_replace("HTTP/1.1 204 No Content"); }
 
     /**
      * This and all future requests should be directed to the given URI.
@@ -76,9 +126,10 @@ class Http
         # Is allowed?
         if (!self::_is_allowed($url)) { return false; }
 
-        self::header("HTTP/1.1 301 Moved Permanently");
-        self::header("Location: {$url}");
-        die();
+        self::header_replace(array(
+            'HTTP/1.1 301 Moved Permanently',
+            "Location: {$url}"
+        ));
     }
 
     /**
@@ -97,79 +148,52 @@ class Http
         # Is allowed?
         if (!self::_is_allowed($url)) { return false; }
 
-        self::header("HTTP/1.1 307 Temporary Redirect");
-        self::header("Location: {$url}");
-        die();
+        self::header_replace(array(
+            'HTTP/1.1 307 Temporary Redirect',
+            "Location: {$url}"
+        ));
     }
 
     /**
      * The request contains bad syntax or cannot be fulfilled.
      * --
-     * @param   string  $message
-     * @param   boolean $die
      * @return  void
      */
-    public static function status_400_bad_request($message=null, $die=false)
+    public static function status_400_bad_request()
     {
-        self::header("HTTP/1.1 400 Bad Request");
-
-        if ($die) 
-            { die($message); }
-        elseif ($message) 
-            { Output::set('AvreliaHTTP.Status400', $message); }
+        self::header_replace("HTTP/1.1 400 Bad Request");
     }
 
     /**
      * The request requires user authentication.
      * --
-     * @param   string  $message
-     * @param   boolean $die
      * @return void
      */
-    public static function status_401_unauthorized($message=null, $die=false)
+    public static function status_401_unauthorized()
     {
-        self::header("HTTP/1.1 401 Unauthorized");
-
-        if ($die) 
-            { die($message); }
-        elseif ($message) 
-            { Output::set('AvreliaHTTP.Status401', $message); }
+        self::header_replace("HTTP/1.1 401 Unauthorized");
     }
 
     /**
      * The request was a legal request, but the server is refusing to respond to it.
      * Unlike a 401 Unauthorized response, authenticating will make no difference.
      * --
-     * @param   string  $message
-     * @param   boolean $die
      * @return  void
      */
-    public static function status_403_forbidden($message=null, $die=false)
+    public static function status_403_forbidden()
     {
-        self::header("HTTP/1.1 403 Forbidden");
-
-        if ($die) 
-            { die($message); }
-        elseif ($message)
-            { Output::set('AvreliaHTTP.Status403', $message); }
+        self::header_replace("HTTP/1.1 403 Forbidden");
     }
 
     /**
      * The requested resource could not be found but may be available again in the future.
      * Subsequent requests by the client are permissible.
      * --
-     * @param   string  $message
-     * @param   boolean $die
      * @return  void
      */
-    public static function status_404_not_found($message=null, $die=false)
+    public static function status_404_not_found()
     {
-        self::header("HTTP/1.0 404 Not Found");
-
-        if ($die) 
-            { die($message); }
-        elseif ($message)
-            { Output::set('AvreliaHTTP.Status404', $message); }
+        self::header_replace("HTTP/1.0 404 Not Found");
     }
 
     /**
@@ -185,32 +209,20 @@ class Http
      * @param   boolean $die
      * @return  void
      */
-    public static function status_410_gone($message=null, $die=false)
+    public static function status_410_gone()
     {
-        self::header("HTTP/1.0 410 Gone");
-
-        if ($die) 
-            { die($message); }
-        elseif ($message) 
-            { Output::set('AvreliaHTTP.Status410', $message); }
+        self::header_replace("HTTP/1.0 410 Gone");
     }
 
     /**
      * The server is currently unavailable (because it is overloaded or down 
      * for maintenance). Generally, this is a temporary state.
      * --
-     * @param   string  $message
-     * @param   boolean $die
      * @return  void
      */
-    public static function status_503_service_unavailable($message=null, $die=false)
+    public static function status_503_service_unavailable()
     {
-        self::header("HTTP/1.0 503 Service Unavailable");
-
-        if ($die) 
-            { die($message); }
-        elseif ($message) 
-            { Output::set('AvreliaHTTP.Status503', $message); }
+        self::header_replace("HTTP/1.0 503 Service Unavailable");
     }
 
     /**
@@ -224,7 +236,7 @@ class Http
         if (!Cfg::get('core/http/allow_redirects', true)) {
             Log::war(
                 "Redirects to `{$url}` failed. ".
-                "Redirects aren't allowed in your config!");
+                "Redirects aren't allowed in config!");
             return false;
         }
     }

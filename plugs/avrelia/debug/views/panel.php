@@ -2,6 +2,7 @@
     <div class="navigation">
         <a href="#" class="cnt_log selected">Log</a>
         <a href="#" class="cnt_input">Input</a>
+        <a href="#" class="cnt_headers">Headers</a>
         <a href="#" class="cnt_config">Config</a>
     </div>
 
@@ -18,6 +19,12 @@
         </div>
         <div class="spacer">
             Path Info: <?php echo dump_r(Input::get_path_info()); ?>
+        </div>
+    </div>
+
+    <div class="content headers">
+        <div class="spacer">
+            <?php echo dump_r(Http::as_array()); ?>
         </div>
     </div>
 

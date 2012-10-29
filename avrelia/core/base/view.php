@@ -57,7 +57,7 @@ class View
 
         if ($bt_type !== 'get') {
             $output_key = 'AvreliaView.'.self::$views_loaded.'.'.$file;
-            Output::set($output_key, $result);
+            Output::add($result, $output_key);
             return new ViewAssign($result, $output_key);
         }
         else {
@@ -158,7 +158,7 @@ class ViewAssign
      */
     public function as_master()
     {
-        Output::set('AvreliaView.master', $this->contents);
+        Output::add($this->contents, 'AvreliaView.master');
         Output::clear($this->output_key);
     }
 
@@ -175,10 +175,10 @@ class ViewAssign
             $master = str_replace('<!-- Avrelia Framework Region {'.$name.'} -->',
                                   $this->contents . "\n" . '<!-- Avrelia Framework Region {'.$name.'} -->',
                                   $master);
-            Output::set('Avrelia.master', $master);
+            Output::add($master, 'Avrelia.master');
         }
         else {
-            Output::set("AvreliaView.region.{$name}", $this->contents);
+            Output::add($this->contents, "AvreliaView.region.{$name}");
         }
 
         Output::clear($this->output_key);
