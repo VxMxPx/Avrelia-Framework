@@ -102,8 +102,9 @@ class Dispatcher
                 $string = str_replace(':'.$key, $value, $string);
             }
         }
-
-        return $string;
+        
+        # Return params-values
+        return $params_values;
     }
 
     /**
