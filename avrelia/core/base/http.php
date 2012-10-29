@@ -221,7 +221,7 @@ class Http
      */
     protected static function _is_allowed($url)
     {
-        if (!Cfg::get('system/allow_redirects', true)) {
+        if (!Cfg::get('core/http/allow_redirects', true)) {
             Log::war(
                 "Redirects to `{$url}` failed. ".
                 "Redirects aren't allowed in your config!");

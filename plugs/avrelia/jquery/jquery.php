@@ -35,7 +35,7 @@ class JQuery
 
             # Link
             self::$link = url(
-                Cfg::get('plug/public_dir', 'plugs').
+                Cfg::get('core/plug/public_dir', 'plugs').
                 '/jquery/jquery-'.self::$config['version'].'.min.js');
         }
         else {

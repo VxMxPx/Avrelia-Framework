@@ -15,7 +15,7 @@ class Dir
 
     public static function _on_include_()
     {
-        self::set_mode(Cfg::get('system/fs_default_mode', 0755));
+        self::set_mode(Cfg::get('core/dir/default_mode', 0755));
     }
 
     /**
@@ -190,7 +190,7 @@ class Dir
     public static function delete($path)
     {
         # Local copy of ignore list
-        $fs_ignore = Cfg::get('system/fs_ignore', array());
+        $fs_ignore = Cfg::get('core/dir/ignore', array());
 
         # If we don't have filter we must remove just one file / folder
         if (is_dir($path)) {

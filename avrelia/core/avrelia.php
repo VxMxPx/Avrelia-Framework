@@ -74,7 +74,7 @@ class Avrelia
         include(sys_path('core/initializer.php'));
 
         # Default timezone
-        date_default_timezone_set(Cfg::get('system/timezone', 'UTC'));
+        date_default_timezone_set(Cfg::get('core/timezone', 'UTC'));
 
         # Register autoloader
         spl_autoload_register('Loader::get');
@@ -86,8 +86,8 @@ class Avrelia
         Log::inf('PHP version: ' . PHP_VERSION . ' | Framework version: ' . self::VERSION);
 
         # Now scan and autoload plugs
-        if (Cfg::get('plug/enabled')) 
-            { Plug::load(Cfg::get('plug/auto_load')); }
+        if (Cfg::get('core/plug/enabled')) 
+            { Plug::load(Cfg::get('core/plug/auto_load')); }
 
         # Trigger event after framework initialization
         Event::trigger('/core/avrelia/initialize');
@@ -106,7 +106,7 @@ class Avrelia
         Loader::get_core('Route');
 
         // Check if application is offline
-        if (Cfg::get('system/offline')) {
+        if (Cfg::get('core/offline')) {
             Route::trigger('@OFFLINE');
         }
         else {
@@ -144,7 +144,7 @@ class Avrelia
         Event::trigger('/core/avrelia/destruct');
 
         # Write final log
-        if (Cfg::get('log/enabled') && Cfg::get('log/write_individual') === false) {
+        if (Cfg::get('core/log/enabled') && Cfg::get('core/log/write_individual') === false) {
             Log::save_all(false);
         }
     }

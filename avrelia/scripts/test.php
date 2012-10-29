@@ -118,7 +118,7 @@ class test_Cli
                     $command = str_replace(
                         '%s', 
                         $file, 
-                        Cfg::get('system/tests_editor'
+                        Cfg::get('core/tests/editor_command'
                     ));
                     exec($command);
                     return;

@@ -28,7 +28,7 @@ class Language
     protected static $defaults   = array();
 
     public static function _on_include_()
-        { self::set_defaults(Cfg::get('system/languages')); }
+        { self::set_defaults(Cfg::get('core/language/defaults')); }
 
     /**
      * Will return language debug (info)
@@ -121,7 +121,7 @@ class Language
         $file_contents = $file_contents . "\n__#EOF#__";
 
         $contents = '';
-        if (Cfg::get('system/lang_n_to_br')) {
+        if (Cfg::get('core/language/n_to_br')) {
             $file_contents = str_replace('\n', '<br />', $file_contents);
         }
         preg_match_all(

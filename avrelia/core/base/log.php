@@ -68,12 +68,12 @@ class Log
     public static function _on_include_()
     {
         # If this fail, then we'll save log to file
-        self::$filename          = Cfg::get('log/path', false);
-        self::$filename_if_fatal = Cfg::get('log/fatal_path');
+        self::$filename          = Cfg::get('core/log/path', false);
+        self::$filename_if_fatal = Cfg::get('core/log/fatal_path');
 
-        self::$types             = Cfg::get('log/types');
-        self::$write_individual  = Cfg::get('log/write_individual');
-        self::$enabled           = Cfg::get('log/enabled');
+        self::$types             = Cfg::get('core/log/types');
+        self::$write_individual  = Cfg::get('core/log/write_individual');
+        self::$enabled           = Cfg::get('core/log/enabled');
     }
 
     /**

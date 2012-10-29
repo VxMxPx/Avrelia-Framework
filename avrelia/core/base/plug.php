@@ -28,7 +28,7 @@ class Plug
      */
     public static function _on_include_()
     {
-        $list = Cfg::get('plug/enabled');
+        $list = Cfg::get('core/plug/enabled');
 
         # Load enabled, if there are any.
         if (file_exists(self::get_database_path('plugs.json'))) {
@@ -265,13 +265,13 @@ class Plug
             { return true; }
 
         # Define public path
-        $public_path = ds(PUBPATH.'/'.Cfg::get('plug/public_dir', 'plugs'));
+        $public_path = ds(PUBPATH.'/'.Cfg::get('core/plug/public_dir', 'plugs'));
 
         # Full public path
         $full_public_path = ds($public_path.'/'.$com_name);
 
         # Debug mode?
-        if (Cfg::get('plug/debug') && is_dir($full_public_path)) {
+        if (Cfg::get('core/plug/debug') && is_dir($full_public_path)) {
             Log::inf(
                 "The debug mode is enabled, will remove folder: ".
                 "`{$full_public_path}`.");
@@ -672,7 +672,7 @@ class Plug
      */
     public static function get_public_path($path=null)
     {
-        return pub_path(Cfg::get('plug/public_dir', 'plugs') . '/' . $path);
+        return pub_path(Cfg::get('core/plug/public_dir', 'plugs') . '/' . $path);
     }
 
     /**
@@ -683,7 +683,7 @@ class Plug
      */
     public static function get_public_url($uri=false)
     {
-        return url(Cfg::get('plug/public_dir', 'plugs') . '/' . $uri);
+        return url(Cfg::get('core/plug/public_dir', 'plugs') . '/' . $uri);
     }
 
     /**
@@ -694,7 +694,7 @@ class Plug
      */
     public static function get_database_path($path=null)
     {
-        return dat_path(Cfg::get('plug/public_dir', 'plugs') . '/' . $path);
+        return dat_path(Cfg::get('core/plug/public_dir', 'plugs') . '/' . $path);
     }
 
     /**

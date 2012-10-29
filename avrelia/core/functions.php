@@ -150,7 +150,7 @@ TEMPLATE;
 
     # Get error simple type, if we have cfg already...
     if (class_exists('Cfg', false)) {
-        $errorTypes = Cfg::get('log/map');
+        $errorTypes = Cfg::get('core/log/map');
         $type = isset($errorTypes[$errno]) ? $errorTypes[$errno] : 'war';
     }
     else 
@@ -167,7 +167,7 @@ TEMPLATE;
     {
         # Write log to file (fatal)
         if (class_exists('Cfg', false) && class_exists('Log', false)) {
-            if (Cfg::get('log/enabled') && Cfg::get('log/write_all_on_fatal')) {
+            if (Cfg::get('core/log/enabled') && Cfg::get('core/log/write_all_on_fatal')) {
                 Log::save_all(true);
             }
         }

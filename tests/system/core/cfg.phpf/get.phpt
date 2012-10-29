@@ -4,8 +4,8 @@ system/core/cfg
 <?php
 include('../../../init.php');
 
-Cfg::overwrite('system/test', 'test');
-echo dump_r(Cfg::get('system/test'));
+Cfg::overwrite('core/test', 'test');
+echo dump_r(Cfg::get('core/test'));
 ?>
 --EXPECTF--
 string[4]: test

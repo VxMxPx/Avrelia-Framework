@@ -40,7 +40,7 @@ class Cookie
         $domain = Cfg::get('plugs/cookie/domain');
         if (!$domain) { $domain = $_SERVER['SERVER_NAME']; }
 
-        Log::inf('Cookie will be set, as: "' . Cfg::get('cookie/prefix') .
+        Log::inf('Cookie will be set, as: "' . Cfg::get('plugs/cookie/prefix') .
                     $name . '", with value: "'  .
                     $value . '", set to expire: "' .
                     ($expire) . '" to domain: "' . $domain . '"');

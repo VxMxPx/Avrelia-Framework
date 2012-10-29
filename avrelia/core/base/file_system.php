@@ -59,7 +59,7 @@ class FileSystem
     public static function Remove($path, $filter=false, $deepScan=false, $matchDir=true)
     {
         # Local copy of ignore list
-        $fsIgnore = Cfg::get('system/fs_ignore', array());
+        $fsIgnore = Cfg::get('core/dir/ignore', array());
 
         # If we don't have filter we must remove just one file / folder
         if (!$filter) {
@@ -251,7 +251,7 @@ class FileSystem
     {
         # Should we ignore it?
         $nameOnly = basename($source);
-        if (in_array($nameOnly, Cfg::get('system/fs_ignore', array()))) {
+        if (in_array($nameOnly, Cfg::get('core/dir/ignore', array()))) {
             Log::inf("This file/folder was set to be ignored on copy: `{$nameOnly}`!");
             return true;
         }

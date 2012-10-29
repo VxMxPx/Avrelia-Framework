@@ -37,7 +37,7 @@ class Input
 
         // Register segments containing equal sign, to get
         foreach ($segments as $segment) {
-            if (Cfg::get('input_eq_segments_to_get')) {
+            if (Cfg::get('core/input/eq_segments_as_get')) {
                 if (strpos($segment, '=') !== false) {
                     $segment_get = Str::explode_trim('=', $segment, 2);
                     self::$get[$segment_get[0]] = $segment_get[1];
@@ -55,7 +55,7 @@ class Input
      */
     public static function get_path_info() 
     {
-        return Cfg::get('input_ignore_get') 
+        return Cfg::get('core/input/ignore_get_segmments') 
                 ? $_SERVER['PATH_INFO']
                 : $_SERVER['REQUEST_URI'];
     }
@@ -197,22 +197,22 @@ class Input
     public static function get_method() 
     {
         // Is it put?
-        if (is_array(Cfg::get('input_method_put_from_post'))) {
-            list($method, $value) = Cfg::get('input_method_put_from_post');
+        if (is_array(Cfg::get('core/input/put_from_post'))) {
+            list($method, $value) = Cfg::get('core/input/put_from_post');
             if (self::post($method) === $value) {
                 return self::METHOD_PUT;
             }
         }
 
         // Is it delete?
-        if (is_array(Cfg::get('input_method_delete_from_post'))) {
-            list($method, $value) = Cfg::get('input_method_delete_from_post');
+        if (is_array(Cfg::get('core/input/delete_from_post'))) {
+            list($method, $value) = Cfg::get('core/input/delete_from_post');
             if (self::post($method) === $value) {
                 return self::METHOD_DELETE;
             }
         }
-        if (is_array(Cfg::get('input_method_delete_from_get'))) {
-            list($method, $value) = Cfg::get('input_method_delete_from_get');
+        if (is_array(Cfg::get('core/input/delete_from_get'))) {
+            list($method, $value) = Cfg::get('core/input/delete_from_get');
             if (self::get($method) === $value) {
                 return self::METHOD_DELETE;
             }

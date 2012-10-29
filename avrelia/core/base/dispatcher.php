@@ -139,7 +139,7 @@ class Dispatcher
         # Call the function if exists
         if (is_callable(array($controller, $method))) {
             $r = call_user_func_array(array($controller, $method), $params);
-            if (Cfg::get('system/dispatcher_check_response')) {
+            if (Cfg::get('core/dispatcher/check_response')) {
                 return $r === false ? false : true;
             }
             else {
