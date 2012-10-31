@@ -6,7 +6,7 @@ class stylusBuild extends baseBuild
 {
 	public function execute()
 	{
-		system('stylus -c -w ' . $this->input . ' -o ' . $this->output);
+		system('stylus -c -w "' . $this->input . '" -o "' . $this->output . '"');
 	}
 }
 

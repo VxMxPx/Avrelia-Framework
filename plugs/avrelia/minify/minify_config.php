@@ -12,7 +12,7 @@ $minify_config = array(
     'css' => array(
         'enabled' => true,
         // Enter ONLY directoried as input and output
-        'input'   => pub_path('css/'),
+        'input'   => pub_path('css/main.stylus'),
         'output'  => pub_path('css/'),
     ),
 );
