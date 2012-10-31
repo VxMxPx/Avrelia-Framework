@@ -705,7 +705,7 @@ class Plug
      */
     public static function get_path($plug)
     {
-        $plug = substr(mb_strtolower($plug), 5);
+        $plug = substr(to_underscore($plug), 5);
         $plug = ds($plug);
         $path = plg_path($plug);
 
@@ -724,9 +724,7 @@ class Plug
      */
     public static function get_file($plug)
     {
-        $plug = mb_strtolower($plug);
         $path_segments = Str::explode_trim(CHAR_BACKSLASH, $plug);
-
-        return array_pop($path_segments);
+        return to_underscore(array_pop($path_segments));
     }
 }

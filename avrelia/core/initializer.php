@@ -53,6 +53,7 @@ $classes_map = array(
     'Avrelia\\Core\\Log'         => 'Log',
     'Avrelia\\Core\\Event'       => 'Event',
     'Avrelia\\Core\\FileSystem'  => 'FileSystem',
+    'Avrelia\\Core\\Dir'         => 'Dir',
     'Avrelia\\Core\\Http'        => 'Http',
     'Avrelia\\Core\\Input'       => 'Input',
     'Avrelia\\Core\\Language'    => 'Language',

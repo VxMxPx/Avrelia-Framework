@@ -165,22 +165,18 @@ TEMPLATE;
     # Fatal error.
     if ($type === 'err')
     {
+        # Error reporting
+        $error_report = class_exists('Log', false) 
+                            ? dump_r(Log::as_array(), true)
+                            : "{$errmsg} in {$filename} at {$linenum}";
+        
         # Write log to file (fatal)
-        if (class_exists('Cfg', false) && class_exists('Log', false)) {
-            if (Cfg::get('core/log/enabled') && Cfg::get('core/log/write_all_on_fatal')) {
-                Log::save_all(true);
-            }
+        if (class_exists('Event', false)) {
+            Event::trigger('/avrelia/core/fatal_error');
+            Event::trigger('/avrelia/core/fatal_error/report', $error_report);
         }
 
-        # Dump whole log on fatal error.
-        if (class_exists('Log', false)) {
-            if (is_cli()) 
-                { $error_report = Log::as_string('war', 'err'); }
-            elseif (DEBUG && !is_cli()) 
-                { $error_report = Log::as_html(); }
-        } 
-        else 
-            { $error_report = $errmsg; }
+
 
         if (is_cli()) {
             die($error_report);
@@ -459,6 +455,5 @@ function to_camelcase($string, $uc_first=true)
  */
 function to_underscore($string)
 {
-    preg_match_all('/[A-Z]*[^A-Z]*/', $string, $result);
-    return trim(strtolower(implode('_', $result[0])), '_');
+    return strtolower(preg_replace('/(?<=[a-z])([A-Z])/', '_$1', $string));
 }

@@ -10,7 +10,7 @@
 class Dir
 {
     # Default mode when creating new directory
-    protected $mode = null;
+    protected static $mode = null;
 
 
     public static function _on_include_()

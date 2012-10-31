@@ -7,7 +7,7 @@
     </div>
 
     <div class="content log">
-        <?php echo Log::as_html(); ?>
+        <?php echo $log_html; ?>
     </div>
 
     <div class="content input">

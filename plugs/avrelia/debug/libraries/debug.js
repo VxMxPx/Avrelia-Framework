@@ -102,8 +102,8 @@
             contents   = panel.find('div.content');
             navigation = panel.find('div.navigation');
 
-            var countWAR = $('#cdebugPanel .content.log .msgType_WAR').length;
-            var countERR = $('#cdebugPanel .content.log .msgType_ERR').length;
+            var countWAR = $('#cdebugPanel .content.log .type_war').length;
+            var countERR = $('#cdebugPanel .content.log .type_err').length;
 
             if (countERR > 0) {
                 toggle.append(' <span class="cdebugToggleTag cdtttError">' + countERR + '</span>');

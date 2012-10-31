@@ -163,8 +163,8 @@ class Loader
             or trigger_error(
                 "Type must be either `controllers` or `models`.", E_USER_ERROR);
 
-        $name = substr($class_name, 0, -(strlen($type)-1));
-        $name = strtolower(to_underscore($name));
+        $name = substr($class_name, 0, -(strlen($type)));
+        $name = to_underscore($name);
         $name_split = explode('_', $name, 2);
 
         # Some possibilities

@@ -90,7 +90,7 @@ class Avrelia
             { Plug::load(Cfg::get('core/plug/auto_load')); }
 
         # Trigger event after framework initialization
-        Event::trigger('/core/avrelia/initialize');
+        Event::trigger('/avrelia/core/initialize');
 
         return $this;
     }
@@ -130,12 +130,7 @@ class Avrelia
             return false;
         }
 
-        # Final event
-        Event::trigger('/core/avrelia/destruct');
-
-        # Write final log
-        if (Cfg::get('core/log/enabled') && Cfg::get('core/log/write_individual') === false) {
-            Log::save_all(false);
-        }
+        // Final event
+        Event::trigger('/avrelia/core/destruct');
     }
 }

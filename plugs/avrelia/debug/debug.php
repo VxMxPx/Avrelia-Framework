@@ -22,29 +22,33 @@ class Debug
     {
         Plug::need(array(
             'Plug\\Avrelia\\JQuery',
-            'Plug\\Avrelia\\HTML'
+            'Plug\\Avrelia\\HTML',
+            'Plug\\Avrelia\\LogWritter'
         ));
 
         # Add jQuery
         JQuery::add();
+
         HTML::add_header(
             '<style>'.
                 FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.css')).
             '</style>', 
-            'Avrelia/Plug/Debug');
+            'Plug/Avrelia/Debug');
 
         Event::on('/plug/html/get_footers', function() {
             Log::add_benchmarks();
 
             HTML::add_footer(
-                View::get(ds(dirname(__FILE__).'/views/panel.php'))->do_return(), 
+                View::get(ds(dirname(__FILE__).'/views/panel.php'), array(
+                    'log_html' => LogWritter::as_html()
+                ))->do_return(), 
                 'cdebugPanel');
 
             HTML::add_footer(
                 '<script>'.
                     FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.js')).
                     '</script>',
-                    'Avrelia/Plug/Debug');
+                    'Plug/Avrelia/Debug');
         });
 
         return true;

@@ -134,49 +134,6 @@ $avrelia_config = array
 
         'log' => array
         (
-            # PHP system errors are handled by Avrelia Framework, therefore 
-            # then need to be simplified to fit log methods.
-            # Framework has only three levels: war, inf, err and react 
-            # differently when one of them is triggered.
-            # ----
-            # WARNING: ERR type will stop script execution.
-            'map'     => array
-            (
-                E_ERROR              => 'err',
-                E_WARNING            => 'war',
-                E_PARSE              => 'err',
-                E_NOTICE             => 'inf',
-                E_CORE_ERROR         => 'err',
-                E_CORE_WARNING       => 'war',
-                E_COMPILE_ERROR      => 'err',
-                E_COMPILE_WARNING    => 'war',
-                E_USER_ERROR         => 'err',
-                E_USER_WARNING       => 'war',
-                E_USER_NOTICE        => 'inf',
-                E_STRICT             => 'war',
-                E_RECOVERABLE_ERROR  => 'err',
-                E_DEPRECATED         => 'war',
-                E_USER_DEPRECATED    => 'war',
-            ),
-
-            # Is log enabled (writing to file)?
-            # Please before you enabled log, make sure your log folder is writable.
-            'enabled' => false,
-
-            # Full log path where all log messages will be saved.
-            # You must provide full absolute path.
-            'path'    => APPPATH . '/log/' . date('Y') . '/' . date('m') . '/' . 
-                         date('d') . '.log',
-
-            # Log types. Select which type of messages should be saved. 
-            # The "inf" type isn't recommended to be saved.
-            'types'   => array
-            (
-                'err' => true,
-                'war' => true,
-                'inf' => false
-            ),
-
             # PHP system errors are handled by Avrelia Framework, 
             # therefore we're simplifying them. 
             # Framework has only three levels: WAR, INF, ERR, (OK) 
@@ -187,34 +144,19 @@ $avrelia_config = array
                 E_ERROR              => 'err',
                 E_WARNING            => 'war',
                 E_PARSE              => 'err',
-                E_NOTICE             => 'inf',
+                E_NOTICE             => 'war',
                 E_CORE_ERROR         => 'err',
                 E_CORE_WARNING       => 'war',
                 E_COMPILE_ERROR      => 'err',
                 E_COMPILE_WARNING    => 'war',
                 E_USER_ERROR         => 'err',
                 E_USER_WARNING       => 'war',
-                E_USER_NOTICE        => 'inf',
+                E_USER_NOTICE        => 'war',
                 E_STRICT             => 'war',
                 E_RECOVERABLE_ERROR  => 'err',
                 E_DEPRECATED         => 'war',
                 E_USER_DEPRECATED    => 'war',
             ),
-
-            # Set to true: every log message will be saved individually.
-            # Set to false: all logs will be saved at the end of script execution.
-            'write_individual'   => true,
-
-            # Write all on fatal error. Set to true, special file will be created,
-            # which will contain only one fatal event, 
-            # with whole session informations, it will include ERR, WAR, INF.
-            'write_all_on_fatal' => true,
-
-            # Filename for fatal error.
-            # Will be used only if you set 'write_all_on_fatal' to true.
-            'fatal_path'         => APPPATH . '/log/' . date('Y') . '/' . date('m') 
-                                    . '/fatal/' . date('Y-m-d__H-i-s') . '.log',
-
         ),
     ),
 );

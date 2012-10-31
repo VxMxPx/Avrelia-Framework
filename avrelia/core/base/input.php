@@ -99,15 +99,15 @@ class Input
 
     /**
      * Get URI _GET segment.
-     * @param  mixed   $key    Following options are available:
+     * @param  mixed   $key     Following options are available:
      *                             false:  return all keys
      *                             string: return particular key if exists
      *                             array:  return keys specified in array
-     * @param  mixed   $defult Default value(s) when key not found
+     * @param  mixed   $default Default value(s) when key not found
      * --
      * @return mixed
      */
-    public static function get($key=false, $defult=false) 
+    public static function get($key=false, $default=false) 
     {
         if (!$key) { return self::$get; }
 
@@ -121,11 +121,11 @@ class Input
 
     /**
      * Get _POST segment.
-     * @param  mixed   $key    Following options are available:
+     * @param  mixed   $key     Following options are available:
      *                             false:  return all keys
      *                             string: return particular key if exists
      *                             array:  return keys specified in array
-     * @param  mixed   $defult Default value(s) when key not found
+     * @param  mixed   $default Default value(s) when key not found
      * --
      * @return mixed
      */

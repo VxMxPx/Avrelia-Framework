@@ -4,7 +4,7 @@ use Avrelia\Core\Plug  as Plug;
 use Avrelia\Core\Event as Event;
 
 /**
- * Html Class
+ * HTML Class
  * -----------------------------------------------------------------------------
  * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com

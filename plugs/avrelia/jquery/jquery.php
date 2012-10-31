@@ -4,7 +4,7 @@ use Avrelia\Core\Plug as Plug;
 use Avrelia\Core\Cfg  as Cfg;
 
 /**
- * JQuery Plug
+ * Jquery Plug
  * -----------------------------------------------------------------------------
  * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
@@ -58,7 +58,7 @@ class JQuery
      * @return  void
      */
     public static function add()
-        { HTML::add_footer(self::$tag, 'Avrelia/Plug/JQuery'); }
+        { HTML::add_footer(self::$tag, 'Avrelia/Plug/Jquery'); }
 
     /**
      * Remove jQuery from cHTML footer.
@@ -66,7 +66,7 @@ class JQuery
      * @return  void
      */
     public static function Remove()
-        { HTML::add_footer(false, 'Avrelia/Plug/JQuery'); }
+        { HTML::add_footer(false, 'Avrelia/Plug/Jquery'); }
 
     /**
      * Get only url
