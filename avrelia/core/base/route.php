@@ -31,8 +31,7 @@ class Route
      * Those are special action, which when not found will trigger special event.
      * @var array
      */
-    protected static $special = array('@404', '@OFFLINE', '@INDEX');
-
+    protected static $special = array('@404', '@OFFLINE', '@INDEX', '@BEFORE', '@AFTER');
 
     /**
      * Register some defaults on include...
@@ -134,7 +133,7 @@ class Route
             $segments = self::_find_segments($action);
 
             if ($segments) {
-                Log::inf("Segments match: `{$segments}`.");
+                Log::inf("Segments match: `" . print_r($segments, true) . "`.");
 
                 // Assign segments to the input
                 Input::set_segments($segments);
@@ -148,7 +147,8 @@ class Route
         }
 
         if ($route && is_a($route, 'Avrelia\\Core\\RouteAssign')) {
-            return $route->trigger($segments, $type);
+            $result = $route->trigger($segments, $type);
+            return $result;
         } 
         else {
             Log::inf("Not found: `{$action}`.");

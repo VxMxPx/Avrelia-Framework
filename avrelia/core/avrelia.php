@@ -105,13 +105,19 @@ class Avrelia
         Loader::get_core('Dispatcher');
         Loader::get_core('Route');
 
+        // Trigger @BEFORE action
+        Route::trigger('@BEFORE');
+
         // Check if application is offline
         if (Cfg::get('core/offline')) {
             Route::trigger('@OFFLINE');
         }
         else {
-            Route::trigger(Input::get_path_info());
+            Route::trigger(trim(Input::get_path_info(), '/'));
         }
+
+        // Trigger @AFTER action
+        Route::trigger('@AFTER');
 
         return $this;
     }

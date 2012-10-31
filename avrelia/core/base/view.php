@@ -154,19 +154,21 @@ class ViewAssign
     /**
      * Set current view as master
      * --
-     * @return  void
+     * @return  true
      */
     public function as_master()
     {
         Output::add($this->contents, 'AvreliaView.master');
         Output::clear($this->output_key);
+
+        return true;
     }
 
     /**
      * Will assign current view as region
      * --
      * @param   string  $name   Region's name
-     * @return  void
+     * @return  true
      */
     public function as_region($name)
     {
@@ -182,16 +184,20 @@ class ViewAssign
         }
 
         Output::clear($this->output_key);
+
+        return true;
     }
 
     /**
      * Echo view
      * --
-     * @return  void
+     * @return  true
      */
     public function to_screen()
     {
         echo $this->do_return();
+
+        return true;
     }
 
     /**

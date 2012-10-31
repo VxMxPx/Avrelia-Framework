@@ -102,21 +102,16 @@ class Json
      * @param   mixed   $values  The value being encoded. Can be any type except 
      *                           a resource . This function only works with 
      *                           UTF-8 encoded data.
-     * @param   boolean $die
      * @param   integer $options Bitmask consisting of JSON_HEX_QUOT, 
      *                           JSON_HEX_TAG, JSON_HEX_AMP, JSON_HEX_APOS, 
      *                           JSON_FORCE_OBJECT.
      * @param   void
      */
-    public static function response($values, $die=false, $options=0)
+    public static function response($values, $options=0)
     {
-        header("Content-type: application/json");
+        Http::header("Content-type: application/json");
 
         $message = self::encode($values, $options);
-
-        if ($die) 
-            { die($message); }
-        else 
-            { Output::add($message, 'AvreliaHTTP.JsonResponse'); }
+        Output::add($message, '/avrelia/core/json/response');
     }
 }
