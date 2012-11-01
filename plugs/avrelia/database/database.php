@@ -4,6 +4,7 @@ use Avrelia\Core\Arr  as Arr;
 use Avrelia\Core\Log  as Log;
 use Avrelia\Core\Plug as Plug;
 use Avrelia\Core\Cfg  as Cfg;
+use Avrelia\Core\Str  as Str;
 
 /**
  * Database Plug
