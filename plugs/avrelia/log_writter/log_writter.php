@@ -120,7 +120,7 @@ class LogWritter
 
             if (is_cli() && in_array($log_item['type'], array('war', 'err'))) {
                 Dot::out($log_item['type'], $log_item['message']);
-                Dot::out($log_item['type'], $$log_item['file'] . " " . $log_item['line']);
+                Dot::out($log_item['type'], $log_item['file'] . " " . $log_item['line']);
                 Dot::out($log_item['type'], str_repeat('-', 40));
             }
         });

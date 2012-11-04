@@ -36,19 +36,30 @@ class Debug
             'Plug/Avrelia/Debug');
 
         Event::on('/plug/html/get_footers', function() {
-            Log::add_benchmarks();
 
-            HTML::add_footer(
-                View::get(ds(dirname(__FILE__).'/views/panel.php'), array(
-                    'log_html' => LogWritter::as_html()
-                ))->do_return(), 
-                'cdebugPanel');
+            HTML::add_footer('<!-- {{Plug/Avrelia/Debug/Placeholder}} -->', 'Plug/Avrelia/Debug/Panel');
 
             HTML::add_footer(
                 '<script>'.
                     FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.js')).
                     '</script>',
-                    'Plug/Avrelia/Debug');
+                    'Plug/Avrelia/Debug/Js');
+        });
+
+        Event::on('/avrelia/core/do_output', function(&$output) {
+
+            Log::add_benchmarks();
+
+            $panel = View::get(ds(dirname(__FILE__).'/views/panel.php'), array(
+                        'log_html' => LogWritter::as_html()
+                     ))->do_return();
+
+            $output = str_replace(
+                        '<!-- {{Plug/Avrelia/Debug/Placeholder}} -->', 
+                        $panel, 
+                        $output);
+
+            return true;
         });
 
         return true;
