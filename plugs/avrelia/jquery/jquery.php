@@ -47,7 +47,7 @@ class JQuery
         self::$tag = '<script src="'.self::$link.'"></script>';
 
         # Add footer tag
-        HTML::add_footer(self::$tag, 'cjquery');
+        HTML::add_footer(self::$tag, 'Avrelia/Plug/JQuery');
 
         return true;
     }
@@ -58,15 +58,15 @@ class JQuery
      * @return  void
      */
     public static function add()
-        { HTML::add_footer(self::$tag, 'Avrelia/Plug/Jquery'); }
+        { HTML::add_footer(self::$tag, 'Avrelia/Plug/JQuery'); }
 
     /**
      * Remove jQuery from cHTML footer.
      * --
      * @return  void
      */
-    public static function Remove()
-        { HTML::add_footer(false, 'Avrelia/Plug/Jquery'); }
+    public static function remove()
+        { HTML::add_footer(false, 'Avrelia/Plug/JQuery'); }
 
     /**
      * Get only url
