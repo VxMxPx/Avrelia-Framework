@@ -27,6 +27,13 @@ if (PHP_SAPI !== 'cli') {
 define('AVRELIA', true);
 
 
+/**
+ * Set timezone to default for now. Later we'll read it from the config file
+ * and set it to the correct value.
+ */
+date_default_timezone_set('UTC');
+
+
 /* -----------------------------------------------------------------------------
  * Just in case something goes wrong on this phase we wanna show it. Latter on,
  * error displaying and reporting will be reconfigured according to your setup.

@@ -76,13 +76,13 @@ class DatabaseDriverSqlite
         # Create dummy file
         FileSystem::Write('', $this->database_path);
 
-        if (is_cli()) {
+        //if (is_cli()) {
             # Chmod it to full permission!
             if (!chmod(ds($this->database_path), 0777)) {
                 Log::war("Can't set aproprite chmod permissions for database file: `".
                     $this->database_path.'`.');
             }
-        }
+        //}
 
         if (file_exists($this->database_path)) {
             $this->valid = true;

@@ -29,17 +29,11 @@ class Migrate
         # Load config
         Plug::get_config(__FILE__);
 
-        # Try to load file with current status
-        $filename = Cfg::get('plugs/migrate/status_file');
-        if (file_exists($filename)) {
-            $this->status = Json::decode_file($filename, true);
-        }
-        else {
-            $this->status = array(
-                'current_version' => 0
-            );
-            $this->_save_status();
-        }
+        $version = Database::find(
+            Cfg::get('plugs/migrate/status_table'), 
+            array('key' => 'current_version'))->as_array(0);
+
+        $this->status['current_version'] = Arr::element('value', $version, 0);
 
         # Get laters possible version
         $this->latest = $this->_find_latest();
@@ -51,9 +45,11 @@ class Migrate
      */
     protected function _save_status()
     {
-        return Json::encode_file(
-            Cfg::get('plugs/migrate/status_file'),
-            $this->status);
+        return Database::update(
+                    array('value' => $this->status['current_version']),
+                    Cfg::get('plugs/migrate/status_table'), 
+                    array('key' => 'current_version')
+                )->succeed();
     }
 
     /**
@@ -222,6 +218,7 @@ class Migrate
                                                 ? $version_step - 1
                                                 : $version_step;
             $this->_save_status();
+
             Event::inf(
                 '/plug/avrelia/migrate/to/success', 
                 "Done: {$type} to version {$this->status['current_version']}{$about}.");
@@ -425,22 +422,22 @@ class Migrate
         else 
             { Log::war("Migrations directory already exists: `{$directory}`."); }
 
-        return is_dir($directory);
+        // Create migrations table
+        Database::execute('CREATE TABLE \''.Cfg::get('plugs/migrate/status_table').'\' (
+            key     VARCHAR NOT NULL,
+            value   VARCHAR
+        );');
+
+        Database::create(
+            array('key' => 'current_version', 'value' => 0),
+            Cfg::get('plugs/migrate/status_table')
+        );
+
+        return true;
     }
 
     public static function _on_disable_()
     {
-        # Load config
-        Plug::get_config(__FILE__);
-
-        # Create migrations directory
-        $directory = Cfg::get('plugs/migrate/directory');
-
-        if (!is_dir($directory)) 
-            { FileSystem::Remove($directory); } 
-        else 
-            { Log::war("directory can't be erased: `{$directory}`."); }
-
         return true;
     }
 }

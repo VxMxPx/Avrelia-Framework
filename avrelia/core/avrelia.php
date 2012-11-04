@@ -76,9 +76,6 @@ class Avrelia
         # Default timezone
         date_default_timezone_set(Cfg::get('core/timezone', 'UTC'));
 
-        # Register autoloader
-        spl_autoload_register('Loader::get');
-
         # Set Timer...
         Benchmark::set_timer('system');
 

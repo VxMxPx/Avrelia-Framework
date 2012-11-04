@@ -12,6 +12,18 @@
 class Loader
 {
     /**
+     * Just register self to be autoloader
+     * @return true
+     */
+    public static function _on_include_()
+    {
+        # Register autoloader
+        spl_autoload_register('Loader::get');
+
+        return true;
+    }
+
+    /**
      * Load class by filename
      * --
      * @param   string  $class_name
