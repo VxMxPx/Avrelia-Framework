@@ -166,7 +166,12 @@ class Input
     public static function get_url($with_query=false)
     {
         # TODO: What if there's https ?
-        $url = 'http://'.$_SERVER['SERVER_NAME'];
+        if (isset($_SERVER['SERVER_NAME'])) {
+            $url = 'http://'.$_SERVER['SERVER_NAME'];
+        }
+        else {
+            $url = '';
+        }
 
         # Make sure we have ending '/'!
         $url = trim($url, '/') . '/';

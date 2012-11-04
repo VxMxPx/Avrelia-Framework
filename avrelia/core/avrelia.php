@@ -123,6 +123,21 @@ class Avrelia
     }
 
     /**
+     * Apply headers and return output as string. Also trigger final action.
+     * --
+     * @return string
+     */
+    public function do_output()
+    {
+        Http::apply_headers();
+        $output = Output::as_string();
+        
+        Event::trigger('/avrelia/core/do_output', $output);
+
+        return $output;
+    }
+
+    /**
      * Executed at the very end of everything
      * --
      * @return void
