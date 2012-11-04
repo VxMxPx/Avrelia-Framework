@@ -84,15 +84,11 @@ else {
 /* -----------------------------------------------------------------------------
  * First we initialize the core framework, then we boot the system 
  * (check routes, use MVC).
+ * Finally output results to the screen and exit the applciation.
  */
 $avrelia_framework = new Avrelia();
 $avrelia_framework
     ->initialize()
     ->boot();
 
-
-/* -----------------------------------------------------------------------------
- * Output results to the screen and exit the applciation.
- */
-Http::apply_headers();
-exit(Output::as_string());
+exit($avrelia_framework->do_output());
