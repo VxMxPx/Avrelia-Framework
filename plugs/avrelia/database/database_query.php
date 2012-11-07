@@ -1,6 +1,7 @@
 <?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
 
 use Avrelia\Core\Log as Log;
+use Avrelia\Core\Str as Str;
 
 /**
  * DatabaseQuery Class

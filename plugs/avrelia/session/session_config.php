@@ -16,7 +16,7 @@ $session_config = array
     # For valid session require the user's agent to match
     'require_agent'    => true,
 
-    # Require field called active, and this field must be set to "1"
+    # Require field called is_active, and this field must be set to "1"
     'require_active'   => false,
 
     # If set to true, databases, files needed for this plug to operate will be
@@ -42,10 +42,10 @@ $session_config = array
     # Database driver configuration
     'db'        => array
     (
-        # Table must have at least following fields: id, [active]
+        # Table must have at least following fields: id, [is_active]
         'users_table'       => 'users',
 
-        # Table must have at least following fields: id, user_id, ip, agent, expires
+        # Table must have at least following fields: id, user_id, ip, agent, expires_on
         'sessions_table'    => 'users_sessions',
 
         # Tables to be auto-created if not exists, set to false, if you don't
@@ -56,7 +56,7 @@ $session_config = array
                     id          INTEGER PRIMARY KEY AUTOINCREMENT   NOT NULL,
                     uname       VARCHAR(200)                        NOT NULL,
                     password    TEXT                                NOT NULL,
-                    active      INTEGER(1)                          NOT NULL
+                    is_active   INTEGER(1)                          NOT NULL
                 )',
             'sessions_table' =>
                 'CREATE TABLE IF NOT EXISTS users_sessions (
@@ -64,7 +64,7 @@ $session_config = array
                     user_id     VARCHAR(255)    NOT NULL,
                     ip          VARCHAR(16)     NOT NULL,
                     agent       VARCHAR(255)    NOT NULL,
-                    expires     INTEGER(12)     NOT NULL
+                    expires_on  INTEGER(12)     NOT NULL
                 )',
         ),
     ),

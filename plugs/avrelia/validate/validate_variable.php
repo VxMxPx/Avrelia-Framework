@@ -1,5 +1,7 @@
 <?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
 
+use Avrelia\Core\Plug as Plug;
+
 /**
  * ValidateVariable Class
  * -----------------------------------------------------------------------------

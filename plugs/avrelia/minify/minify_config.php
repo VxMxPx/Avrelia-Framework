@@ -6,7 +6,7 @@ $minify_config = array(
         'coffee'  => false,
         'uglify'  => true,
         // Enter BOTH directory and filename
-        'input'   => pub_path('js/main.dev.js'),
+        'input'   => pub_path('js/map.json'),
         'output'  => pub_path('js/main.js'),
     ),
     'css' => array(

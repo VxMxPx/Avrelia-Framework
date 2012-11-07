@@ -62,9 +62,9 @@ class Message
      * $file will be used as a group.
      * If you added OK or INF true will be returned else false.
      * --
+     * @param   string  $message
      * @param   string  $type       inf|war|err|ok == information, warning, 
      *                              error, successfully done
-     * @param   string  $message
      * @param   string  $group      Any particular group?
      * --
      * @return  boolean
@@ -96,46 +96,46 @@ class Message
         foreach (self::$list as $message)
         {
             if ($group != null && $message['group'] != $group) continue;
-            if ($message['type']  == 'ERR')  $err[] = $message;
-            if ($message['type']  == 'WAR')  $war[] = $message;
-            if ($message['type']  == 'INF')  $inf[] = $message;
-            if ($message['type']  == 'OK')   $ok[]  = $message;
+            if ($message['type']  == 'err')  $err[] = $message;
+            if ($message['type']  == 'war')  $war[] = $message;
+            if ($message['type']  == 'inf')  $inf[] = $message;
+            if ($message['type']  == 'ok')   $ok[]  = $message;
         }
 
         # Get Errors
         if (!empty($err)) {
-            $return .= '<div id="tERR" class="mItem"><div class="mIco"><span>ERR:</span></div><div class="mMsg">';
+            $return .= '<div class="alert alert-error">';
             foreach ($err as $message) {
-                $return .= '<div>'.$message['message'].'</div>'."\n";
+                $return .= '<p>'.$message['message'].'</p>'."\n";
             }
-            $return .= '</div></div>'."\n";
+            $return .= '</div>'."\n";
         }
 
         # Get Warnings
         if (!empty($war)) {
-            $return .= '<div id="tWAR" class="mItem"><div class="mIco"><span>WAR:</span></div><div class="mMsg">';
+            $return .= '<div class="alert alert-block">';
             foreach ($war as $message) {
-                $return .= '<div>'.$message['message'].'</div>'."\n";
+                $return .= '<p>'.$message['message'].'</p>'."\n";
             }
-            $return .= '</div></div>'."\n";
+            $return .= '</div>'."\n";
         }
 
         # Get Infos
         if (!empty($inf)) {
-            $return .= '<div id="tINF" class="mItem"><div class="mIco"><span>INF:</span></div><div class="mMsg">';
+            $return .= '<div class="alert alert-info">';
             foreach ($inf as $message) {
-                $return .= '<div>'.$message['message'].'</div>'."\n";
+                $return .= '<p>'.$message['message'].'</p>'."\n";
             }
-            $return .= '</div></div>'."\n";
+            $return .= '</div>'."\n";
         }
 
         # Get Ok
         if (!empty($ok)) {
-            $return .= '<div id="tOK" class="mItem"><div class="mIco"><span>OK:</span></div><div class="mMsg">';
+            $return .= '<div class="alert alert-success">';
             foreach ($ok as $message) {
-                $return .= '<div>'.$message['message'].'</div>'."\n";
+                $return .= '<p>'.$message['message'].'</p>'."\n";
             }
-            $return .= '</div></div>'."\n";
+            $return .= '</div>'."\n";
         }
 
         return $return;

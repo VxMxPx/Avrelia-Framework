@@ -4,6 +4,7 @@ use Avrelia\Core\Cfg        as Cfg;
 use Avrelia\Core\Str        as Str;
 use Avrelia\Core\vString    as vString;
 use Avrelia\Core\Log        as Log;
+use Avrelia\Core\Plug       as Plug;
 
 /**
  * Session Driver Db Class
@@ -43,7 +44,7 @@ class SessionDriverDb implements SessionDriverInterface
         if (Cfg::get('plugs/session/create_on_enable', false) === false) { return true; }
 
         # Create users table (if doesn't exists)
-        if (Plug::has('database')) {
+        if (Plug::has('Plug\\Avrelia\\Database')) {
             Cfg::get('plugs/session/db/tables/users_table') 
                 and Database::execute(Cfg::get('plugs/session/db/tables/users_table'));
 
@@ -60,10 +61,12 @@ class SessionDriverDb implements SessionDriverInterface
 
         $defaults = Cfg::get('plugs/session/defaults');
 
-        foreach ($defaults as $default_user)
-        {
-            $default_user['password'] = vString::Hash($default_user['password'], false, true);
-            Database::create($default_user, Cfg::get('plugs/session/users_table'));
+        if (is_array($defaults) && !empty($defaults)) {
+            foreach ($defaults as $default_user)
+            {
+                $default_user['password'] = vString::Hash($default_user['password'], false, true);
+                Database::create($default_user, Cfg::get('plugs/session/users_table'));
+            }
         }
 
         return true;
@@ -199,7 +202,7 @@ class SessionDriverDb implements SessionDriverInterface
     {
         Database::delete(
             Cfg::get('plugs/session/db/sessions_table'),
-            'WHERE expires < :expires',
+            'WHERE expires_on < :expires',
             array('expires' => time())
         );
     }
@@ -226,7 +229,7 @@ class SessionDriverDb implements SessionDriverInterface
 
         $user = $user->as_array(0);
 
-        if (Cfg::get('plugs/session/require_active', true) && !$user['active']) {
+        if (Cfg::get('plugs/session/require_active', true) && !$user['is_active']) {
             Log::inf("User's account is not active, can't continue.");
             return false;
         }
@@ -260,7 +263,7 @@ class SessionDriverDb implements SessionDriverInterface
             {
                 $session_details = $session_details->as_array(0);
                 $user_id  = $session_details['user_id'];
-                $expires  = $session_details['expires'];
+                $expires  = $session_details['expires_on'];
                 $ip       = $session_details['ip'];
                 $agent    = $session_details['agent'];
 
@@ -336,11 +339,11 @@ class SessionDriverDb implements SessionDriverInterface
 
         # Set session file
         $session = array(
-            'id'      => $q_id,
-            'user_id' => $user_id,
-            'expires' => $expires === 0 ? time() + 60 * 60 : $expires,
-            'ip'      => $_SERVER['REMOTE_ADDR'],
-            'agent'   => self::_clean_agent($_SERVER['HTTP_USER_AGENT']),
+            'id'         => $q_id,
+            'user_id'    => $user_id,
+            'expires_on' => $expires === 0 ? time() + 60 * 60 : $expires,
+            'ip'         => $_SERVER['REMOTE_ADDR'],
+            'agent'      => self::_clean_agent($_SERVER['HTTP_USER_AGENT']),
         );
 
         return Database::create(

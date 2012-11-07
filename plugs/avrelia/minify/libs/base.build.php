@@ -11,17 +11,17 @@ class baseBuild
 
 	public function __construct()
 	{
-		$this->input   = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : false;
-		$this->output  = isset($_SERVER['argv'][2]) ? $_SERVER['argv'][2] : false;
-		$this->options = isset($_SERVER['argv'][3]) ? $_SERVER['argv'][3] : false;
+		$this->input_raw = isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : false;
+		$this->output    = isset($_SERVER['argv'][2]) ? $_SERVER['argv'][2] : false;
+		$this->options   = isset($_SERVER['argv'][3]) ? $_SERVER['argv'][3] : false;
 
-		$this->input = realpath($this->input);
+		$this->input     = realpath($this->input_raw);
 		$this->baseInput = dirname($this->input);
 
 		$this->baseOutput = dirname($this->output);
 
 		if (!file_exists($this->input)) {
-			die("File not found: {$this->input}\n");
+			die("File not found: {$this->input_raw}\n");
 		}
 	}
 

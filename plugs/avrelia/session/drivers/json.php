@@ -92,10 +92,10 @@ class SessionDriverJson implements SessionDriverInterface
 
         foreach ($defaults as $default_user)
         {
-            $user['id']       = self::_uname_to_id($default_user['uname']);
-            $user['uname']    = $default_user['uname'];
-            $user['password'] = vString::Hash($default_user['password'], false, true);
-            $user['active']   = true;
+            $user['id']        = self::_uname_to_id($default_user['uname']);
+            $user['uname']     = $default_user['uname'];
+            $user['password']  = vString::Hash($default_user['password'], false, true);
+            $user['is_active'] = true;
 
             $users[$user['id']] = $user;
         }
@@ -239,7 +239,7 @@ class SessionDriverJson implements SessionDriverInterface
 
         foreach ($this->data_sessions as $id => $session)
         {
-            if ($session['expires'] < time()) {
+            if ($session['expires_on'] < time()) {
                 unset($this->data_sessions[$id]);
                 $removed++;
             }
@@ -306,7 +306,7 @@ class SessionDriverJson implements SessionDriverInterface
 
         # Is active?
         if (Cfg::get('plugs/session/require_active', true)) {
-            if (!isset($this->data_users[$user_id]['active']) || $this->data_users[$user_id]['active'] !== true) {
+            if (!isset($this->data_users[$user_id]['is_active']) || $this->data_users[$user_id]['is_active'] !== true) {
                 Log::inf("User's account isn't active: `{$user_id}`.");
                 return false;
             }
@@ -349,7 +349,7 @@ class SessionDriverJson implements SessionDriverInterface
             {
                 $session_details = $this->data_sessions[$session_id];
                 $user_id  = $session_details['user_id'];
-                $expires  = $session_details['expires'];
+                $expires  = $session_details['expires_on'];
                 $ip       = $session_details['ip'];
                 $agent    = $session_details['agent'];
 
@@ -431,11 +431,11 @@ class SessionDriverJson implements SessionDriverInterface
 
         # Set session file
         $this->data_sessions[$q_id] = array(
-            'id'      => $q_id,
-            'user_id' => $user_id,
-            'expires' => $expires === 0 ? time() + 60 * 60 : $expires,
-            'ip'      => $_SERVER['REMOTE_ADDR'],
-            'agent'   => self::_clean_agent($_SERVER['HTTP_USER_AGENT']),
+            'id'         => $q_id,
+            'user_id'    => $user_id,
+            'expires_on' => $expires === 0 ? time() + 60 * 60 : $expires,
+            'ip'         => $_SERVER['REMOTE_ADDR'],
+            'agent'      => self::_clean_agent($_SERVER['HTTP_USER_AGENT']),
         );
 
         $this->current_session = $this->data_sessions[$q_id];
