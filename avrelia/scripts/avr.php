@@ -26,7 +26,7 @@ class avr_Cli
             $stdin    = trim($stdin);
             $continue = ($stdin == 'exit' || $stdin == '\q') ? false : true;
 
-            if ($continue) {
+            if ($continue && $stdin) {
                 eval(
                     '$val = ' . 
                     (substr($stdin,-1,1) == ';' 

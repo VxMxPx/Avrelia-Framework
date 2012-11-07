@@ -409,7 +409,7 @@ class RouteAssign
         if (is_array($this->before)) {
             foreach ($this->before as $action) {
                 if (!Route::trigger($action)) {
-                    Log::war("Failed to execute `BEFORE` action: `{$action}`.");
+                    Log::inf("The action `BEFORE` returnes false: `{$action}`.");
                     return false;
                 }
             }
@@ -418,7 +418,7 @@ class RouteAssign
         $main_action = $this->_find_action($type);
 
         if (!Dispatcher::execute($main_action, $segments)) {
-            Log::err("Failed to execute main action!");
+            Log::inf("The main action was not executed: {$main_action}.");
             $result = false;
         }
         else {
@@ -428,7 +428,7 @@ class RouteAssign
         if (is_array($this->after)) {
             foreach ($this->after as $action) {
                 if (!Route::trigger($action)) {
-                    Log::war("Failed to execute `AFTER` action: `{$action}`.");
+                    Log::inf("The action `AFTER` returned false: `{$action}`.");
                     return false;
                 }
             }
@@ -516,6 +516,12 @@ class RouteAssign
      */
     public function post($action)
     {
+        if (is_string($action) && strpos($action, '->') !== false) {
+            if (strpos($action, '->post_') === false) {
+                $action = str_replace('->', '->post_', $action);
+            }
+        }
+
         $this->on_post = $action;
         return $this;
     }
@@ -529,6 +535,12 @@ class RouteAssign
      */
     public function get($action)
     {
+        if (is_string($action) && strpos($action, '->') !== false) {
+            if (strpos($action, '->get_') === false) {
+                $action = str_replace('->', '->get_', $action);
+            }
+        }
+
         $this->on_get = $action;
         return $this;
     }
@@ -542,6 +554,12 @@ class RouteAssign
      */
     public function put($action)
     {
+        if (is_string($action) && strpos($action, '->') !== false) {
+            if (strpos($action, '->put_') === false) {
+                $action = str_replace('->', '->put_', $action);
+            }
+        }
+
         $this->on_put = $action;
         return $this;
     }
@@ -555,6 +573,12 @@ class RouteAssign
      */
     public function delete($action)
     {
+        if (is_string($action) && strpos($action, '->') !== false) {
+            if (strpos($action, '->delete_') === false) {
+                $action = str_replace('->', '->delete_', $action);
+            }
+        }
+
         $this->on_delete = $action;
         return $this;
     }

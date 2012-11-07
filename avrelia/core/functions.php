@@ -278,6 +278,11 @@ function lh()
 
     foreach ($elements as $element)
     {
+        if (substr($element, 0, 1) === '!') {
+            $list[] = substr($element, 1);
+            continue;
+        }
+
         if (strpos($element, ' ') !== false)
             { $element_array = explode(' ', $element); }
         else
@@ -293,8 +298,8 @@ function lh()
 
             preg_match('/\((.*?)\)/',         $tag, $url);
             $tag = preg_replace('/\((.*?)\)/', '', $tag);
-            preg_match_all('/\.([a-zA-Z0-9_]*)/', $tag, $class);
-            preg_match('/\#([a-zA-Z0-9_]*)/', $tag, $id);
+            preg_match_all('/\.([a-zA-Z0-9_\-]*)/', $tag, $class);
+            preg_match('/\#([a-zA-Z0-9_\-]*)/', $tag, $id);
             preg_match('/^([a-zA-Z]*)/',      $tag, $tag);
 
             $open_tags .= '<' . $tag[1];

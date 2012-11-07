@@ -77,7 +77,7 @@ $avrelia_config = array
             # If set to true, dispatcher will check controller's response.
             # If response will be === false, the 404 will be displayed
             # (as if no route was not found!)
-            'check_response'        => false,
+            'check_response'        => true,
         ),
 
         'http'            => array(

@@ -228,7 +228,7 @@ class Http
     /**
      * Check if redirects are allowed at all...
      * --
-     * @param   string  $url    For log
+     * @param  string  $url    For log
      * @return boolean
      */
     protected static function _is_allowed($url)
@@ -239,5 +239,7 @@ class Http
                 "Redirects aren't allowed in config!");
             return false;
         }
+
+        return true;
     }
 }
