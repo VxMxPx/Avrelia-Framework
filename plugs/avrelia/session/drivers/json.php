@@ -3,6 +3,7 @@
 use Avrelia\Core\FileSystem as FileSystem;
 use Avrelia\Core\Json       as Json;
 use Avrelia\Core\Cfg        as Cfg;
+use Avrelia\Core\Arr        as Arr;
 use Avrelia\Core\Str        as Str;
 use Avrelia\Core\vString    as vString;
 use Avrelia\Core\Log        as Log;

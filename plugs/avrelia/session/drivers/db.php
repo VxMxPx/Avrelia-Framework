@@ -2,9 +2,11 @@
 
 use Avrelia\Core\Cfg        as Cfg;
 use Avrelia\Core\Str        as Str;
+use Avrelia\Core\Arr        as Arr;
 use Avrelia\Core\vString    as vString;
 use Avrelia\Core\Log        as Log;
 use Avrelia\Core\Plug       as Plug;
+use Avrelia\Core\Event      as Event;
 
 /**
  * Session Driver Db Class
@@ -228,6 +230,8 @@ class SessionDriverDb implements SessionDriverInterface
         }
 
         $user = $user->as_array(0);
+
+        Event::trigger('/plugs/avrelia/session/user_set', $user);
 
         if (Cfg::get('plugs/session/require_active', true) && !$user['is_active']) {
             Log::inf("User's account is not active, can't continue.");

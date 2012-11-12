@@ -1,6 +1,7 @@
 <?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
 
 use Avrelia\Core\Log as Log;
+use Avrelia\Core\Event as Event;
 
 /**
  * DatabaseStatement
@@ -93,6 +94,12 @@ class DatabaseStatement
         Log::inf("I'm about to execute following statement:\n{$this->statement}\n".
                 "parameters:" . print_r($this->bind, true));
         
-        return Database::get_driver()->prepare($this->statement, $this->bind);
+        $params = array(
+            'statement' => $this->statement,
+            'bind'      => $this->bind
+        );
+
+        Event::trigger('/plugs/avrelia/database/statement/execute', $params);
+        return Database::get_driver()->prepare($params['statement'], $params['bind']);
     }
 }
