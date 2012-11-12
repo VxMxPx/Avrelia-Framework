@@ -13,6 +13,20 @@ class Event
     protected static $waiting = array();
 
     /**
+     * Will load events list.
+     * --
+     * @return boolean true
+     */
+    public static function _on_include_()
+    {
+        file_exists(sys_path('config/events.php')) and include(sys_path('config/events.php'));
+        file_exists(app_path('config/events.php')) and include(app_path('config/events.php'));
+        file_exists(app_path('config/events.local.php')) and include(app_path('config/events.local.php'));
+
+        return true;
+    }
+
+    /**
      * Wait for paticular event to happened - then call the assigned function / method.
      * --
      * @param   string  $event      Name of the event you're waiting for
