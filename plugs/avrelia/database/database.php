@@ -248,6 +248,10 @@ class Database
         if (is_array($condition)) {
             $bind = self::_parse_condition($condition);
         }
+        else {
+            strtoupper( substr($condition, 0, 6) ) === 'WHERE ' 
+                or $condition = 'WHERE ' . $condition;
+        }
 
         $sql .= ' ' . $condition;
 
