@@ -239,9 +239,10 @@ class Dot
         Dot::inf('Available options:');
         Dot::nl();
         foreach ($commands as $key => $command) {
+
             Dot::inf(
                 '  ' . 
-                $key . 
+                (!is_integer($key) ? $key : ' ') . 
                 '    ' . 
                 str_repeat(" ", $longest - strlen($key)) .
                 $command

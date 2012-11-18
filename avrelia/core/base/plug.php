@@ -65,6 +65,43 @@ class Plug
     }
 
     /**
+     * Will return the list of currently enabled plugs
+     * --
+     * @return array
+     */
+    public static function list_enabled()
+    {
+        return self::$available;
+    }
+
+    /**
+     * List all plugs, based on folder name.
+     * --
+     * @return array
+     */
+    public static function list_all()
+    {
+        $plugs = scandir(ds(PLGPATH));
+        $list  = array();
+
+        foreach ($plugs as $plug) {
+
+            if (substr($plug, 0, 1) === '.') { continue; }
+
+            $ns_plugs = scandir(ds(PLGPATH, $plug));
+            
+            foreach ($ns_plugs as $ns_plug) {
+                
+                if (substr($ns_plug, 0, 1) === '.') { continue; }
+
+                $list[$plug][] = $ns_plug;
+            }
+        }
+
+        return $list;
+    }
+
+    /**
      * The same as "has" only that this will trigger fatal error if any of the 
      * needed plugs isn't enabled.
      * --
@@ -305,28 +342,19 @@ class Plug
         $al_conf  = app_path("config/plugs/{$name}_config.local.php");
         $variable = "{$name}_config";
         $included = array();
+        $cache    = array();
 
-        # Include plug's default settings (from plug's folder)
-        if (file_exists($c_conf)) {
-            $included[] = $c_conf;
-            include $c_conf;
-        }
+        foreach ([$c_conf, $a_conf, $al_conf] as $k_conf) {
+            
+            if (file_exists($k_conf)) {
+                $included[] = $k_conf;
+                include $k_conf;
 
-        # Include settings for plug from application folder
-        if (file_exists($a_conf)) {
-            $included[] = $a_conf;
-            include $a_conf;
-        }
-
-        # Include settings for plug from application folder, local version
-        if (file_exists($al_conf)) {
-            $included[] = $al_conf;
-            include $al_conf;
-        }
-
-        # Check if variable is set and return it!
-        if (!isset($$variable)) {
-            $$variable = false;
+                if(isset($$variable)) {
+                    $cache = Arr::merge($cache, $$variable);
+                    unset($$variable);
+                }
+            }
         }
 
         # Log the list of included files
@@ -335,10 +363,10 @@ class Plug
             implode("\n", $included));
 
         # Append it to the global config
-        $config['plugs'][$name] = $$variable;
+        $config['plugs'][$name] = $cache;
         Cfg::append($config);
 
-        return $$variable;
+        return $cache;
     }
 
     /**
@@ -573,7 +601,7 @@ class Plug
                 }
             }
 
-            self::map_class($component);
+            self::_map_class($component);
         }
 
         return (empty($failed)) ? true : $failed;
@@ -616,7 +644,7 @@ class Plug
      * --
      * @return void
      */
-    protected static function map_class($class_name, $alias=false)
+    protected static function _map_class($class_name, $alias=false)
     {
         if (!$alias) { $alias = self::_get_class_alias($class_name); }
 
