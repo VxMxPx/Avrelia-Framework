@@ -12,13 +12,19 @@
 
     <div class="content input">
         <div class="spacer">
+            Path Info: <?php echo dump_r(Input::get_path_info()); ?>
+        </div>    
+        <div class="spacer">
             $_POST: <?php echo dump_r($_POST); ?>
         </div>
         <div class="spacer">
             $_GET: <?php echo dump_r($_GET); ?>
         </div>
         <div class="spacer">
-            Path Info: <?php echo dump_r(Input::get_path_info()); ?>
+            $_COOKIE: <?php echo dump_r($_COOKIE); ?>
+        </div>
+        <div class="spacer">
+            $_SERVER: <?php echo dump_r($_SERVER); ?>
         </div>
     </div>
 
