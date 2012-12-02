@@ -22,8 +22,7 @@ class javascriptBuild extends baseBuild
             $r = $this->getMd5($this->baseInput);
             if ($calcMod != $r) {
                 $calcMod = $r;
-                $files   = json_decode(file_get_contents($this->input), true);
-                $contents = $this->_merge_files($files);
+                $contents = $this->_merge_files($this->input);
 
                 if (file_put_contents($this->output, $contents)) {
                     $this->say('INF', '  JavaScript to: ' . $this->output);
@@ -46,18 +45,27 @@ class javascriptBuild extends baseBuild
     /**
      * Merge multiple files into one file.
      * --
-     * @param  array $files
+     * @param  string $input
      * --
      * @return string
      */
-    protected function _merge_files($files)
+    protected function _merge_files($input)
     {
+        $files = json_decode(file_get_contents($this->input), true);
+        $dir   = dirname($this->input);
+
         $result = '';
 
         if (is_array($files)) {
             foreach ($files as $file) {
                 
                 if (substr($file, 0, 1) === '.') { continue; }
+
+                if (substr($file, 0, 9) === '@include ') {
+
+                    $result .= "\n\n" . $this->_merge_files(realpath($dir.'/'.substr($file, 9)));
+                    continue;
+                }
 
                 $fullpath = $this->baseInput . '/' . trim($file);
                 
