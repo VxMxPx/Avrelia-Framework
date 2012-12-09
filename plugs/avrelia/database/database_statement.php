@@ -90,10 +90,7 @@ class DatabaseStatement
      * @return  DatabaseResult
      */
     public function execute()
-    {
-        Log::inf("I'm about to execute following statement:\n{$this->statement}\n".
-                "parameters:" . print_r($this->bind, true));
-        
+    {        
         $params = array(
             'statement' => $this->statement,
             'bind'      => $this->bind

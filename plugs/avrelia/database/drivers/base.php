@@ -65,7 +65,12 @@ class DatabaseDriverBase
                         $type = \PDO::PARAM_STR;
                     }
 
-                    $link->bindValue(':'.$key, $value, $type);
+                    if (!is_numeric($key)) {
+                        $link->bindValue(':'.$key, $value, $type);
+                    }
+                    else {
+                        $link->bindValue((int)$key+1, $value, $type);
+                    }
                 }
             }
         }

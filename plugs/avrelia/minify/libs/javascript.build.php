@@ -51,8 +51,8 @@ class javascriptBuild extends baseBuild
      */
     protected function _merge_files($input)
     {
-        $files = json_decode(file_get_contents($this->input), true);
-        $dir   = dirname($this->input);
+        $files = json_decode(file_get_contents($input), true);
+        $dir   = dirname($input);
 
         $result = '';
 

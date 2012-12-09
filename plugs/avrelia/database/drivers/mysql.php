@@ -1,6 +1,7 @@
 <?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
 
 use Avrelia\Core\Cfg as Cfg;
+use Avrelia\Core\Arr as Arr;
 
 /**
  * Database Driver MySQL
@@ -56,6 +57,46 @@ class DatabaseDriverMysql
                 "Can't create PDO object: `" . $e->getMessage() . '`.', 
                 E_USER_WARNING);
         }
+    }
+
+    /**
+     * Create many records with only one query.  [
+     *     [name => Marko, age => 28],
+     *     [name => Inna,  age => 24],
+     *     ...
+     * ]
+     * 
+     * @param  array  $values
+     * @param  string $table
+     * @return DatabaseResult
+     */
+    public function create_many(&$values, $table)
+    {
+        if (!is_array($values[0])) { return false; }
+
+        $new_values = [];
+
+        # Create statement
+        $sql_intro = "INSERT INTO {$table} (" . Arr::implode_keys(', ', $values[0]) . ') VALUES';
+        $sql = [];
+
+        foreach ($values as $k1 => $sub_values) {
+            
+            $sub_sql = '(';
+            
+            foreach ($sub_values as $k2 => $v) {
+                
+                $sub_sql .= ":{$k1}_{$k2}, ";
+                $new_values[$k1.'_'.$k2] = $v;
+            }
+            
+            $sub_sql = substr($sub_sql, 0, -2) . ')';
+            $sql[]   = $sub_sql;
+        }
+
+        $values = $new_values;
+
+        return $sql_intro . ' ' . implode(', ', $sql);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 use Avrelia\Core\Cfg as Cfg;
 use Avrelia\Core\Log as Log;
+use Avrelia\Core\Arr as Arr;
 use Avrelia\Core\FileSystem as FileSystem;
 
 /**
@@ -102,9 +103,49 @@ class DatabaseDriverSqlite
      * --
      * @return string
      */
-    function truncate($table)
+    public function truncate($table)
     {
         return 'DELETE FROM ' . $table . ';';
+    }
+
+    /**
+     * Create many records with only one query.  [
+     *     [name => Marko, age => 28],
+     *     [name => Inna,  age => 24],
+     *     ...
+     * ]
+     * 
+     * @param  array  $values
+     * @param  string $table
+     * @return DatabaseResult
+     */
+    public function create_many(&$values, $table)
+    {
+        if (!is_array($values[0])) { return false; }
+
+        $new_values = [];
+
+        # Create statement
+        $sql[] = "INSERT INTO {$table}";
+
+        foreach ($values as $k1 => $sub_values) {
+            
+            $sub_sql = 'UNION SELECT ';
+            
+            foreach ($sub_values as $k2 => $v) {
+                
+                $sub_sql .= "? as {$k2}, ";
+                $new_values[] = $v;
+            }
+            
+            $sub_sql = substr($sub_sql, 0, -2);
+            $sql[]   = $sub_sql;
+        }
+
+        $sql[1] = substr($sql[1], 6);
+        $values = $new_values;
+
+        return implode(' ', $sql);
     }
 
     /**

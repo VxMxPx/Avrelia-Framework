@@ -110,7 +110,7 @@ class Database
     /**
      * Create new record.
      * 
-     * @param   array   $values
+     * @param   array   $values ['name' => 'Marko', 'age' => 28]
      * @param   string  $table
      * @return  DatabaseResult
      */
@@ -130,6 +130,24 @@ class Database
         $statement = new DatabaseStatement($sql);
         $statement->bind($values);
 
+        return $statement->execute();
+    }
+
+    /**
+     * Create many records with only one query.  [
+     *     [name => Marko, age => 28],
+     *     [name => Inna,  age => 24],
+     *     ...
+     * ]
+     * 
+     * @param  array  $values
+     * @param  string $table
+     * @return DatabaseResult
+     */
+    public static function create_many($values, $table)
+    {
+        $statement = new DatabaseStatement(self::$driver->create_many($values, $table));
+        $statement->bind($values);
         return $statement->execute();
     }
 
