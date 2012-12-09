@@ -479,4 +479,56 @@ class Arr
         }
     }
 
+    /**
+     * Get first array's element.
+     * --
+     * @param  array $array
+     * --
+     * @return mixed
+     */
+    public static function first($array)
+    {
+        return reset($array);
+    }
+
+    /**
+     * Get last array's element.
+     * --
+     * @param  array $array
+     * --
+     * @return mixed
+     */
+    public static function last($array)
+    {
+        return end($array);
+    }
+
+    /**
+     * Get first array's key.
+     * --
+     * @param  array $array
+     * --
+     * @return mixed String | Integer
+     */
+    public static function first_key($array)
+    {
+        reset($array);
+
+        return key($array);
+    }
+
+    /**
+     * Get last array's key.
+     * --
+     * @param  array $array
+     * --
+     * @return mixed String | Integer
+     */
+    public static function last_key($array)
+    {
+        end($array);
+
+        return key($array);
+    }
+
 }
