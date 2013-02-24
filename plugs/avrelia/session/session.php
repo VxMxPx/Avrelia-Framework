@@ -20,7 +20,7 @@ use Avrelia\Core\Event      as Event;
 class Session
 {
     /**
-     * Current's user data
+     * Current user object
      * @var array
      */
     protected static $current = false;
@@ -34,7 +34,6 @@ class Session
     public static function _on_include_()
     {
         Plug::get_config(__FILE__);
-
         self::_session_discover();
         
         return true;
@@ -55,8 +54,8 @@ class Session
         // Do not create things on enable...
         if (Cfg::get('plugs/session/create_on_enable', false) === false) { return true; }
 
-        # Create users and sessions table (if doesn't exists)
-        foreach (array('users_table', 'sessions_table') as $table) {
+        # Create Sessions table (if doesn't exists)
+        foreach (array('sessions_table') as $table) {
             
             $table_sql = Cfg::get('plugs/session/tables/'.$table);
 
@@ -89,15 +88,21 @@ class Session
             return true; 
         }
 
-        if (Cfg::get('plugs/session/tables/users_table')) {
-            Database::execute('DROP TABLE IF EXISTS ' . Cfg::get('plugs/session/users_table'));
-        }
-
         if (Cfg::get('plugs/session/tables/sessions_table')) {
             Database::execute('DROP TABLE IF EXISTS ' . Cfg::get('plugs/session/sessions_table'));
         }
 
         return true;
+    }
+
+    /**
+     * Return current user's object or false.
+     * --
+     * @return object or false
+     */
+    public static function current()
+    {
+        return self::$current;
     }
 
     /**
@@ -111,23 +116,15 @@ class Session
         { return Str::clean(str_replace(' ', '_', $agent), 'aA1', '_'); }
 
     /**
-     * Return user's information as an array.
-     * --
-     * @return  array
-     */
-    public static function as_array()
-        { return self::$current; }
-
-    /**
-     * Get particular information about user (session).
-     * --
-     * @param  string  $key
-     * @param  mixed   $default
+     * Get current user's ID
      * --
      * @return mixed
      */
-    public static function get($key, $default=false)
-        { return Arr::element($key, self::$current, $default); }
+    protected static function _current_id()
+    {
+        $id = Cfg::get('plugs/session/user_id');
+        return self::$current->{$id};
+    }
 
     /**
      * List all sessions currently set.
@@ -167,7 +164,7 @@ class Session
     public static function create($id, $expires=null)
     {
         if (self::_user_set($id)) {
-            return self::_session_set(self::$current['id'], $expires);
+            return self::_session_set(self::_current_id(), $expires);
         }
     }
 
@@ -179,7 +176,7 @@ class Session
     public static function destroy()
     {
         if (self::$current) {
-            self::_session_destroy(self::$current['id']);
+            self::_session_destroy(self::_current_id());
             self::$current = false;
         }
     }
@@ -199,7 +196,7 @@ class Session
      * @return  void
      */
     public static function reload()
-        { self::has() and self::_user_set(self::$current['id']); }
+        { self::has() and self::_user_set(self::_current_id()); }
 
     /**
      * Will clear all expired sessions.
@@ -224,30 +221,18 @@ class Session
      */
     protected static function _user_set($id)
     {
-        # Select user
-        $user = Database::find(
-                    Cfg::get('plugs/session/users_table'), 
-                    array('id' => (int) $id));
+        # User's model
+        $method = Cfg::get('plugs/session/user_method');
+        $method = explode('::', $method, 2);
+        $model  = $method[0];
+        $method = $method[1];
 
-        # Valid user?
-        if ($user->failed()) {
-            Log::inf("Invalid id, user not found: `{$id}`.");
-            return false;
-        }
-
-        $user = $user->as_array(0);
-
+        $user = call_user_func_array(array($model, $method), array($id));
+        
         Event::trigger('/plugs/avrelia/session/user_set', $user);
-
-        if (Cfg::get('plugs/session/require_active', true) && !$user['is_active']) {
-            Log::inf("User's account is not active, can't continue.");
-            return false;
-        }
-
-        Log::inf("User found by id: `{$user['id']}`.");
+        
         self::$current = $user;
-
-        return true;
+        return !!self::$current;
     }
 
     /**

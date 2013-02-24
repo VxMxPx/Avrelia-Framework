@@ -6,6 +6,7 @@ use Avrelia\Core\Log as Log;
 use Avrelia\Core\Dot as Dot;
 use Avrelia\Core\FileSystem as FileSystem;
 use Avrelia\Core\Event as Event;
+use Avrelia\Core\vString as vString;
 
 class LogWritter
 {

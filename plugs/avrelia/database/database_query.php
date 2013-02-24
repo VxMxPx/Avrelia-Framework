@@ -2,6 +2,7 @@
 
 use Avrelia\Core\Log as Log;
 use Avrelia\Core\Str as Str;
+use Avrelia\Core\Arr as Arr;
 
 /**
  * DatabaseQuery Class

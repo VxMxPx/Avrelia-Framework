@@ -30,7 +30,7 @@ class Migrate
         Plug::get_config(__FILE__);
 
         $version = Database::find(
-            Cfg::get('plugs/migrate/status_table'), 
+            Cfg::get('plugs/migrate/status_table'),
             array('key' => 'current_version'))->as_array(0);
 
         $this->status['current_version'] = Arr::element('value', $version, 0);
@@ -47,7 +47,7 @@ class Migrate
     {
         return Database::update(
                     array('value' => $this->status['current_version']),
-                    Cfg::get('plugs/migrate/status_table'), 
+                    Cfg::get('plugs/migrate/status_table'),
                     array('key' => 'current_version')
                 )->succeed();
     }
@@ -58,7 +58,7 @@ class Migrate
      * @param  array  $tasks
      * @param  string $name
      * --
-     * @return mixed  False if there was an error and integer, with version if           
+     * @return mixed  False if there was an error and integer, with version if
      */
     public function create($tasks, $name=null)
     {
@@ -84,9 +84,9 @@ class Migrate
 
         // Save
         if (FileSystem::Write(
-            $string, 
+            $string,
             ds(
-                Cfg::get('plugs/migrate/directory'), 
+                Cfg::get('plugs/migrate/directory'),
                 (int)$this->latest + 1 . '.sql'
             )
         )) {
@@ -158,15 +158,15 @@ class Migrate
     public function to($version)
     {
         $version = (int) $version;
-        if ($version < 0) { 
+        if ($version < 0) {
             Log::war("Version must be more than one: `{$version}`.");
-            return false; 
+            return false;
         }
-        if ($version > $this->latest) { 
+        if ($version > $this->latest) {
             Log::war("Version must not be more than latest: ".
                      "`{$this->latest}`, required was: ".
                      "`{$version}`.");
-            return false; 
+            return false;
         }
 
         if ($version == $this->status['current_version']) {
@@ -192,7 +192,7 @@ class Migrate
         // Start the loop
         foreach ($range as $version_step) {
 
-                $contents  = $this->_get_version_file($version_step) 
+                $contents  = $this->_get_version_file($version_step)
             and $migration = $this->_prepare_migration($contents);
 
             $about = $migration[$type]['about']
@@ -220,7 +220,7 @@ class Migrate
             $this->_save_status();
 
             Event::inf(
-                '/plug/avrelia/migrate/to/success', 
+                '/plug/avrelia/migrate/to/success',
                 "Done: {$type} to version {$this->status['current_version']}{$about}.");
         }
 
@@ -246,12 +246,12 @@ class Migrate
 
             if (Database::execute($task['statement'])->succeed()) {
                 Event::inf(
-                    '/plug/avrelia/migrate/task/success', 
+                    '/plug/avrelia/migrate/task/success',
                     "Task done{$task_id}");
             }
             else {
                 throw new \Avrelia\Exception\Database(
-                    "Failed to execute task{$task_id}");
+                    "Failed to execute task: " . dump_r($task));
             }
         }
 
@@ -268,7 +268,7 @@ class Migrate
     protected function _prepare_migration($raw_string)
     {
         $list = preg_split(
-            '/-- MIGRATE ((?:UP|DOWN)(?:\: .*)?)/', 
+            '/-- MIGRATE ((?:UP|DOWN)(?:\: .*)?)/',
             $raw_string,
             null,
             PREG_SPLIT_DELIM_CAPTURE);
@@ -304,7 +304,7 @@ class Migrate
     protected function _prepare_tasks($raw_tasks)
     {
         $list = preg_split(
-            '/-- (TASK(?:\: .*)?)/', 
+            '/-- (TASK(?:\: .*)?)/',
             $raw_tasks,
             null,
             PREG_SPLIT_DELIM_CAPTURE);
@@ -335,7 +335,7 @@ class Migrate
                 }
             }
         }
-        
+
         return $final;
     }
 
@@ -397,8 +397,8 @@ class Migrate
                     $version = substr($file, 0, -4);
                     if (!is_numeric($version)) { continue; }
                     $version = (int) $version;
-                    $latest = $version > $latest 
-                                ? $version 
+                    $latest = $version > $latest
+                                ? $version
                                 : $latest;
                 }
             }
@@ -417,9 +417,9 @@ class Migrate
 
         # Create migrations directory
         $directory = Cfg::get('plugs/migrate/directory');
-        if (!is_dir($directory)) 
+        if (!is_dir($directory))
             { FileSystem::MakeDir($directory, true, 0777); }
-        else 
+        else
             { Log::war("Migrations directory already exists: `{$directory}`."); }
 
         // Create migrations table

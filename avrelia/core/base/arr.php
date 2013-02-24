@@ -364,6 +364,35 @@ class Arr
     }
 
     /**
+     * Will implode only values of array, which results in true, - so, empty,
+     * null, and false elements won't be implded.
+     * --
+     * @param  string $glue
+     * @param  array  $pieces
+     * @param  mixed  $default In case there's no 'true' values in an array,
+     *                         the default value can be returned.
+     * --
+     * @return string
+     */
+    public static function implode_true($glue, $pieces, $default=null)
+    {
+        $new_array = array();
+
+        foreach ($pieces as $piece) {
+            if ($piece) {
+                $new_array[] = $piece;
+            }
+        }
+
+        if (!empty($new_array)) {
+            return implode($glue, $new_array);
+        }
+        else {
+            return $default;
+        }
+    }
+
+    /**
      * Will get array value by entering string path.
      * ['user' => ['address' => 'My Address']] 
      *     ----> user/address

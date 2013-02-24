@@ -28,7 +28,7 @@ class Log
         # Auto assign line and file
         $BT   = debug_backtrace();
         $line = isset($BT[1]['line']) ? $BT[1]['line'] : null;
-        $file = isset($BT[1]['file']) ? $BT[1]['file'] : null;
+        $file = isset($BT[1]['file']) ? $BT[1]['file'] : dump_r($BT[1]);
 
         # Add backtrace if error
         if ($type === 'err') {

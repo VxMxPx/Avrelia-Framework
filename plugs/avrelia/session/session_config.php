@@ -16,9 +16,6 @@ $session_config = array
     # For valid session require the user's agent to match
     'require_agent'      => true,
 
-    # Require field called is_active, and this field must be set to "1"
-    'require_active'     => false,
-
     # If set to true, database tables needed for this plug to operate will be
     # auto created when the plug is enabled.
     'create_on_enable'   => true,
@@ -27,11 +24,12 @@ $session_config = array
     # is disabled. Good for testing perhaps, not so got when in production.
     'drop_on_disable'    => false,
 
-    # Table must have at least following fields: 
-    # id            -- INT User's ID 
-    # [is_active]   -- INT Is user's account active, only if you set 
-    #                      "require_acive" to be true
-    'users_table'        => 'users',
+    # How to discover the user, the id will be passed to the method!
+    'user_method'        => 'User_Model::one_by_session',
+
+    # Which field contains user's id - it will be called as: user_model->{field}
+    # for example $current->id
+    'user_id'            => 'id',
 
     # Table must have at least following fields: 
     # id               -- VARCHAR(255) Session's ID
@@ -52,13 +50,6 @@ $session_config = array
     # sessions_table key.
     'tables'             => array
     (
-        'users_table'    =>
-            'CREATE TABLE IF NOT EXISTS {{table_name}} (
-                id          INTEGER PRIMARY KEY AUTOINCREMENT   NOT NULL,
-                uname       VARCHAR(200)                        NOT NULL,
-                password    VARCHAR(80)                         NOT NULL,
-                is_active   INTEGER(1)                          NOT NULL
-            )',
         'sessions_table' =>
             'CREATE TABLE IF NOT EXISTS {{table_name}} (
                 id                VARCHAR(255)    NOT NULL,

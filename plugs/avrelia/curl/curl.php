@@ -2,6 +2,7 @@
 
 use Avrelia\Core\Plug as Plug;
 use Avrelia\Core\Cfg  as Cfg;
+use Avrelia\Core\Log  as Log;
 use Avrelia\Core\FileSystem as FileSystem;
 
 /**
@@ -34,6 +35,14 @@ class Curl
         Plug::get_config(__FILE__);
         self::$timeout = Cfg::get('plugs/curl/timeout');
         self::$cookie_file = Cfg::get('plugs/curl/cookie_file');
+
+        $path = self::$cookie_file;
+        $path = get_path_segment($path, 0, -1);
+
+        if (!is_dir($path)) {
+            Log::err('CURL needs following directory: `' . $path . '`');
+            return false;
+        }
 
         return true;
     }

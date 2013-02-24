@@ -20,7 +20,7 @@ class Database
 
     /**
      * Init the Database object
-     * 
+     *
      * @return  boolean
      */
     public static function _on_include_()
@@ -28,14 +28,21 @@ class Database
         self::_load_driver();
 
         # Load all other required libraries
-        if (!class_exists('Plug\Avrelia\DatabaseQuery',     false)) 
+        if (!class_exists('Plug\Avrelia\DatabaseException',  false))
+            { include(ds(dirname(__FILE__).'/database_exceptions.php')); }
+
+        if (!class_exists('Plug\Avrelia\DatabaseQuery',     false))
             { include(ds(dirname(__FILE__).'/database_query.php')); }
-        
-        if (!class_exists('Plug\Avrelia\DatabaseResult',    false)) 
+
+        if (!class_exists('Plug\Avrelia\DatabaseResult',    false))
             { include(ds(dirname(__FILE__).'/database_result.php')); }
 
-        if (!class_exists('Plug\Avrelia\DatabaseStatement', false)) 
+        if (!class_exists('Plug\Avrelia\DatabaseStatement', false))
             { include(ds(dirname(__FILE__).'/database_statement.php')); }
+
+        if (!class_exists('Plug\Avrelia\DatabaseRecord',    false))
+            { include(ds(dirname(__FILE__).'/database_record.php')); }
+
 
         if (!self::$driver->connect()) {
             Log::err("Can't connect to, or create database.");
@@ -47,7 +54,7 @@ class Database
 
     /**
      * Enable database plug
-     * 
+     *
      * @return boolean
      */
     public static function _on_enable_()
@@ -58,7 +65,7 @@ class Database
 
     /**
      * Remove the database
-     * 
+     *
      * @return  boolean
      */
     public static function _on_disable_()
@@ -69,14 +76,14 @@ class Database
 
     /**
      * Will load driver and config
-     * 
+     *
      * @return void
      */
     protected static function _load_driver()
     {
         Plug::get_config(__FILE__);
         self::$driver = Plug::get_driver(
-            __FILE__, 
+            __FILE__,
             Cfg::get('plugs/database/driver'),
             __NAMESPACE__
         );
@@ -84,15 +91,25 @@ class Database
 
     /**
      * Return PDO Driver object.
-     * 
+     *
      * @return DatabaseDriverInterface
      */
     public static function get_driver()
         { return self::$driver; }
 
     /**
+     * Create new DatabaseQuery object and return it
+     * --
+     * @return DatabaseQuery
+     */
+    public static function query_factory()
+    {
+        return new DatabaseQuery();
+    }
+
+    /**
      * Execute raw SQL statement
-     * 
+     *
      * @param   string  $statement
      * @param   array   $bind
      * @return  DatabaseResult
@@ -101,7 +118,7 @@ class Database
     {
         $statement = new DatabaseStatement($statement);
 
-        if ($bind) 
+        if ($bind)
             { $statement->bind($bind); }
 
         return $statement->execute();
@@ -109,7 +126,7 @@ class Database
 
     /**
      * Create new record.
-     * 
+     *
      * @param   array   $values ['name' => 'Marko', 'age' => 28]
      * @param   string  $table
      * @return  DatabaseResult
@@ -139,7 +156,7 @@ class Database
      *     [name => Inna,  age => 24],
      *     ...
      * ]
-     * 
+     *
      * @param  array  $values
      * @param  string $table
      * @return DatabaseResult
@@ -153,14 +170,14 @@ class Database
 
     /**
      * Will read (select) items from database.
-     * 
+     *
      * @param   string  $table
-     * @param   mixed   $condition  ['id' => 12] || 
+     * @param   mixed   $condition  ['id' => 12] ||
      *                              'id=:id AND name=:name' and bind it later.
      * @param   array   $bind
      * @param   mixed   $limit      Select 12 records || range: [10, 25]
-     * @param   array   $order      ['name' => 'DESC'] || 
-     *                              ['name' => 'DESC', 'date' => 'ASC'] || 
+     * @param   array   $order      ['name' => 'DESC'] ||
+     *                              ['name' => 'DESC', 'date' => 'ASC'] ||
      *                              ['name', 'id' => 'DESC']
      * @return  DatabaseResult
      */
@@ -219,7 +236,7 @@ class Database
 
     /**
      * Update particular record.
-     * 
+     *
      * @param   array   $values
      * @param   string  $table
      * @param   mixed   $condition  ['id' => 12] || 'id=:id AND name=:name' and bind it.
@@ -253,7 +270,7 @@ class Database
 
     /**
      * Will delete particular item.
-     * 
+     *
      * @param   string  $table
      * @param   mixed   $condition  ['id' => 12] || 'id=:id AND name=:name' and bind it later.
      * @param   array   $bind
@@ -267,7 +284,7 @@ class Database
             $bind = self::_parse_condition($condition);
         }
         else {
-            strtoupper( substr($condition, 0, 6) ) === 'WHERE ' 
+            strtoupper( substr($condition, 0, 6) ) === 'WHERE '
                 or $condition = 'WHERE ' . $condition;
         }
 
@@ -297,7 +314,7 @@ class Database
 
     /**
      * Parse an array condition (like) ['id' => 12] into WHERE id=:id
-     * 
+     *
      * @param   array   $condition
      * @return  string
      */
@@ -308,9 +325,9 @@ class Database
             $new_condition = 'WHERE ';
 
             foreach ($condition as $k => $v) {
-                
-                $divider = strpos(str_replace(array('AND ', 'OR '), '', $k), ' ') !== false 
-                            ? ' ' 
+
+                $divider = strpos(str_replace(array('AND ', 'OR '), '', $k), ' ') !== false
+                            ? ' '
                             : ' = ';
 
                 $kclean  = Str::clean($k, 'aA1', '_', 100);
