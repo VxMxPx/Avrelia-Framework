@@ -343,7 +343,6 @@ class DatabaseRecord
 
         // Check if was modifed...
         if (!$this->_is_modified()) {
-            echo "\nNo save, - no changes!\n";
             return true;
         }
 
@@ -521,6 +520,27 @@ class DatabaseRecord
                 $new_params[$key] = $param;
             }
             static::$fields[$field] = $new_params;
+        }
+    }
+
+    /**
+     * Will trigger an error (add error to the list of error + throw exception)
+     * --
+     * @param  string  $message
+     * @param  string  $field
+     * @param  boolean $exception
+     * --
+     * @return void
+     */
+    protected static function _trigger_error($message, $field, $exception=false)
+    {
+        $errors[$field] = array(
+            $message,
+            array($field)
+        );
+        
+        if ($exception) {
+            throw new DatabaseValueException($message);
         }
     }
 
@@ -1030,7 +1050,13 @@ class DatabaseRecord
     {
         // Check if setter method exists
         if (method_exists($this, 'set_'.$field)) {
-            $value = call_user_func_array([$this, 'set_'.$field], [$value]);
+            try {
+                $value = call_user_func_array([$this, 'set_'.$field], [$value]);
+            }
+            catch (DatabaseValueException $e) {
+                Log::war($e->getMessage());
+                return;
+            }
         }
 
         try {
