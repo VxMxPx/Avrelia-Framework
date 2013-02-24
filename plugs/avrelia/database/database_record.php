@@ -532,9 +532,9 @@ class DatabaseRecord
      * --
      * @return void
      */
-    protected static function _trigger_error($message, $field, $exception=false)
+    protected function _trigger_error($message, $field, $exception=false)
     {
-        $errors[$field] = array(
+        $this->validation_errors[$field] = array(
             $message,
             array($field)
         );
