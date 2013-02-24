@@ -40,6 +40,7 @@ class DatabaseRecord
         //             you can specify format as a second parameter: Y-m-d H:i:s
         // :updated=   Specify value which will be set when item is updated,
         //             you can specify format as a second parameter: Y-m-d H:i:s
+        // :null       System won't complain if null (empty) value is beeing set
         // :required   Field is mandatory
         // :id         Positive integer
         // :boolean    Accepts 'true', 'false', '1', '0', 1, 0, true, false
@@ -57,6 +58,7 @@ class DatabaseRecord
         // :max=       Require string length not to be more than the one specefied
         // :min=       Require string length not to be less than the one specefied
     ];
+    protected $updated_hash      = '';
     protected $relations_objects = array();
     protected $fields_values     = array();
     protected $validation_errors = array();
@@ -72,8 +74,28 @@ class DatabaseRecord
         $this->_set_defaults();
 
         if (is_array($data)) {
-            $this->set_from_array($data);
+            $this->update_from_array($data);
         }
+    }
+
+    /**
+     * Will update object with data from database.
+     * --
+     * @param  array  $data
+     * --
+     * @return void
+     */
+    public function update_from_database($data = null)
+    {
+        // Set the default values
+        $this->_set_defaults();
+
+        if (is_array($data)) {
+            $this->update_from_array($data);
+        }
+
+        // Create state hash!
+        $this->_create_hash();
     }
 
     /**
@@ -83,13 +105,13 @@ class DatabaseRecord
      * --
      * @return void
      */
-    public function set_from_array(array $input)
+    public function update_from_array(array $input)
     {
-        foreach (static::$fields as $field => $params) {
-            if (isset($input[$field])) {
+        foreach ($input as $field => $value) {
 
+            if (isset(static::$fields[$field]) || method_exists($this, 'set_'.$field)) {
                 try {
-                    $this->{$field} = $input[$field];
+                    $this->{$field} = $value;
                 }
                 catch (DatabaseValueException $e) {
                     // Alright, write it to log
@@ -102,9 +124,28 @@ class DatabaseRecord
     /**
      * Will use post to set fields.
      * --
+     * @param string $allowed -- List of allowed fields (name, email, ...)
+     * --
      * @return void
      */
-    public function set_from_post() { $this->set_from_array($_POST); }
+    public function update_from_post($allowed = null) 
+    {
+        $fields = array();
+
+        if ($allowed) {
+            $allowed = Str::explode_trim(',', $allowed);
+            foreach ($allowed as $field) {
+                if (isset($_POST[$field])) {
+                    $fields[$field] = $_POST[$field];
+                }
+            }
+        }
+        else {
+            $fields = $_POST;
+        }
+
+        $this->update_from_array($fields);
+    }
 
     /**
      * Get all data where...
@@ -137,14 +178,34 @@ class DatabaseRecord
         
         if ($one_only) { $db->limit(0, 1); }
 
-        $results = $db->execute()->as_array();
+        $data = $db->execute()->as_array();
 
-        //if (!empty($results)) {
-            return self::_bind_data($results, $one_only);
-        //}
-        //else {
-            //return array();
-        //}
+        $out = array();
+
+        // Yes, we wanna return an empty array here
+        if (empty($data)) { $data = array(0 => array()); }
+
+        if ($one_only) {
+            $obj = new static();
+            $obj->update_from_database($data[0]);
+            return $obj;
+        }
+
+        foreach ($data as $key => $sub_data) {
+            
+            if (!is_array($sub_data)) { continue; }
+
+            try {
+                $obj = new static();
+                $obj->update_from_database($sub_data);
+                $out[] = $obj;
+            }
+            catch (DatabaseValueException $e) {
+                continue;
+            }
+        }
+
+        return $out;
     }
 
     /**
@@ -275,8 +336,15 @@ class DatabaseRecord
      */
     public function save() 
     {
+        // Check if is valid at all...
         if (!$this->is_valid()) {
             return false;
+        }
+
+        // Check if was modifed...
+        if (!$this->_is_modified()) {
+            echo "\nNo save, - no changes!\n";
+            return true;
         }
 
         // Check if we're updating or saving
@@ -314,41 +382,31 @@ class DatabaseRecord
         // Set the primary key
         $this->fields_values[$primary] = $id;
 
+        // Create new snapshot
+        $this->_create_hash();
+
         return $r->succeed();
     }
 
     /**
-     * Will accept an array, and create instance of self for each item.
+     * This will create data hash, which can be used to compare if data was
+     * changed since last save.
      * --
-     * @param  array   $data
-     * @param  boolean $one_only
-     * --
-     * @return array Contains instances of self || empty array
+     * @return void
      */
-    protected static function _bind_data(array $data, $one_only=false)
+    protected function _create_hash()
     {
-        $results = array();
+        $this->updated_hash = md5( serialize( $this->fields_values ) );
+    }
 
-        // Yes, we wanna return an empty array here
-        if (empty($data)) { $data = array(0 => array()); }
-
-        if ($one_only) {
-            return new static($data[0]);
-        }
-
-        foreach ($data as $key => $sub_data) {
-            
-            if (!is_array($sub_data)) { continue; }
-
-            try {
-                $results[] = new static($sub_data);
-            }
-            catch (DatabaseValueException $e) {
-                continue;
-            }
-        }
-
-        return $results;
+    /**
+     * Check if object was modifed since last save.
+     * --
+     * @return boolean
+     */
+    protected function _is_modified()
+    {
+        return !!($this->updated_hash !== md5( serialize( $this->fields_values ) ));
     }
 
     /**
@@ -505,17 +563,10 @@ class DatabaseRecord
             }
         }
 
-        // :id || :primary
-        if (isset($params[':id']) || isset($params[':primary'])) {
-            if ($value != (int) $value || (int) $value < 1) {
-                $errors[$field] = array(
-                    'DBRECORD_ID_OR_PRIMARY_FIELDS_VALUE_NEED_TO_BE_POSITIVE_FULL_NUMBER',
-                    array($field)
-                );
-                throw new DatabaseValueException("ID or primary field's value need to be positive full number: `{$field}`.");
-            } 
-            else {
-                $value = (int) $value;
+        // :null
+        if (isset($params[':null'])) {
+            if (!$value) {
+                return $value;
             }
         }
 
@@ -572,6 +623,26 @@ class DatabaseRecord
             }
         }
 
+
+        // :notags
+        if (isset($params[':notags'])) {
+            $value = strip_tags($value);
+        }
+
+        // :id || :primary
+        if (isset($params[':id']) || isset($params[':primary'])) {
+            if ($value != (int) $value || (int) $value < 1) {
+                $errors[$field] = array(
+                    'DBRECORD_ID_OR_PRIMARY_FIELDS_VALUE_NEED_TO_BE_POSITIVE_FULL_NUMBER',
+                    array($field)
+                );
+                throw new DatabaseValueException("ID or primary field's value need to be positive full number: `{$field}`.");
+            } 
+            else {
+                $value = (int) $value;
+            }
+        }
+
         // :positive
         if (isset($params[':positive'])) {
             if ((float) $value <= 0) {
@@ -581,11 +652,6 @@ class DatabaseRecord
                 );
                 throw new DatabaseValueException("Value needs to be positive number: `{$field}`.");
             }
-        }
-
-        // :notags
-        if (isset($params[':notags'])) {
-            $value = strip_tags($value);
         }
 
         // :date_time
