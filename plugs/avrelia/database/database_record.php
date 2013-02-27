@@ -58,6 +58,7 @@ class DatabaseRecord
         // :max=       Require string length not to be more than the one specefied
         // :min=       Require string length not to be less than the one specefied
     ];
+    public    $force_create      = false;
     protected $updated_hash      = '';
     protected $relations_objects = array();
     protected $fields_values     = array();
@@ -128,7 +129,7 @@ class DatabaseRecord
      * --
      * @return void
      */
-    public function update_from_post($allowed = null) 
+    public function update_from_post($allowed = null)
     {
         $fields = array();
 
@@ -175,7 +176,7 @@ class DatabaseRecord
             ->select()
             ->from(static::$table)
             ->where($field, $value);
-        
+
         if ($one_only) { $db->limit(0, 1); }
 
         $data = $db->execute()->as_array();
@@ -192,7 +193,7 @@ class DatabaseRecord
         }
 
         foreach ($data as $key => $sub_data) {
-            
+
             if (!is_array($sub_data)) { continue; }
 
             try {
@@ -217,31 +218,6 @@ class DatabaseRecord
     public static function do_autoload()
     {
         return static::$auto_load;
-    }
-
-   /**
-    * Create new data.
-    * --
-    * @param  array $data -- See the vali fields above
-    * --
-    * @return object      -- New instance of self.
-    */
-    public static function create($data) { return self::update($data, false); }
-
-    /**
-     * Update existring data.
-     * --
-     * @param  array   $data
-     * @param  integer $id
-     * --
-     * @return object  -- Instance of self.
-     */
-    public static function update($data, $id)
-    {
-        $Object = new static($data);
-        $Object->save($id);
-
-        return $Object;
     }
 
     /**
@@ -275,7 +251,7 @@ class DatabaseRecord
                         static::$table,
                         "WHERE ({$field} = :{$field} AND {$primaty_name} != :{$primaty_name})",
                         array($this->{$field}, $primary_value))->count() > 0) {
-                    
+
                     $this->validation_errors[$field] = array(
                         'DBRECORD_DUPLICATE_FIELD_NEEDS_TO_BE_UNIQUE',
                         array($field)
@@ -293,14 +269,14 @@ class DatabaseRecord
      * --
      * @return array
      */
-    public function get_validation_errors_raw() 
-    { 
+    public function get_validation_errors_raw()
+    {
         $this->is_valid();
-        return $this->validation_errors; 
+        return $this->validation_errors;
     }
 
     /**
-     * Get properly formatted validation error, 
+     * Get properly formatted validation error,
      * which can be passed to Message::add_array()
      * --
      * @param  boolean $translate Pass every error message through l() function.
@@ -313,8 +289,8 @@ class DatabaseRecord
 
         if (is_array($this->validation_errors)) {
             foreach ($this->validation_errors as $field => $error) {
-                
-                $message = $translate 
+
+                $message = $translate
                             ? l($error[0], isset($error[1]) ? $error[1] : array())
                             : $error[0];
 
@@ -325,7 +301,7 @@ class DatabaseRecord
                 );
             }
         }
-        
+
         return $new_array;
     }
 
@@ -334,7 +310,7 @@ class DatabaseRecord
      * --
      * @return boolean
      */
-    public function save() 
+    public function save()
     {
         // Check if is valid at all...
         if (!$this->is_valid()) {
@@ -354,7 +330,7 @@ class DatabaseRecord
 
         $db = new DatabaseQuery();
 
-        if ($id) {
+        if ($id && !$this->force_create) {
 
             // Unset it before update
             unset($this->fields_values[$primary]);
@@ -538,7 +514,7 @@ class DatabaseRecord
             $message,
             array($field)
         );
-        
+
         if ($exception) {
             throw new DatabaseValueException($message);
         }
@@ -617,7 +593,7 @@ class DatabaseRecord
                 $value = (int) $value;
             }
         }
-            
+
         // :numeric
         if (isset($params[':numeric'])) {
             if (!is_numeric($value)) {
@@ -657,7 +633,7 @@ class DatabaseRecord
                     array($field)
                 );
                 throw new DatabaseValueException("ID or primary field's value need to be positive full number: `{$field}`.");
-            } 
+            }
             else {
                 $value = (int) $value;
             }
@@ -695,7 +671,7 @@ class DatabaseRecord
                 throw new DatabaseValueException("Value needs to be a valid time: `{$field}`.");
             }
         }
-            
+
         // :date
         if (isset($params[':date'])) {
             if (date('Y-m-d', strtotime($value)) !== $value) {
@@ -764,7 +740,7 @@ class DatabaseRecord
                 throw new DatabaseValueException("Value exceeded the maximum length allowed ({$max}): `{$field}`.");
             }
         }
-            
+
         // :min=
         if (isset($params[':min'])) {
             $min = (int) $params[':min'];
@@ -801,7 +777,7 @@ class DatabaseRecord
         $model  = null;
 
         $params = Str::tokenize(static::$relations[$relation], ' ', ['(', ')']);
-        
+
         if (!is_array($params)) {
             throw new DatabaseValueException("Seems that relation for field `{$relation}` has no definition.");
         }
@@ -852,13 +828,13 @@ class DatabaseRecord
         $where  = null;
 
         $params = Str::tokenize(static::$relations[$field], ' ', ['(', ')']);
-        
+
         if (!is_array($params)) {
             throw new DatabaseValueException("Seems that relation for field `{$field}` has no definition.");
         }
 
         foreach ($params as $param) {
-            
+
             // :has_one || :belongs_to
             if ($param === ':has_one' || $param === ':belongs_to') {
                 $single = true;
@@ -966,7 +942,7 @@ class DatabaseRecord
         // Get where
         $where  = null;
         $params = Str::tokenize(static::$relations[$relation], ' ', ['(', ')']);
-        
+
         if (!is_array($params)) {
             throw new DatabaseValueException("Seems that relation for field `{$relation}` has no definition.");
         }
@@ -1010,6 +986,7 @@ class DatabaseRecord
         $arguments[$that_where] = $this_where_value;
 
         $this->relations_objects[$relation] = new $model($arguments);
+        $this->relations_objects[$relation]->force_create = true;
 
         // Return new instance of the model
         return $this->relations_objects[$relation];
@@ -1072,7 +1049,7 @@ class DatabaseRecord
      * --
      * @param  string $field
      * --
-     * @throws DatabaseValueException If requested field not found or 
+     * @throws DatabaseValueException If requested field not found or
      *                   if trying to access no_read field.
      * --
      * @return mixed
