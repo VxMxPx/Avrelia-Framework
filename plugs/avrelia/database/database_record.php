@@ -1029,6 +1029,9 @@ class DatabaseRecord
         if (method_exists($this, 'set_'.$field)) {
             try {
                 $value = call_user_func_array([$this, 'set_'.$field], [$value]);
+                if (!isset(static::$fields[$field])) {
+                    return;
+                }
             }
             catch (DatabaseValueException $e) {
                 Log::war($e->getMessage());
