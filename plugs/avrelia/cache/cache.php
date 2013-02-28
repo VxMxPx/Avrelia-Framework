@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Plug as Plug;
 use Avrelia\Core\Cfg  as Cfg;
@@ -18,7 +20,7 @@ class Cache
     {
         Plug::get_config(__FILE__);
         self::$driver = Plug::get_driver(
-            __FILE__, 
+            __FILE__,
             Cfg::get('plugs/cache/driver'),
             __NAMESPACE__
         );
@@ -29,7 +31,7 @@ class Cache
 
     /**
      * Enable plug
-     * 
+     *
      * @return boolean
      */
     public static function _on_enable_()
@@ -40,7 +42,7 @@ class Cache
 
     /**
      * Disable plug
-     * 
+     *
      * @return  boolean
      */
     public static function _on_disable_()
@@ -51,7 +53,7 @@ class Cache
 
     /**
      * Will set cache (store content into cache file)
-     * 
+     *
      * @param   string  $contents
      * @param   string  $key
      * @param   integer $expires    Time when chache expires, in seconds.
@@ -64,7 +66,7 @@ class Cache
 
     /**
      * Will get cache or return false if can't find it.
-     * 
+     *
      * @param   string  $key
      * @return  mixed
      */
@@ -73,7 +75,7 @@ class Cache
 
     /**
      * Check if particular key exists.
-     * 
+     *
      * @param   string  $key
      * @return  boolean
      */
@@ -82,7 +84,7 @@ class Cache
 
     /**
      * Clear particular cache, or all cache (if key is false)
-     * 
+     *
      * @param   mixed   $key    String key name or false to clear all cache
      * @return  boolean
      */

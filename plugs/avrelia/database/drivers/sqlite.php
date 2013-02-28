@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Cfg as Cfg;
 use Avrelia\Core\Log as Log;
@@ -12,8 +14,8 @@ use Avrelia\Core\FileSystem as FileSystem;
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
  */
-class DatabaseDriverSqlite 
-    extends DatabaseDriverBase 
+class DatabaseDriverSqlite
+    extends DatabaseDriverBase
     implements DatabaseDriverInterface
 {
     private $valid;
@@ -37,9 +39,9 @@ class DatabaseDriverSqlite
         $this->database_path = dat_path(Cfg::get('plugs/database/sqlite/filename'));
 
         # File was found?
-        if (!file_exists($this->database_path)) 
+        if (!file_exists($this->database_path))
             { $this->valid = false; }
-        else 
+        else
             { $this->valid = true; }
     }
 
@@ -58,12 +60,12 @@ class DatabaseDriverSqlite
             }
             catch (\PDOException $e) {
                 trigger_error(
-                    "Can't create PDO object: `" . $e->getMessage() . '`.', 
+                    "Can't create PDO object: `" . $e->getMessage() . '`.',
                     E_USER_WARNING);
                 return false;
             }
         }
-        else 
+        else
             { return false; }
     }
 
@@ -114,7 +116,7 @@ class DatabaseDriverSqlite
      *     [name => Inna,  age => 24],
      *     ...
      * ]
-     * 
+     *
      * @param  array  $values
      * @param  string $table
      * @return DatabaseResult
@@ -129,15 +131,15 @@ class DatabaseDriverSqlite
         $sql[] = "INSERT INTO {$table}";
 
         foreach ($values as $k1 => $sub_values) {
-            
+
             $sub_sql = 'UNION SELECT ';
-            
+
             foreach ($sub_values as $k2 => $v) {
-                
+
                 $sub_sql .= "? as {$k2}, ";
                 $new_values[] = $v;
             }
-            
+
             $sub_sql = substr($sub_sql, 0, -2);
             $sql[]   = $sub_sql;
         }

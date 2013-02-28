@@ -1,79 +1,69 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 /**
- * Avrelia
- * ----
- * Time Functions
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
- * @copyright  Copyright (c) 2009, Avrelia.com
+ * Time Plug
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
+ * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.60
- * @since      Date 2009-08-18
  */
-
-
 class Time
 {
     /**
      * Return date(Y-m-d H:i:s)
-     * ---
-     * @param bool $dateOnly -- return only date, or date and time?
-     * ---
+     * --
+     * @param  boolean $date_only  Return only date, or date and time?
+     * --
      * @return string
      */
-    public static function Now($dateOnly=false)
+    public static function now($date_only = false)
     {
-        if ($dateOnly) {
-            return date('Y-m-d');
-        }
-        else {
-            return date('Y-m-d H:i:s');
-        }
+        return $date_only ? date('Y-m-d') : date('Y-m-d H:i:s');
     }
-    //-
 
     /**
      * Format Date / Time
-     * ---
-     * @param string $pattern -- Example: %Y-%m-%d %H:%M:%S
-     * @param string $date / time (YYYY-dd-mm HH:ii:ss)
-     * ---
+     * --
+     * @param  string $pattern  Example: %Y-%m-%d %H:%M:%S
+     * @param  string $date     Time (YYYY-dd-mm HH:ii:ss)
+     * --
      * @return string
      */
-    public static function Format($pattern, $date)
+    public static function format($pattern, $date)
     {
         return strftime($pattern, strtotime($date));
     }
-    //-
 
     /**
      * Format Date / Time
-     * ---
-     * @param string $pattern -- Example: Y-m-d H:i:s
-     * @param string $date / time (YYYY-dd-mm HH:ii:ss)
-     * ---
+     * --
+     * @param  string $pattern Example: Y-m-d H:i:s
+     * @param  string $date    Time (YYYY-dd-mm HH:ii:ss)
+     * --
      * @return string
      */
-    public static function Format_d($pattern, $date)
+    public static function format_d($pattern, $date)
     {
         return date($pattern, strtotime($date));
     }
-    //-
 
     /**
      * This will format any type of date/time to particular format
-     * ---
-     * @param str/int $date         -- example: 20110416194512 // for 2001 April 16, 19:45:12
-     * @param string  $dateFormat   -- example: yyyymmddhhiiss // This is description of our date
-     * @param string  $outputFormat
-     * @param string  $yearPrefix   -- usually is 20 (as for 20+11 = 2011)
-     * ---
+     * --
+     * @param  string $date           Example: 20110416194512 // for 2001 April 16, 19:45:12
+     * @param  string $date_format    Example: yyyymmddhhiiss // This is description of our date
+     * @param  string $output_format
+     * @param  string $year_prefix    Usually is 20 (as for 20+11 = 2011)
+     * --
      * @return string
      */
-    public static function Format_c($date, $dateFormat, $outputFormat='%Y-%m-%d %H:%M:%S', $yearPrefix='20')
+    public static function format_c(
+        $date,
+        $date_format,
+        $output_format = '%Y-%m-%d %H:%M:%S',
+        $year_prefix = '20')
     {
         $year   = '';
         $month  = '';
@@ -82,11 +72,11 @@ class Time
         $minute = '';
         $second = '';
 
-        $dateFormat = strtolower($dateFormat);
+        $date_format = strtolower($date_format);
 
         for ($i=0; $i<strlen($date); $i++)
         {
-            switch ($dateFormat[$i])
+            switch ($date_format[$i])
             {
                 case 'y':
                     $year .= $date[$i];
@@ -115,7 +105,7 @@ class Time
         }
 
         if (strlen($year) < 4) {
-            $year = $yearPrefix . $year;
+            $year = $year_prefix . $year;
         }
 
         $month  = str_pad($month,  2, '0', STR_PAD_LEFT);
@@ -125,25 +115,26 @@ class Time
         $second = str_pad($second, 2, '0', STR_PAD_LEFT);
 
         $final = "{$year}-{$month}-{$day} {$hour}:{$minute}:{$second}";
-        return self::Format($outputFormat, $final);
+        return self::format($output_format, $final);
     }
-    //-
 
     /**
      * Will conver timezone.
-     *
-     * @param string $dateTime    - format: YYYY-dd-mm HH:ii:ss
-     * @param string $newTimezone - example: Europe/Ljubljana
-     * @param string $format      - Example: %Y-%m-%d %H:%M:%S
-     *
+     * --
+     * @param string $date_time     Format: YYYY-dd-mm HH:ii:ss
+     * @param string $new_timezone  Example: Europe/Ljubljana
+     * @param string $format        Example: %Y-%m-%d %H:%M:%S
+     * --
      * @return string
      */
-    public static function NewTimezone($dateTime, $newTimezone, $format='Y-m-d H:i:s')
+    public static function new_timezone(
+        $date_time,
+        $new_timezone,
+        $format = 'Y-m-d H:i:s')
     {
-        $dateTime = new DateTime($dateTime);
-        $dateTime->setTimezone(new DateTimeZone($newTimezone));
-        return $dateTime->format($format);
+        $date_time = new DateTime($date_time);
+        $date_time->setTimezone(new DateTimeZone($new_timezone));
+        return $date_time->format($format);
     }
-    //-
+
 }
-//--

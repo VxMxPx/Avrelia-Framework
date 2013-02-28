@@ -1,28 +1,30 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Plug as Plug;
-use Avrelia\Core\Cfg as Cfg;
-use Avrelia\Core\Log as Log;
-use Avrelia\Core\Dot as Dot;
+use Avrelia\Core\Cfg  as Cfg;
+use Avrelia\Core\Log  as Log;
+use Avrelia\Core\Dot  as Dot;
 use Avrelia\Core\FileSystem as FileSystem;
-use Avrelia\Core\Event as Event;
+use Avrelia\Core\Event   as Event;
 use Avrelia\Core\vString as vString;
 
 class LogWritter
 {
     // Turn everything on/off.
-    // Useful when we're saving log message (individualy), if in that process 
+    // Useful when we're saving log message (individualy), if in that process
     // error happened, it may cause infinite loop.
     protected static $to_file = false;
 
-    // When set to true, special file will be created, which will contain all logs 
+    // When set to true, special file will be created, which will contain all logs
     // for whole session; all messages will be included.
     // This will write logs even if `to_file` is set to false.
     protected static $save_fatal = false;
 
     // The filename of regular log item
     protected static $file_name = false;
-    
+
     // Log types. Which type of messages should be saved. Options: err, war, inf
     protected static $types = array('err', 'war');
 
@@ -39,8 +41,8 @@ class LogWritter
         'item'     => null,
         'colors'   => array
         (
-            'inf'  => '9c6', 
-            'err'  => 'c66', 
+            'inf'  => '9c6',
+            'err'  => 'c66',
             'war'  => 'c96',
             'odd'  => '111',
             'even' => '222',
@@ -114,9 +116,9 @@ class LogWritter
         // Even individual log item added
         Event::on('/avrelia/core/log/add', function($log_item) {
             self::_write_line(
-                    $log_item['type'], 
-                    $log_item['message'], 
-                    $log_item['line'], 
+                    $log_item['type'],
+                    $log_item['message'],
+                    $log_item['line'],
                     $log_item['file']);
 
             if (is_cli() && in_array($log_item['type'], array('war', 'err'))) {
@@ -135,16 +137,16 @@ class LogWritter
 
         // On fatal error
         Event::on('/avrelia/core/fatal_error', function() {
-            if (self::$save_fatal) { 
-                self::save_all(true); 
+            if (self::$save_fatal) {
+                self::save_all(true);
             }
         });
 
         // Errro report
         Event::on('/avrelia/core/fatal_error/report', function() {
-            if (is_cli()) 
+            if (is_cli())
                 { $error_report = self::as_string('war', 'err'); }
-            elseif (DEBUG && !is_cli()) 
+            elseif (DEBUG && !is_cli())
                 { $error_report = self::as_html(); }
 
             return $error_report;
@@ -192,7 +194,7 @@ class LogWritter
 
         $collection = array();
         $i = 0;
-        
+
         foreach ($logs as $log) {
             if ($type && !in_array($log['type'], $type)) { continue; }
             # To remove absolute long paths in case of application, system or
@@ -208,18 +210,18 @@ class LogWritter
 
             $collection[] = str_replace(
                 array(
-                    '{{background}}', 
-                    '{{class}}', 
+                    '{{background}}',
+                    '{{class}}',
                     '{{type_color}}',
-                    '{{message}}', 
-                    '{{date_time}}', 
-                    '{{type}}', 
+                    '{{message}}',
+                    '{{date_time}}',
+                    '{{type}}',
                     '{{file}}',
-                    '{{file_short}}', 
+                    '{{file_short}}',
                     '{{line}}'),
                 array(
-                    (($i == 1) 
-                        ? self::$templates['colors']['odd'] 
+                    (($i == 1)
+                        ? self::$templates['colors']['odd']
                         : self::$templates['colors']['even']),
                     $log['type'],
                     self::$templates['colors'][$log['type']],
@@ -229,15 +231,15 @@ class LogWritter
                     $log['file'],
                     $file,
                     $log['line']
-                    ), 
+                    ),
                 self::$templates['item']);
 
             $i = $i == 1 ? 0 : 1;
         }
 
         return str_replace(
-                    '{{items}}', 
-                    implode('', $collection), 
+                    '{{items}}',
+                    implode('', $collection),
                     self::$templates['wrap']);
     }
 
@@ -302,7 +304,7 @@ class LogWritter
         $to_file = 'Date/time: ' . date('Y-m-d H:i:s') . "\n" .
                     "Type: {$type}\n" .
                     "Message: " . str_replace(
-                        '&lt;br /&gt;', '<br />', 
+                        '&lt;br /&gt;', '<br />',
                         vString::EncodeEntities($message)) . "\n" .
                     "File: {$file}\n" .
                     "Line: {$line}\n" .
@@ -319,9 +321,9 @@ class LogWritter
     /**
      * Will Check If Log Can Be Written
      * --
-     * @param  string  $type           Which type are we checking? 
+     * @param  string  $type           Which type are we checking?
      *                                 eg: inf, war, err (false to ignore types)
-     * @param  boolean $is_individual 
+     * @param  boolean $is_individual
      * @return boolean
      */
     private static function _can_write($type=false, $is_individual=false)

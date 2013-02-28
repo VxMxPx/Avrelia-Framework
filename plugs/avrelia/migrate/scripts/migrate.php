@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) die('Access is denied!');
+<?php
 
 class Migrate_Cli
 {
@@ -7,7 +7,7 @@ class Migrate_Cli
 
     public function __construct()
     {
-        $this->model = new Migrate; 
+        $this->model = new Migrate;
 
         // Subscribe to successful events...
         Event::on('/plug/avrelia/migrate/to/success', function($message) {

@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Cfg as Cfg;
 use Avrelia\Core\Log as Log;
@@ -25,7 +27,7 @@ class CacheDriverApc implements CacheDriverInterface
 
     /**
      * Called when plug is enabled.
-     * 
+     *
      * @return  boolean
      */
     public function _create()
@@ -33,15 +35,15 @@ class CacheDriverApc implements CacheDriverInterface
 
     /**
      * Called when plug is disabled.
-     * 
+     *
      * @return  boolean
      */
-    public function _destroy() 
+    public function _destroy()
         { return true; }
 
     /**
      * Will set cache (store content into cache file)
-     * 
+     *
      * @param   string  $contents
      * @param   string  $key
      * @param   integer $expires    Time when chache expires, in seconds.
@@ -70,7 +72,7 @@ class CacheDriverApc implements CacheDriverInterface
 
     /**
      * Check if particular key exists.
-     * 
+     *
      * @param   string  $key
      * @return  boolean
      */
@@ -79,7 +81,7 @@ class CacheDriverApc implements CacheDriverInterface
 
     /**
      * Clear particular cache, or all cache (if key is false)
-     * 
+     *
      * @param   mixed   $key    String key name or false to clear all cache
      * @return  boolean
      */

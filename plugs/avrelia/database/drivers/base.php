@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Log as Log;
 
@@ -26,7 +28,7 @@ class DatabaseDriverBase
         # Check If is PDO enabled...
         if (!class_exists('\PDO', false)) {
             trigger_error(
-                'PDO class doesn\'t exists. Please enable PDO extension.', 
+                'PDO class doesn\'t exists. Please enable PDO extension.',
                 E_USER_ERROR);
         }
     }
@@ -41,7 +43,7 @@ class DatabaseDriverBase
      */
     public function prepare($statement, $bind=false)
     {
-        Log::inf("Will prepare following statement: `{$statement}` with params: ". 
+        Log::inf("Will prepare following statement: `{$statement}` with params: ".
                     print_r($bind, true));
 
         $link = $this->PDO->prepare($statement);
@@ -76,7 +78,7 @@ class DatabaseDriverBase
         }
         else {
             trigger_error(
-                "Failed to prepare: `" . print_r($this->PDO->errorInfo(), true) . '`.', 
+                "Failed to prepare: `" . print_r($this->PDO->errorInfo(), true) . '`.',
                 E_USER_WARNING);
         }
 

@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Arr  as Arr;
 use Avrelia\Core\Log  as Log;
@@ -114,7 +116,7 @@ class Database
      * @param   array   $bind
      * @return  DatabaseResult
      */
-    public static function execute($statement, $bind=false)
+    public static function execute($statement, $bind = false)
     {
         $statement = new DatabaseStatement($statement);
 
@@ -181,7 +183,12 @@ class Database
      *                              ['name', 'id' => 'DESC']
      * @return  DatabaseResult
      */
-    public static function find($table, $condition=false, $bind=false, $limit=false, $order=false)
+    public static function find(
+        $table,
+        $condition = false,
+        $bind = false,
+        $limit = false,
+        $order = false)
     {
         # Initial statement
         $sql = "SELECT * FROM {$table}";
@@ -243,7 +250,7 @@ class Database
      * @param   array   $bind
      * @return  DatabaseResult
      */
-    public static function update($values, $table, $condition, $bind=false)
+    public static function update($values, $table, $condition, $bind = false)
     {
         $sql = "UPDATE {$table} SET ";
 
@@ -276,7 +283,7 @@ class Database
      * @param   array   $bind
      * @return  DatabaseResult
      */
-    public static function delete($table, $condition, $bind=false)
+    public static function delete($table, $condition, $bind = false)
     {
         $sql  = "DELETE FROM {$table}";
 

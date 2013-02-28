@@ -1,13 +1,15 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
 
-use Avrelia\Core\Plug as Plug;
+namespace Plug\Avrelia;
+
+use Avrelia\Core\Plug       as Plug;
 use Avrelia\Core\FileSystem as FileSystem;
-use Avrelia\Core\Cfg as Cfg;
-use Avrelia\Core\Log as Log;
-use Avrelia\Core\JSON as Json;
-use Avrelia\Core\Arr as Arr;
-use Avrelia\Core\Str as Str;
-use Avrelia\Core\Event as Event;
+use Avrelia\Core\Cfg        as Cfg;
+use Avrelia\Core\Log        as Log;
+use Avrelia\Core\JSON       as Json;
+use Avrelia\Core\Arr        as Arr;
+use Avrelia\Core\Str        as Str;
+use Avrelia\Core\Event      as Event;
 
 /**
  * Migrate Class

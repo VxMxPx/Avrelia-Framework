@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Log as Log;
 
@@ -27,7 +29,7 @@ class DatabaseResult
     protected $last_id;
 
     /**
-     * @var boolean  The status of PDO statement. 
+     * @var boolean  The status of PDO statement.
      *               Was execution successful or not.
      */
     protected $status;
@@ -35,7 +37,7 @@ class DatabaseResult
 
     /**
      * Construct the database result object.
-     * This require prepeared PDOStatement, which will be 
+     * This require prepeared PDOStatement, which will be
      * executed on construction of this this class.
      * --
      * @param   PDOStatement    $PDOStatement   Prepeared PDO statement.
@@ -50,8 +52,8 @@ class DatabaseResult
             $this->last_id = Database::get_driver()->get_PDO()->lastInsertId();
 
             if (!$this->status) {
-                trigger_error("Failed to execute: `" . 
-                    print_r(Database::get_driver()->get_PDO()->errorInfo(), true).'`.', 
+                trigger_error("Failed to execute: `" .
+                    print_r(Database::get_driver()->get_PDO()->errorInfo(), true).'`.',
                     E_USER_WARNING);
             }
         }

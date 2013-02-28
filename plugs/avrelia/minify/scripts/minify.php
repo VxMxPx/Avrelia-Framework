@@ -1,4 +1,4 @@
-<?php if (!defined('AVRELIA')) die('Access is denied!');
+<?php
 
 class minify_Cli
 {
@@ -75,7 +75,7 @@ class minify_Cli
             $input  = escapeshellarg($css['input']);
             $output = escapeshellarg($css['output']);
             $command .= "{$input} {$output}";
-            
+
             $this->_fork_command($command);
         }
     }

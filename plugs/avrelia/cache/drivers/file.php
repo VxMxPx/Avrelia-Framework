@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Log as Log;
 use Avrelia\Core\Cfg as Cfg;
@@ -19,7 +21,7 @@ class CacheDriverFile implements CacheDriverInterface
 
     /**
      * Called when plug is enabled.
-     * 
+     *
      * @return  boolean
      */
     public function _create()
@@ -34,7 +36,7 @@ class CacheDriverFile implements CacheDriverInterface
 
     /**
      * Called when plug is disabled.
-     * 
+     *
      * @return  boolean
      */
     public function _destroy()
@@ -49,7 +51,7 @@ class CacheDriverFile implements CacheDriverInterface
 
     /**
      * Will set cache (store content into cache file)
-     * 
+     *
      * @param   string  $contents
      * @param   string  $key
      * @param   integer $expires    Time when chache expires, in seconds.
@@ -66,15 +68,15 @@ class CacheDriverFile implements CacheDriverInterface
 
         $expires = $expires === 0 ? 'infinite' : (time() + $expires);
         return FileSystem::Write(
-                $expires.'||'.$contents, 
-                $this->_file_from_key($key), 
-                false, 
+                $expires.'||'.$contents,
+                $this->_file_from_key($key),
+                false,
                 0777);
     }
 
     /**
      * Will get cache or return false if can't find it.
-     * 
+     *
      * @param   string  $key
      * @return  mixed
      */
@@ -102,7 +104,7 @@ class CacheDriverFile implements CacheDriverInterface
 
     /**
      * Check if particular key exists.
-     * 
+     *
      * @param   string  $key
      * @return  boolean
      */

@@ -1,29 +1,32 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
+
+use Avrelia\Core\Log        as Log;
+use Avrelia\Core\FileSystem as FileSystem;
 
 /**
- * Avrelia
- * ----
- * Immage Main Object
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
- * @copyright  Copyright (c) 2009, Avrelia.com
- * @license    http://avrelia.com/license
- * @link       http://avrelia.com
- * @since      Version 0.80
- * @since      sre dec 07 16:33:56 2011
+ * Image Plug
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
+ * @copyright  Copyright (c) 2010, Avrelia.com
+ * @license    http://framework.avrelia.com/license
  */
 class Image
 {
-    private $Allow       = array('jpg','jpeg','gif','png'); # array Allowed image extensions
-    private $Source      = array();                         # array Info about source image
-    private $Destination = array();                         # array Info about destination
+    # Allowed image extensions
+    private $allow       = array('jpg','jpeg','gif','png');
 
+    # Info about source image
+    private $source      = array();
+
+    # Info about destination
+    private $destination = array();
 
     /**
      * Create new image from filename
      * --
-     * @param   string  $filename   Full absolute path to the image
+     * @param   string  $filename  Full absolute path to the image
      * --
      * @return  void
      */
@@ -44,17 +47,17 @@ class Image
         }
 
         # Get Image extension
-        $imageExt = strtolower(FileSystem::Extension($filename));
+        $image_ext = strtolower(FileSystem::Extension($filename));
 
         # Check if extension is valid
-        if (!in_array($imageExt, $this->Allow)) {
-            Log::war("Invalid file type: `{$imageExt}`.");
+        if (!in_array($image_ext, $this->allow)) {
+            Log::war("Invalid file type: `{$image_ext}`.");
             return false;
         }
 
-        $this->Source = array(
+        $this->source = array(
             'file' => $filename,
-            'ext'  => $imageExt,
+            'ext'  => $image_ext,
         );
     }
     //-
@@ -63,45 +66,44 @@ class Image
      * Will add watermark (set text to false, to turn off watermar)
      * --
      * @param   string  $text
-     * @param   array   $Params Can contain: array(
-     *      color     => #ffffff // Text color  - must be full! hexcolor value
-     *      shadow    => #000000 // Text shadow - must be full! hexcolor value OR false
-     *      fontPath  => // full path to ttf font, or false for default font
-     *      fontSize  => // Integer, font site in px
-     *      angle     => // Integer, font angle
-     *      offsetX   => // Integer x offset
-     *      offsetY   => // Integer y offset
+     * @param   array   $params Can contain: array(
+     *      color       => #ffffff // Text color  - must be full! hexcolor value
+     *      shadow      => #000000 // Text shadow - must be full! hexcolor value OR false
+     *      font_path   => // full path to ttf font, or false for default font
+     *      font_size   => // Integer, font site in px
+     *      angle       => // Integer, font angle
+     *      offset_x    => // Integer x offset
+     *      offset_y    => // Integer y offset
      *  )
      * --
      * @return  $this
      */
-    public function setWatermark($text, $Params=array())
+    public function set_watermark($text, $params = array())
     {
         if (!$text) {
-            $this->Destination['Watermark'] = false;
+            $this->destination['watermark'] = false;
         }
 
         # Set it up!
-        $this->Destination['Watermark'] = array_merge(
+        $this->destination['watermark'] = array_merge(
             array(
-                'text'     => $text,
-                'color'    => '#ffffff',
-                'shadow'   => '#000000',
-                'fontPath' => ds(dirname(__FILE__) . '/fonts/ambitsek.ttf'),
-                'fontSize' => 6,
-                'angle'    => 0,
-                'offsetX'  => 5,
-                'offsetY'  => 2,
+                'text'       => $text,
+                'color'      => '#ffffff',
+                'shadow'     => '#000000',
+                'font_path'  => ds(dirname(__FILE__) . '/fonts/ambitsek.ttf'),
+                'font_size'  => 6,
+                'angle'      => 0,
+                'offset_x'   => 5,
+                'offset_y'   => 2,
             ),
-            $Params
+            $params
         );
 
         Log::inf("Watermark with following properties will be added to image: ".
-                    dump_r($this->Destination['Watermark']));
+                    dump_r($this->destination['watermark']));
 
         return $this;
     }
-    //-
 
     /**
      * Set sharpening to true or false
@@ -110,13 +112,12 @@ class Image
      * --
      * @return  $this
      */
-    public function setSharpening($enabled=false)
+    public function set_sharpening($enabled = false)
     {
-        $this->Destination['sharpening'] = $enabled;
+        $this->destination['sharpening'] = $enabled;
         Log::inf('Sharpening will be: ' . ($enabled ? 'enabled' : 'disabled'));
         return $this;
     }
-    //-
 
     /**
      * Set Destination Path
@@ -125,7 +126,7 @@ class Image
      * --
      * @return  $this
      */
-    public function setDestination($path)
+    public function set_destination($path)
     {
         $path = ds($path);
 
@@ -133,22 +134,21 @@ class Image
             Log::war("Destination is not valid directory: `{$path}`.");
         }
         else {
-            $this->Destination['path'] = $path;
+            $this->destination['path'] = $path;
             Log::inf("Destination was set to: `{$path}`.");
         }
 
         return $this;
     }
-    //-
 
     /**
      * Will Set Image Quality
      * --
-     * @param   integer $quality
+     * @param   integer $quality  Default value is 75
      * --
      * @return  $this
      */
-    public function setQuality($quality=75)
+    public function set_quality($quality = 75)
     {
         $quality = (int) $quality;
 
@@ -156,23 +156,22 @@ class Image
             Log::war("Invalid quality value: `{$quality}`.");
         }
         else {
-            $this->Destination['quality'] = $quality;
+            $this->destination['quality'] = $quality;
             Log::inf("Quality will be set to `{$quality}`.");
         }
 
         return $this;
     }
-    //-
 
     /**
      * Will set dimension for output image
      * --
-     * @param   integer $width  If set to false we'll calculate it dynamicly
-     * @param   integer $height If set to false we'll calculate it dynamicly
+     * @param   integer $width   If set to false we'll calculate it dynamicly
+     * @param   integer $height  If set to false we'll calculate it dynamicly
      * --
      * @return  $this
      */
-    public function setDimension($width, $height)
+    public function set_dimension($width, $height)
     {
         if ($width  === false) { $width  = 0; }
         if ($height === false) { $height = 0; }
@@ -183,18 +182,18 @@ class Image
             $width = $height = 0;
         }
 
-        $this->Destination['width']  = $width;
-        $this->Destination['height'] = $height;
+        $this->destination['width']  = $width;
+        $this->destination['height'] = $height;
 
         return $this;
     }
-    //-
 
     /**
      * Will Save Image (with all previous settings)
      * Return saved image full path or false on error!
      * --
-     * @param   string  $fileName   Filename without path (if you have set destination before)
+     * @param   string  $fileName   Filename without path --
+     *                              if you have set destination before
      * --
      * @return  mixed
      */
@@ -205,188 +204,185 @@ class Image
             return false;
         }
 
-        $destination  = isset($this->Destination['path']) ? $this->Destination['path'] : '';
-        $fullFilename = ds($destination . '/' . $fileName);
+        $destination  = isset($this->destination['path'])
+                            ? $this->destination['path']
+                            : '';
+        $full_filename = ds($destination . '/' . $fileName);
 
-        return $this->process($fullFilename) ? $fullFilename : false;
+        return $this->process($full_filename) ? $full_filename : false;
     }
-    //-
-
-    /*  ****************************************************** *
-     *          Private Methods
-     *  **************************************  */
 
     /**
      * Apply all setting on selected image.
      * --
-     * @param   string  $destinationPath
+     * @param   string  $destination_path
      * --
      * @return  boolean
      */
-    private function process($destinationPath)
+    private function process($destination_path)
     {
         # Check If File Exists
-        if (!file_exists($this->Source['file']) || !is_file($this->Source['file'])) {
-            Log::err('Source image doesn\'t exists: `'.$this->Source['file'].'`.');
+        if (!file_exists($this->source['file']) || !is_file($this->source['file'])) {
+            Log::err('Source image doesn\'t exists: `'.$this->source['file'].'`.');
             return false;
         }
 
         # Check if destination folder exists
-        if (!is_dir(dirname($destinationPath))) {
-            Log::war('Invalid directory provided: `' . dirname($fullFilename) . '`.');
+        if (!is_dir(dirname($destination_path))) {
+            Log::war('Invalid directory provided: `' . dirname($destination_path) . '`.');
             return false;
         }
 
         # Check if file already exists
-        if (file_exists($destinationPath)) {
-            Log::war("Destination file exists: `{$destinationPath}`.");
+        if (file_exists($destination_path)) {
+            Log::war("Destination file exists: `{$destination_path}`.");
             return false;
         }
 
         # Check if quality is set, and if it's not, set it to default value
-        if (!isset($this->Destination['quality'])) {
-            $this->setQuality();
+        if (!isset($this->destination['quality'])) {
+            $this->set_quality();
         }
 
         # Get source's width an height and type
-        list($srcWidth, $srcHeight, $srcType) = getimagesize($this->Source['file']);
+        list($src_width, $src_height, $src_type) = getimagesize($this->source['file']);
 
         # Make new image resource
-        switch ($srcType) {
+        switch ($src_type) {
             case 1 :
-                $srcHandle = imagecreatefromgif($this->Source['file']);
+                $src_handle = imagecreatefromgif($this->source['file']);
                 break;
 
             case 2 :
-                $srcHandle = imagecreatefromjpeg($this->Source['file']);
+                $src_handle = imagecreatefromjpeg($this->source['file']);
                 break;
 
             case 3 :
-                $srcHandle = imagecreatefrompng($this->Source['file']);
+                $src_handle = imagecreatefrompng($this->source['file']);
                 # Set alpha to true
-                imagealphablending($srcHandle, true);
+                imagealphablending($src_handle, true);
                 # Save it!
-                // imagesavealpha($srcHandle, true);
+                // imagesavealpha($src_handle, true);
                 break;
 
             default :
-                Log::err("Invalid image file type: `{$srcType}`.");
+                Log::err("Invalid image file type: `{$src_type}`.");
                 return false;
         }
 
         # Must be valid resource
-        if (!is_resource($srcHandle)) {
+        if (!is_resource($src_handle)) {
             Log::err("Failed to create a valid resource.");
             return false;
         }
 
         # Make some shortcuts
-        $destHeight = isset($this->Destination['height']) ? $this->Destination['height'] : 0;
-        $destWidth  = isset($this->Destination['width'])  ? $this->Destination['width']  : 0;
+        $dest_height = isset($this->destination['height']) ? $this->destination['height'] : 0;
+        $dest_width  = isset($this->destination['width'])  ? $this->destination['width']  : 0;
 
         # Calculate Missing Info (width and/or height)
-        if ($destHeight == 0 && $destWidth == 0) {
-            $destHeight  = $srcHeight;
-            $destWidth   = $srcWidth;
+        if ($dest_height == 0 && $dest_width == 0) {
+            $dest_height  = $src_height;
+            $dest_width   = $src_width;
         }
-        elseif ($destHeight == 0) {
-            $divBy = $srcWidth / $destWidth;
-            if ($divBy < 1) {
-                $destHeight = $srcHeight;
+        elseif ($dest_height == 0) {
+            $div_by = $src_width / $dest_width;
+            if ($div_by < 1) {
+                $dest_height = $src_height;
             }
             else {
-                $newHeight  = $srcHeight / $divBy;
-                $destHeight = round($newHeight);
+                $new_height  = $src_height / $div_by;
+                $dest_height = round($new_height);
             }
         }
-        elseif ($this->Destination['width'] == 0) {
-            $divBy = $srcHeight / $destHeight;
-            if ($divBy < 1) {
-                $destWidth = $srcWidth;
+        elseif ($this->destination['width'] == 0) {
+            $div_by = $src_height / $dest_height;
+            if ($div_by < 1) {
+                $dest_width = $src_width;
             }
             else {
-                $newWidth  = $srcWidth / $divBy;
-                $destWidth = round($newWidth);
+                $new_width  = $src_width / $div_by;
+                $dest_width = round($new_width);
             }
         }
 
         # If New Height or Width is greater than source we'll leave it as it is
-        if ($destHeight > $srcHeight) $destHeight = $srcHeight;
-        if ($destWidth  > $srcWidth ) $destWidth  = $srcWidth;
+        if ($dest_height > $src_height) $dest_height = $src_height;
+        if ($dest_width  > $src_width ) $dest_width  = $src_width;
 
         # Calclulations for resize
-        if ($srcHeight < $srcWidth) { # Source has a horizontal Shape
+        if ($src_height < $src_width) { # Source has a horizontal Shape
 
-            $ratio    = (double)($srcHeight / $destHeight);
-            $cpyWidth = round($destWidth * $ratio);
+            $ratio     = (double)($src_height / $dest_height);
+            $cpy_width = round($dest_width * $ratio);
 
-            if ($cpyWidth > $srcWidth) {
-                $ratio     = (double)($srcWidth / $destWidth);
-                $cpyWidth  = $srcWidth;
-                $cpyHeight = round($destHeight * $ratio);
-                $xOffset   = 0;
-                $yOffset   = round(($srcHeight - $cpyHeight) / 2);
+            if ($cpy_width > $src_width) {
+                $ratio      = (double)($src_width / $dest_width);
+                $cpy_width  = $src_width;
+                $cpy_height = round($dest_height * $ratio);
+                $x_offset   = 0;
+                $y_offset   = round(($src_height - $cpy_height) / 2);
             }
             else {
-                $cpyHeight = $srcHeight;
-                $xOffset = round(($srcWidth - $cpyWidth) / 2);
-                $yOffset = 0;
+                $cpy_height = $src_height;
+                $x_offset   = round(($src_width - $cpy_width) / 2);
+                $y_offset   = 0;
             }
         }
         else { # Source has a Vertical Shape
-            $ratio     = (double)($srcWidth / $destWidth);
-            $cpyHeight = round($destHeight * $ratio);
+            $ratio      = (double)($src_width / $dest_width);
+            $cpy_height = round($dest_height * $ratio);
 
-            if ($cpyHeight > $srcHeight) {
-                $ratio     = (double)($srcHeight / $destHeight);
-                $cpyHeight = $srcHeight;
-                $cpyWidth  = round($destWidth * $ratio);
-                $xOffset   = round(($srcWidth - $cpyWidth) / 2);
-                $yOffset   = 0;
+            if ($cpy_height > $src_height) {
+                $ratio      = (double)($src_height / $dest_height);
+                $cpy_height = $src_height;
+                $cpy_width  = round($dest_width * $ratio);
+                $x_offset   = round(($src_width - $cpy_width) / 2);
+                $y_offset   = 0;
             }
             else {
-                $cpyWidth = $srcWidth;
-                $xOffset  = 0;
-                $yOffset  = round(($srcHeight - $cpyHeight) / 2);
+                $cpy_width = $src_width;
+                $x_offset  = 0;
+                $y_offset  = round(($src_height - $cpy_height) / 2);
             }
         }
 
-        $dstHandle = imagecreatetruecolor($destWidth, $destHeight);
-        imagealphablending($dstHandle, false);
-        imagesavealpha($dstHandle, true);
+        $dst_handle = imagecreatetruecolor($dest_width, $dest_height);
+        imagealphablending($dst_handle, false);
+        imagesavealpha($dst_handle, true);
 
         # bool imagecopyresampled ( resource dst_image, resource src_image, int dst_x, int dst_y, int src_x, int src_y, int dst_w, int dst_h, int src_w, int src_h )
-        if (!imagecopyresampled($dstHandle, $srcHandle, 0, 0, $xOffset, $yOffset, $destWidth, $destHeight, $cpyWidth, $cpyHeight)) {
-            imagedestroy($srcHandle);
-            Log::err("Failed to resize image calling function: 
-                imagecopyresized(\$dstHandle, \$srcHandle, 0, 0, {$xOffset}, {$yOffset}, {$destWidth}, {$destHeight}, {$cpyWidth}, {$cpyHeight})");
+        if (!imagecopyresampled($dst_handle, $src_handle, 0, 0, $x_offset, $y_offset, $dest_width, $dest_height, $cpy_width, $cpy_height)) {
+            imagedestroy($src_handle);
+            Log::err("Failed to resize image calling function:
+                imagecopyresized(\$dst_handle, \$src_handle, 0, 0, {$x_offset}, {$y_offset}, {$dest_width}, {$dest_height}, {$cpy_width}, {$cpy_height})");
             return false;
         }
 
         # Destroy source handler
-        imagedestroy($srcHandle);
+        imagedestroy($src_handle);
 
         # Sharpening
-        if ($this->Destination['sharpening']) {
-            $dstHandle = $this->processUnsharpMask($dstHandle);
+        if ($this->destination['sharpening']) {
+            $dst_handle = $this->process_unsharp_mask($dst_handle);
         }
 
         # Watermark
-        if ($this->Destination['Watermark']['text']) {
-            $dstHandle = $this->processWatermark($dstHandle, $srcType);
+        if ($this->destination['watermark']['text']) {
+            $dst_handle = $this->process_watermark($dst_handle, $src_type);
         }
 
-        switch ($srcType) {
+        switch ($src_type) {
             case 1 :
-                $return = imagegif($dstHandle, $destinationPath);
+                $return = imagegif($dst_handle, $destination_path);
                 break;
 
             case 2 :
-                $return = imagejpeg($dstHandle, $destinationPath, $this->Destination['quality']);
+                $return = imagejpeg($dst_handle, $destination_path, $this->destination['quality']);
                 break;
 
             case 3 :
-                $return = imagepng($dstHandle, $destinationPath);
+                $return = imagepng($dst_handle, $destination_path);
                 break;
 
             default :
@@ -395,105 +391,112 @@ class Image
         }
 
         # End
-        imagedestroy($dstHandle);
+        imagedestroy($dst_handle);
         return $return;
     }
-    //-
 
     /**
      * Add watermark to image
      * --
-     * @param   resource    $image
-     * @param   integer     $type
+     * @param   resource $image
      * --
      * @return  resource
      */
-    private function processWatermark($image, $imageType)
+    private function process_watermark($image)
     {
         # Determine image size and type
-        $sizeX     = $this->Destination['width'];
-        $sizeX     = $this->Destination['height'];
-        $imageType = $imageType;
+        $sizeX      = $this->destination['width'];
+        $sizeX      = $this->destination['height'];
 
         // Translate color to decimal
-        $color  = sscanf($this->Destination['Watermark']['color'], '#%2x%2x%2x');
-        $colorR = $color[0];
-        $colorG = $color[1];
-        $colorB = $color[2];
+        $color  = sscanf($this->destination['watermark']['color'], '#%2x%2x%2x');
+        $color_r = $color[0];
+        $color_g = $color[1];
+        $color_b = $color[2];
 
         # Calculate TTF text size
-        $fontSize = $this->Destination['Watermark']['fontSize'];
-        $fontPath = $this->Destination['Watermark']['fontPath'];
-        $angle    = $this->Destination['Watermark']['angle'];
-        $text     = $this->Destination['Watermark']['text'];
-        $ttfsize  = imagettfbbox($fontSize, $angle, $fontPath, $text);
+        $font_size = $this->destination['watermark']['font_size'];
+        $font_path = $this->destination['watermark']['font_path'];
+        $angle     = $this->destination['watermark']['angle'];
+        $text      = $this->destination['watermark']['text'];
+        $ttfsize   = imagettfbbox($font_size, $angle, $font_path, $text);
 
         # Set Offset
-        $offsetX = $this->Destination['Watermark']['offsetX'];
-        $offsetY = $this->Destination['Watermark']['offsetY'];
+        $offset_x = $this->destination['watermark']['offset_x'];
+        $offset_y = $this->destination['watermark']['offset_y'];
 
         # Add custom insets
-        $ttfx = $offsetX + max($ttfsize[0],$ttfsize[2],$ttfsize[4],$ttfsize[6]);
-        $ttfy = $offsetY + max($ttfsize[1],$ttfsize[3],$ttfsize[5],$ttfsize[7]);
+        $ttfx = $offset_x + max($ttfsize[0],$ttfsize[2],$ttfsize[4],$ttfsize[6]);
+        $ttfy = $offset_y + max($ttfsize[1],$ttfsize[3],$ttfsize[5],$ttfsize[7]);
 
         # Shadow
-        if ($this->Destination['Watermark']['shadow']) {
+        if ($this->destination['watermark']['shadow']) {
 
             # Get Shadow Color
-            $shadowColor = $this->Destination['Watermark']['shadow'];
+            $shadow_color = $this->destination['watermark']['shadow'];
 
             # Translate color to decimal
-            $scolor   = sscanf($shadowColor, '#%2x%2x%2x');
-            $scolorR = $scolor[0];
-            $scolorG = $scolor[1];
-            $scolorB = $scolor[2];
+            $scolor   = sscanf($shadow_color, '#%2x%2x%2x');
+            $scolor_r = $scolor[0];
+            $scolor_g = $scolor[1];
+            $scolor_b = $scolor[2];
 
-            $textColor = imagecolorallocate($image, $scolorR, $scolorG, $scolorB);
-            imagettftext($image, $fontSize,
+            $text_color = imagecolorallocate($image, $scolor_r, $scolor_g, $scolor_b);
+            imagettftext($image, $font_size,
                 $angle, // angle
                 $sizeX - $ttfx - 2, // left inset
                 $sizeY - $ttfy - 2, // top inset
-                $textColor, $fontPath, $text);
+                $text_color, $font_path, $text);
         }
 
         # Render text
-        $textColor = imagecolorallocate($image, $colorR, $colorG, $colorB);
-        imagettftext($image, $fontSize,
+        $text_color = imagecolorallocate($image, $color_r, $color_g, $color_b);
+        imagettftext($image, $font_size,
             $angle, // angle
             $sizeX - $ttfx - 3, // left inset
             $sizeY - $ttfy - 3, // top inset
-            $textColor, $fontPath, $text);
+            $text_color, $font_path, $text);
 
         return $image;
     }
-    //-
 
     /**
      * Unsharp Mask for PHP - version 2.1.1
      * Unsharp mask algorithm by Torstein Hønsi 2003-07. thoensi_at_netcom_dot_no.
      * --
-     * @param   resource    $image
-     * @param   integer     $amount
-     * @param   integer     $radius
-     * @param   integer     $threshold
+     * @param   resource $image
+     * @param   integer  $amount
+     * @param   integer  $radius
+     * @param   integer  $threshold
      * --
      * @return  resource
      */
-    private function processUnsharpMask($image, $amount=50, $radius=0.5, $threshold=3)
+    private function process_unsharp_mask(
+        $image,
+        $amount = 50,
+        $radius = 0.5,
+        $threshold = 3)
     {
         # $img is an image that is already created within php using
         # imgcreatetruecolor. No url! $img must be a truecolor image.
 
         # Attempt to calibrate the parameters to Photoshop:
-        if ($amount > 500)    $amount = 500;
+        if ($amount > 500) {
+            $amount = 500;
+        }
         $amount = $amount * 0.016;
 
-        if ($radius > 50)    $radius = 50;
+        if ($radius > 50) {
+            $radius = 50;
+        }
         $radius = $radius * 2;
 
-        if ($threshold > 255)    $threshold = 255;
+        if ($threshold > 255) {
+            $threshold = 255;
+        }
 
-        $radius = abs(round($radius));     # Only integers make sense.
+        # Only integers make sense.
+        $radius = abs(round($radius));
         if ($radius == 0) {
             return;
         }
@@ -501,8 +504,8 @@ class Image
         $w = imagesx($image);
         $h = imagesy($image);
 
-        $imgCanvas = imagecreatetruecolor($w, $h);
-        $imgBlur   = imagecreatetruecolor($w, $h);
+        $img_canvas = imagecreatetruecolor($w, $h);
+        $img_blur   = imagecreatetruecolor($w, $h);
 
 
         # Gaussian blur matrix:
@@ -517,20 +520,20 @@ class Image
                 array( 2, 4, 2 ),
                 array( 1, 2, 1 )
             );
-            imagecopy($imgBlur, $image, 0, 0, 0, 0, $w, $h);
-            imageconvolution($imgBlur, $matrix, 16, 0);
+            imagecopy($img_blur, $image, 0, 0, 0, 0, $w, $h);
+            imageconvolution($img_blur, $matrix, 16, 0);
         }
         else {
             # Move copies of the image around one pixel at the time and merge them with weight
             # according to the matrix. The same matrix is simply repeated for higher radii.
             for ($i = 0; $i < $radius; $i++) {
-                imagecopy      ($imgBlur, $image, 0, 0, 1, 0, $w - 1, $h); # left
-                imagecopymerge ($imgBlur, $image, 1, 0, 0, 0, $w, $h, 50); # right
-                imagecopymerge ($imgBlur, $image, 0, 0, 0, 0, $w, $h, 50); # center
-                imagecopy      ($imgCanvas, $imgBlur, 0, 0, 0, 0, $w, $h);
+                imagecopy      ($img_blur, $image, 0, 0, 1, 0, $w - 1, $h); # left
+                imagecopymerge ($img_blur, $image, 1, 0, 0, 0, $w, $h, 50); # right
+                imagecopymerge ($img_blur, $image, 0, 0, 0, 0, $w, $h, 50); # center
+                imagecopy      ($img_canvas, $img_blur, 0, 0, 0, 0, $w, $h);
 
-                imagecopymerge ($imgBlur, $imgCanvas, 0, 0, 0, 1, $w, $h - 1, 33.33333 ); # up
-                imagecopymerge ($imgBlur, $imgCanvas, 0, 1, 0, 0, $w, $h, 25);            # down
+                imagecopymerge ($img_blur, $img_canvas, 0, 0, 0, 1, $w, $h - 1, 33.33333 ); # up
+                imagecopymerge ($img_blur, $img_canvas, 0, 1, 0, 0, $w, $h, 25);            # down
             }
         }
 
@@ -541,32 +544,32 @@ class Image
             for ($x = 0; $x < $w-1; $x++) { # each row
                 for ($y = 0; $y < $h; $y++) { # each pixel
 
-                    $rgbOrig = ImageColorAt($image, $x, $y);
-                    $rOrig   = (($rgbOrig >> 16) & 0xFF);
-                    $gOrig   = (($rgbOrig >> 8) & 0xFF);
-                    $bOrig   = ($rgbOrig & 0xFF);
+                    $rgb_orig = ImageColorAt($image, $x, $y);
+                    $r_orig   = (($rgb_orig >> 16) & 0xFF);
+                    $g_orig   = (($rgb_orig >> 8) & 0xFF);
+                    $b_orig   = ($rgb_orig & 0xFF);
 
-                    $rgbBlur = ImageColorAt($imgBlur, $x, $y);
+                    $rgb_blur = ImageColorAt($img_blur, $x, $y);
 
-                    $rBlur = (($rgbBlur >> 16) & 0xFF);
-                    $gBlur = (($rgbBlur >> 8) & 0xFF);
-                    $bBlur = ($rgbBlur & 0xFF);
+                    $r_blur = (($rgb_blur >> 16) & 0xFF);
+                    $g_blur = (($rgb_blur >> 8) & 0xFF);
+                    $b_blur = ($rgb_blur & 0xFF);
 
                     # When the masked pixels differ less from the original
                     # than the threshold specifies, they are set to their original value.
-                    $rNew = (abs($rOrig - $rBlur) >= $threshold)
-                        ? max(0, min(255, ($amount * ($rOrig - $rBlur)) + $rOrig))
-                        : $rOrig;
-                    $gNew = (abs($gOrig - $gBlur) >= $threshold)
-                        ? max(0, min(255, ($amount * ($gOrig - $gBlur)) + $gOrig))
-                        : $gOrig;
-                    $bNew = (abs($bOrig - $bBlur) >= $threshold)
-                        ? max(0, min(255, ($amount * ($bOrig - $bBlur)) + $bOrig))
-                        : $bOrig;
+                    $r_new = (abs($r_orig - $r_blur) >= $threshold)
+                        ? max(0, min(255, ($amount * ($r_orig - $r_blur)) + $r_orig))
+                        : $r_orig;
+                    $g_new = (abs($g_orig - $g_blur) >= $threshold)
+                        ? max(0, min(255, ($amount * ($g_orig - $g_blur)) + $g_orig))
+                        : $g_orig;
+                    $b_new = (abs($b_orig - $b_blur) >= $threshold)
+                        ? max(0, min(255, ($amount * ($b_orig - $b_blur)) + $b_orig))
+                        : $b_orig;
 
-                    if (($rOrig != $rNew) || ($gOrig != $gNew) || ($bOrig != $bNew)) {
-                        $pixCol = ImageColorAllocate($image, $rNew, $gNew, $bNew);
-                        ImageSetPixel($image, $x, $y, $pixCol);
+                    if (($r_orig != $r_new) || ($g_orig != $g_new) || ($b_orig != $b_new)) {
+                        $pix_col = ImageColorAllocate($image, $r_new, $g_new, $b_new);
+                        ImageSetPixel($image, $x, $y, $pix_col);
                     }
                 }
             }
@@ -574,36 +577,35 @@ class Image
         else {
             for ($x = 0; $x < $w; $x++) { # each row
                 for ($y = 0; $y < $h; $y++) { # each pixel
-                    $rgbOrig = ImageColorAt($image, $x, $y);
-                    $rOrig = (($rgbOrig >> 16) & 0xFF);
-                    $gOrig = (($rgbOrig >> 8) & 0xFF);
-                    $bOrig = ($rgbOrig & 0xFF);
+                    $rgb_orig = ImageColorAt($image, $x, $y);
+                    $r_orig = (($rgb_orig >> 16) & 0xFF);
+                    $g_orig = (($rgb_orig >> 8) & 0xFF);
+                    $b_orig = ($rgb_orig & 0xFF);
 
-                    $rgbBlur = ImageColorAt($imgBlur, $x, $y);
+                    $rgb_blur = ImageColorAt($img_blur, $x, $y);
 
-                    $rBlur = (($rgbBlur >> 16) & 0xFF);
-                    $gBlur = (($rgbBlur >> 8) & 0xFF);
-                    $bBlur = ($rgbBlur & 0xFF);
+                    $r_blur = (($rgb_blur >> 16) & 0xFF);
+                    $g_blur = (($rgb_blur >> 8) & 0xFF);
+                    $b_blur = ($rgb_blur & 0xFF);
 
-                    $rNew = ($amount * ($rOrig - $rBlur)) + $rOrig;
-                        if($rNew>255){$rNew=255;}
-                        elseif($rNew<0){$rNew=0;}
-                    $gNew = ($amount * ($gOrig - $gBlur)) + $gOrig;
-                        if($gNew>255){$gNew=255;}
-                        elseif($gNew<0){$gNew=0;}
-                    $bNew = ($amount * ($bOrig - $bBlur)) + $bOrig;
-                        if($bNew>255){$bNew=255;}
-                        elseif($bNew<0){$bNew=0;}
-                    $rgbNew = ($rNew << 16) + ($gNew <<8) + $bNew;
-                    ImageSetPixel($image, $x, $y, $rgbNew);
+                    $r_new = ($amount * ($r_orig - $r_blur)) + $r_orig;
+                        if($r_new>255){$r_new=255;}
+                        elseif($r_new<0){$r_new=0;}
+                    $g_new = ($amount * ($g_orig - $g_blur)) + $g_orig;
+                        if($g_new>255){$g_new=255;}
+                        elseif($g_new<0){$g_new=0;}
+                    $b_new = ($amount * ($b_orig - $b_blur)) + $b_orig;
+                        if($b_new>255){$b_new=255;}
+                        elseif($b_new<0){$b_new=0;}
+                    $rgb_new = ($r_new << 16) + ($g_new <<8) + $b_new;
+                    ImageSetPixel($image, $x, $y, $rgb_new);
                 }
             }
         }
 
-        imagedestroy($imgCanvas);
-        imagedestroy($imgBlur);
+        imagedestroy($img_canvas);
+        imagedestroy($img_blur);
         return $image;
     }
-    //-
+
 }
-//--

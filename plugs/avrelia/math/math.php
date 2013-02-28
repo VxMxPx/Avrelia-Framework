@@ -1,31 +1,28 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
+
+use Avrelia\Core\Log as Log;
 
 /**
- * Avrelia
- * ----
  * Math Class
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2011-08-17
  */
-
 class Math
 {
     /**
      * Get percent value from two numbers (amount, total)
-     *
-     * @param int $amount
-     * @param int $total
-     * @param int $precision -- decimal percision
-     *
-     * @return int
+     * --
+     * @param  integer $amount
+     * @param  integer $total
+     * @param  integer $precision  Decimal percision
+     * --
+     * @return integer or false
      */
-    public static function GetPercent($amount, $total, $precision=2)
+    public static function get_percent($amount, $total, $precision = 2)
     {
         if (is_numeric($amount) && is_numeric($total)) {
             if ($amount == 0 || $total == 0) {
@@ -40,18 +37,17 @@ class Math
         Log::war("Not a numeric parameter for amount: `{$amount}` or total: `{$total}`.");
         return false;
     }
-    //-
 
     /**
      * Get value by percent
-     *
-     * @param int $percent
-     * @param int $total
-     * @param int $precision -- decimal percision
-     *
-     * @return int
+     * --
+     * @param  integer $percent
+     * @param  integer $total
+     * @param  integer $precision  Decimal percision
+     * --
+     * @return integer
      */
-    public static function SetPercent($percent, $total, $precision=2)
+    public static function set_percent($percent, $total, $precision = 2)
     {
         if (is_numeric($percent) && is_numeric($total)) {
             if ($percent == 0 || $total == 0) {
@@ -65,6 +61,5 @@ class Math
         Log::war("Not a numeric parameter for percent: `{$percent}` or total: `{$total}`.");
         return false;
     }
-    //-
+
 }
-//--

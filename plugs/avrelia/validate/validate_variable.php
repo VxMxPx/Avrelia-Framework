@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Plug as Plug;
 
@@ -16,7 +18,7 @@ class ValidateVariable
                                   #          using Message plug.
     private $value       = '';    # string   Actual field's value.
     private $name        = false; # string   The name of the field.
-    private $need_value  = false; # boolean  To be valid, does this field need 
+    private $need_value  = false; # boolean  To be valid, does this field need
                                   #          to have value?
 
     /**
@@ -32,7 +34,7 @@ class ValidateVariable
         $this->value = $value;
         $this->name  = $name;
 
-        if (!$name && Plug::has('Plug\\Avrelia\\Message')) 
+        if (!$name && Plug::has('Plug\\Avrelia\\Message'))
             { $this->add_message = false; }
     }
 
@@ -64,7 +66,7 @@ class ValidateVariable
         $this->need_value = true;
 
         if (is_string($this->value)) {
-            if (strlen($this->value) === 0) 
+            if (strlen($this->value) === 0)
                 { $return = false; }
         }
         elseif (empty($this->value)) {
@@ -74,7 +76,7 @@ class ValidateVariable
         if ($return == false) {
             if ($this->add_message) {
                 Message::war(
-                    l('VAL_FIELD_CANT_BE_EMPTY', $this->name), 
+                    l('VAL_FIELD_CANT_BE_EMPTY', $this->name),
                     __CLASS__);
             }
             $this->is_valid = false;
@@ -87,7 +89,7 @@ class ValidateVariable
     /**
      * Check if variable contains valid e-mail
      * --
-     * @param   string  $domain Check if is on particular domain 
+     * @param   string  $domain Check if is on particular domain
      *                          (example: @gmail.com)
      * --
      * @return  $this
@@ -101,7 +103,7 @@ class ValidateVariable
         if (!$return) {
             if ($this->add_message) {
                 Message::war(
-                    l('VAL_FIELD_DOESNT_VALID_EMAIL', $this->name), 
+                    l('VAL_FIELD_DOESNT_VALID_EMAIL', $this->name),
                     __CLASS__);
             }
             $this->is_valid = false;
@@ -112,16 +114,16 @@ class ValidateVariable
         if (!is_null($domain)) {
             $len_front = strlen($domain);
             $len_back  = $len_front * -1;
-            $return = (substr($this->value, $len_back, $len_front) == $domain) 
-                        ? true 
+            $return = (substr($this->value, $len_back, $len_front) == $domain)
+                        ? true
                         : false;
 
             if (!$return) {
                 if ($this->add_message) {
                     Message::war(
                         l(
-                            'VAL_FIELD_MUST_EMAIL_ON_DOMAIN', 
-                            array($this->name, $domain)), 
+                            'VAL_FIELD_MUST_EMAIL_ON_DOMAIN',
+                            array($this->name, $domain)),
                     __CLASS__);
                 }
                 $this->is_valid = false;
@@ -145,7 +147,7 @@ class ValidateVariable
         if (!$return) {
             if ($this->add_message) {
                 Message::war(
-                    l('VAL_FIELD_MUST_VALID_IP_ADDRESS', $this->name), 
+                    l('VAL_FIELD_MUST_VALID_IP_ADDRESS', $this->name),
                     __CLASS__);
             }
             $this->is_valid = false;
@@ -157,7 +159,7 @@ class ValidateVariable
         if (!preg_match("/^{$mask_reg}$/", $this->value)) {
             if ($this->add_message) {
                 Message::war(
-                    l('VAL_FIELD_IP_MUST_EQ_MASK', array($this->name, $mask)), 
+                    l('VAL_FIELD_IP_MUST_EQ_MASK', array($this->name, $mask)),
                     __CLASS__);
             }
             $this->is_valid = false;
@@ -180,7 +182,7 @@ class ValidateVariable
         if ($cleaned != $this->value) {
             if ($this->add_message) {
                 Message::war(
-                    l('VAL_FIELD_MUST_MATCH_PATTERN', array($this->name, $mask)), 
+                    l('VAL_FIELD_MUST_MATCH_PATTERN', array($this->name, $mask)),
                     __CLASS__);
             }
             $this->is_valid = false;
@@ -199,7 +201,7 @@ class ValidateVariable
         if (!filter_var($this->value, FILTER_VALIDATE_URL)) {
             if ($this->add_message) {
                 Message::war(
-                    l('VAL_FIELD_MUST_VALID_WEB_ADDRESS', $this->name), 
+                    l('VAL_FIELD_MUST_VALID_WEB_ADDRESS', $this->name),
                     __CLASS__);
             }
             $this->is_valid = false;
@@ -227,8 +229,8 @@ class ValidateVariable
                     if ($this->add_message) {
                         Message::war(
                             l(
-                                'VAL_FIELD_NUM_MIN_AT_LEAST', 
-                                array($this->name, $min)), 
+                                'VAL_FIELD_NUM_MIN_AT_LEAST',
+                                array($this->name, $min)),
                             __CLASS__);
                     }
                     $this->is_valid = false;
@@ -239,8 +241,8 @@ class ValidateVariable
                     if ($this->add_message) {
                         Message::war(
                             l(
-                                'VAL_FIELD_NUM_MAX_CANT_MORE_THAN', 
-                                array($this->name, $max)), 
+                                'VAL_FIELD_NUM_MAX_CANT_MORE_THAN',
+                                array($this->name, $max)),
                             __CLASS__);
                     }
                     $this->is_valid = false;
@@ -251,7 +253,7 @@ class ValidateVariable
         else {
             if ($this->add_message) {
                 Message::war(
-                    l('VAL_FIELD_MUST_BE_NUMERIC', $this->name), 
+                    l('VAL_FIELD_MUST_BE_NUMERIC', $this->name),
                     __CLASS__);
             }
             $this->is_valid = false;
@@ -273,7 +275,7 @@ class ValidateVariable
         if ((int)$this->value != $this->value) {
             if ($this->add_message) {
                 Message::war(
-                    l('VAL_FIELD_MUST_BE_WHOLE_NUMBER', $this->name), 
+                    l('VAL_FIELD_MUST_BE_WHOLE_NUMBER', $this->name),
                     __CLASS__);
             }
             $this->is_valid = false;
@@ -285,7 +287,7 @@ class ValidateVariable
             if ((int)$this->value < 0) {
                 if ($this->add_message) {
                     Message::war(
-                        l('VAL_FIELD_MUST_BE_POSITIVE_NUMER', $this->name), 
+                        l('VAL_FIELD_MUST_BE_POSITIVE_NUMER', $this->name),
                         __CLASS__);
                 }
                 $this->is_valid = false;
@@ -298,10 +300,10 @@ class ValidateVariable
     /**
      * Check if is boolean
      * --
-     * @param   boolean $particular Set to true / false: it will check for 
+     * @param   boolean $particular Set to true / false: it will check for
      *                              particular boolean value (either true or false)
-     * @param   boolean $strict     If set to "false" we'll approve also: 
-     *                              1,0,"true","false","yes","no","on","off", 
+     * @param   boolean $strict     If set to "false" we'll approve also:
+     *                              1,0,"true","false","yes","no","on","off",
      *                              "1", "0" (string values)
      * --
      * @return  $this
@@ -316,9 +318,9 @@ class ValidateVariable
             $true_values  = array('1', 'true', 'yes', 'on',  1);
             $false_values = array('0', 'false', 'no', 'off', 0);
 
-            if (in_array(strtolower($value), $true_values)) 
+            if (in_array(strtolower($value), $true_values))
                 { $value = true; }
-            elseif (in_array(strtolower($value), $false_values)) 
+            elseif (in_array(strtolower($value), $false_values))
                 { $value = false; }
         }
 
@@ -326,7 +328,7 @@ class ValidateVariable
         if (!is_bool($value)) {
             if ($this->add_message) {
                 Message::war(
-                    l('VAL_FIELD_MUST_CONTAIN_BOOLEAN', $this->name), 
+                    l('VAL_FIELD_MUST_CONTAIN_BOOLEAN', $this->name),
                     __CLASS__);
             }
             $this->is_valid = false;
@@ -340,15 +342,15 @@ class ValidateVariable
                     if ($particular === true) {
                         Message::war(
                             l(
-                                'VAL_FIELD_MUST_BE_SET_TO_TRUE', 
-                                $this->name), 
+                                'VAL_FIELD_MUST_BE_SET_TO_TRUE',
+                                $this->name),
                             __CLASS__);
                     }
                     else {
                         Message::war(
                             l(
-                                'VAL_FIELD_MUST_BE_SET_TO_FALSE', 
-                                $this->name), 
+                                'VAL_FIELD_MUST_BE_SET_TO_FALSE',
+                                $this->name),
                             __CLASS__);
                     }
                 }
@@ -374,7 +376,7 @@ class ValidateVariable
                 if ($this->add_message) {
                     Message::war(
                         l(
-                            'VAL_FIELD_MUST_CONTAIN_AT_LEAST', 
+                            'VAL_FIELD_MUST_CONTAIN_AT_LEAST',
                             array($this->name, $min)),
                         __CLASS__);
                 }
@@ -388,7 +390,7 @@ class ValidateVariable
                 if ($this->add_message) {
                     Message::war(
                         l(
-                            'VAL_FIELD_MUST_HAVE_NOT_MORE_THAN', 
+                            'VAL_FIELD_MUST_HAVE_NOT_MORE_THAN',
                             array($this->name, $max)),
                         __CLASS__);
                 }
@@ -415,8 +417,8 @@ class ValidateVariable
             if ($this->add_message) {
                 Message::war(
                     l(
-                        'VAL_FIELD_MUST_HAVE_VALID_DATE', 
-                        array($this->name, $format)), 
+                        'VAL_FIELD_MUST_HAVE_VALID_DATE',
+                        array($this->name, $format)),
                     __CLASS__);
             }
             $this->is_valid = false;
@@ -439,8 +441,8 @@ class ValidateVariable
                 if ($this->add_message) {
                     Message::war(
                         l(
-                            'VAL_FIELD_MUST_BE_VALUES', 
-                            array($this->name, implode(',', $allowed))), 
+                            'VAL_FIELD_MUST_BE_VALUES',
+                            array($this->name, implode(',', $allowed))),
                         __CLASS__);
                 }
                 $this->is_valid = false;
@@ -451,8 +453,8 @@ class ValidateVariable
                 if ($this->add_message) {
                     Message::war(
                         l(
-                            'VAL_FIELD_MUST_BE_VALUES', 
-                            array($this->name, implode(',', $allowed))), 
+                            'VAL_FIELD_MUST_BE_VALUES',
+                            array($this->name, implode(',', $allowed))),
                         __CLASS__);
                 }
                 $this->is_valid = false;
@@ -477,8 +479,8 @@ class ValidateVariable
             if ($this->add_message) {
                 Message::war(
                     l(
-                        'VAL_FIELD_MUST_BE_THE_SAME_AS', 
-                        array($this->name, $name)), 
+                        'VAL_FIELD_MUST_BE_THE_SAME_AS',
+                        array($this->name, $name)),
                     __CLASS__);
             }
             $this->is_valid = false;

@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Cfg  as Cfg;
 use Avrelia\Core\Log  as Log;
@@ -21,11 +23,11 @@ class Cookie
 
     /**
      * Create cookie
-     * 
+     *
      * @param  string $name
      * @param  string $value
-     * @param  string $expire  Use false for default expire time (set in 
-     *                         configuration), or enter value (actuall value so 
+     * @param  string $expire  Use false for default expire time (set in
+     *                         configuration), or enter value (actuall value so
      *                         must be time() + seconds)
      * @return bool
      */
@@ -46,16 +48,16 @@ class Cookie
                     ($expire) . '" to domain: "' . $domain . '"');
 
         return setcookie(
-            Cfg::get('plugs/cookie/prefix') . $name, 
-            $value, 
-            $expire, 
-            "/", 
+            Cfg::get('plugs/cookie/prefix') . $name,
+            $value,
+            $expire,
+            "/",
             $domain);
     }
 
     /**
      * Fetch an item from the COOKIE array
-     * 
+     *
      * @param  string $key
      * @return mixed
      */
@@ -64,11 +66,11 @@ class Cookie
         $key_prefix = Cfg::get('plugs/cookie/prefix') . $key;
 
         # Is Cookie With Prefix Set?
-        if (isset($_COOKIE[$key_prefix])) 
+        if (isset($_COOKIE[$key_prefix]))
             { $return = $_COOKIE[$key_prefix]; }
-        elseif (isset($_COOKIE[$key])) 
+        elseif (isset($_COOKIE[$key]))
             { $return = $_COOKIE[$key]; }
-        else 
+        else
             { return false; }
 
         return htmlspecialchars($return);
@@ -76,7 +78,7 @@ class Cookie
 
     /**
      * Remove cookie
-     * 
+     *
      * @param  string $name
      * @return boolean
      */
@@ -91,10 +93,10 @@ class Cookie
         }
 
        return setcookie(
-            Cfg::get('plugs/cookie/prefix') . $name, 
-            '', 
-            time() - 3600, 
-            "/", 
+            Cfg::get('plugs/cookie/prefix') . $name,
+            '',
+            time() - 3600,
+            "/",
             $domain);
     }
 }

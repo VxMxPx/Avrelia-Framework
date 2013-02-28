@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Cfg        as Cfg;
 use Avrelia\Core\Str        as Str;
@@ -35,7 +37,7 @@ class Session
     {
         Plug::get_config(__FILE__);
         self::_session_discover();
-        
+
         return true;
     }
 
@@ -56,14 +58,14 @@ class Session
 
         # Create Sessions table (if doesn't exists)
         foreach (array('sessions_table') as $table) {
-            
+
             $table_sql = Cfg::get('plugs/session/tables/'.$table);
 
             if ($table_sql) {
 
                 $table_sql = str_replace(
-                    '{{table_name}}', 
-                    Cfg::get('plugs/session/'.$table), 
+                    '{{table_name}}',
+                    Cfg::get('plugs/session/'.$table),
                     $table_sql);
 
                 Database::execute($table_sql);
@@ -83,9 +85,9 @@ class Session
         Plug::get_config(__FILE__);
 
         // Do not drop it when disabled!
-        if (Cfg::get('plugs/session/drop_on_disable', false) === false) { 
-            
-            return true; 
+        if (Cfg::get('plugs/session/drop_on_disable', false) === false) {
+
+            return true;
         }
 
         if (Cfg::get('plugs/session/tables/sessions_table')) {
@@ -228,9 +230,9 @@ class Session
         $method = $method[1];
 
         $user = call_user_func_array(array($model, $method), array($id));
-        
+
         Event::trigger('/plugs/avrelia/session/user_set', $user);
-        
+
         self::$current = $user;
         return !!self::$current;
     }
@@ -321,7 +323,7 @@ class Session
     protected static function _session_update($user_id, $session_id, $expires)
     {
         Database::update(
-            array('expires_on' => time() + (!$expires ? 60 * 60 : $expires)), 
+            array('expires_on' => time() + (!$expires ? 60 * 60 : $expires)),
             Cfg::get('plugs/session/sessions_table'),
             array('user_id' => $user_id));
 
@@ -330,8 +332,8 @@ class Session
         // but we will extend database record!
         if ($expires) {
             Cookie::create(
-                Cfg::get('plugs/session/cookie_name'), 
-                $session_id, 
+                Cfg::get('plugs/session/cookie_name'),
+                $session_id,
                 $expires + time());
         }
     }
@@ -348,8 +350,8 @@ class Session
     protected static function _session_set($user_id, $expires=null)
     {
         // Save expiration value
-        $expiration_value = $expires === null 
-            ? (int) Cfg::get('plugs/session/expires') 
+        $expiration_value = $expires === null
+            ? (int) Cfg::get('plugs/session/expires')
             : (int) $expires;
 
         # Set expires to some time in future. It 0 was set in config, then we
@@ -379,7 +381,7 @@ class Session
         );
 
         return Database::create(
-                $session, 
+                $session,
                 Cfg::get('plugs/session/sessions_table'))->succeed();
     }
 
@@ -400,7 +402,7 @@ class Session
 
         # Okay, clear session now...
         return Database::delete(
-                Cfg::get('plugs/session/sessions_table'), 
+                Cfg::get('plugs/session/sessions_table'),
                 array('user_id' => (int) $user_id))->succeed();
     }
 

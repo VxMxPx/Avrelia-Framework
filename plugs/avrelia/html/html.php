@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Plug  as Plug;
 use Avrelia\Core\Event as Event;
@@ -17,7 +19,7 @@ class HTML
 
     /**
      * Will init the object
-     * 
+     *
      * @return boolean
      */
     public static function _on_include_()
@@ -28,8 +30,8 @@ class HTML
 
     /**
      * Add Something To The Heeader
-     * 
-     * @param   string  $content  What we want to add to header? | 
+     *
+     * @param   string  $content  What we want to add to header? |
      *                            If false, header will be removed.
      * @param   mixed   $key      False for no key.
      * @return  void
@@ -53,7 +55,7 @@ class HTML
 
     /**
      * Return Headers
-     * 
+     *
      * @param   boolean $echo   Do we need to echo headers?
      * @return  string
      */
@@ -79,7 +81,7 @@ class HTML
 
     /**
      * Add Something To The Footer
-     * 
+     *
      * @param   string  $content    If false, footer will be removed.
      * @param   mixed   $key        False for no key.
      * @return  void
@@ -103,7 +105,7 @@ class HTML
 
     /**
      * Return Footers
-     * 
+     *
      * @param   boolean $echo   Do we need to echo footers?
      * @return  string
      */
@@ -129,7 +131,7 @@ class HTML
 
     /**
      * Create tabs toolbar
-     * 
+     *
      * @param   array   $items       Arrax('uri/path' => 'Title', 'http://absolute.address' => 'Title')
      *                               OR array('uri' => array('attributes' => 'class="something", title="My title"))
      *                               OR array(':right' => 'costume_code') // will not act as url item
@@ -141,7 +143,7 @@ class HTML
     public static function tabs($items, $prefix_zero=false, $main_class='tabs', $main_id=false)
     {
         # Create base open div element
-        $return = 
+        $return =
             '<div'
             .($main_class ? ' class="'.$main_class.'"' : '')
             .($main_id ? ' id="'.$main_id.'"' : '').'>';
@@ -188,7 +190,7 @@ class HTML
 
     /**
      * Will highlight particular text. Return full string with all highlights.
-     * 
+     *
      * @param   string  $haystack
      * @param   mixed   $needle     List of words to highlight (string/array)
      * @param   string  $wrap       Tag into which we wrap the needle
@@ -213,12 +215,12 @@ class HTML
         $needle   = trim(str_replace('/', '', $needle));
         if (!empty($needle)) {
             $haystack = preg_replace_callback(
-                '/'.preg_quote($needle).'/i', 
+                '/'.preg_quote($needle).'/i',
                 create_function(
-                    '$Matches', 
+                    '$Matches',
                     'return str_replace(\'%s\', $Matches[0], \''
                         .str_replace("'", "\'", $wrap).'\');'
-                ), 
+                ),
                 $haystack);
         }
 
@@ -227,7 +229,7 @@ class HTML
 
     /**
      * Create Pagination
-     * 
+     *
      * @param   integer $now            Current page
      * @param   integer $per_page       How many items per page
      * @param   string  $url            Full url, with variable %current_page%
@@ -241,12 +243,12 @@ class HTML
      * @return  string
      */
     public static function pagination(
-        $now, 
-        $per_page, 
-        $url, 
-        $all, 
-        $display_num=4, 
-        $diaply_next=true, 
+        $now,
+        $per_page,
+        $url,
+        $all,
+        $display_num=4,
+        $diaply_next=true,
         $display_first=true
     ) {
         # Will contain all pagination elements
@@ -256,7 +258,7 @@ class HTML
         if (!$now || $now < 1) { $now = 1; }
 
         # Per Page
-        if (!$per_page || $per_page < 1) 
+        if (!$per_page || $per_page < 1)
             { throw new \Avrelia\Exception\ValueError("Per page must be more than zero!"); }
 
         # All Avilable
@@ -339,7 +341,7 @@ class HTML
 
     /**
      * Create <a href element
-     * 
+     *
      * @param  string  $caption
      * @param  string  $href       This won't apply any magic like url(...)
      * @param  string  $attributes 'class="someclass" id="some_id"'

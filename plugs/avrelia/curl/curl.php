@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Plug as Plug;
 use Avrelia\Core\Cfg  as Cfg;
@@ -84,10 +86,10 @@ class Curl
     }
 
     /**
-     * Get url content and response headers. Given a url, follows all 
+     * Get url content and response headers. Given a url, follows all
      * redirections on it and returned content and response headers of final url.
      * http://www.php.net/manual/en/ref.curl.php#93163
-     * 
+     *
      * @param  string   $url
      * @return array[0] content
      *         array[1] array of response headers
@@ -157,7 +159,7 @@ class Curl
      * Returns TRUE on success or FALSE on failure.
      * However, if the CURLOPT_RETURNTRANSFER option is set, it will return the
      * result on success, FALSE on failure.
-     * 
+     *
      * @return mixed
      */
     public function exec()
@@ -167,7 +169,7 @@ class Curl
      * Get information regarding a specific transfer
      * ---
      * @param integer $opt
-     *                For available options see: 
+     *                For available options see:
      *                http://www.php.net/manual/en/function.curl-getinfo.php
      * @return mixed  String or Array
      */

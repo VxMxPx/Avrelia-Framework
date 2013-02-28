@@ -1,26 +1,24 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Plug as Plug;
+use Avrelia\Core\Str  as Str;
 
 /**
- * Avrelia
- * ----
- * Form Model ---
- * Usage example: $Form->attributes(array('class' => 'styled', 'method' => 'get'))->form('register');
- * ----
- * @package    Avrelia
- * @author     Avrelia.com
+ * Form Class
+ * -----------------------------------------------------------------------------
+ * @author     Avrelia.com (Marko Gajst)
  * @copyright  Copyright (c) 2010, Avrelia.com
  * @license    http://framework.avrelia.com/license
- * @link       http://framework.avrelia.com
- * @since      Version 0.80
- * @since      2011-07-21
  */
 class Form
 {
-    private $FormData = array('wrap' => false); # array Specific settings for form
-    private $Defaults = array();                # array Default values for form
+    # Specific settings for form
+    private $form_data = array('wrap' => false);
 
+    # Default values for form
+    private $defaults = array();
 
     /**
      * Load Assign Class
@@ -35,11 +33,6 @@ class Form
         # Return true!
         return true;
     }
-    //-
-
-    /*  ****************************************************** *
-     *          Elements
-     *  **************************************  */
 
     /**
      * Form start
@@ -54,9 +47,9 @@ class Form
      * --
      * @return  string
      */
-    public function start($action=null, $recover=true)
+    public function start($action = null, $recover = true)
     {
-        $this->FormData['recover'] = $recover;
+        $this->form_data['recover'] = $recover;
 
         # Define action
         if (is_null($action)) {
@@ -66,12 +59,13 @@ class Form
             $action = url($action);
         }
 
-        $this->FormData['attributes']['action'] = $action;
-        $this->FormData['attributes']['method'] = isset($this->FormData['attributes']['method']) ? $this->FormData['attributes']['method'] : 'post';
+        $this->form_data['attributes']['action'] = $action;
+        $this->form_data['attributes']['method'] = isset($this->form_data['attributes']['method'])
+                                                    ? $this->form_data['attributes']['method']
+                                                    : 'post';
 
         return $this->returner("\n\n<form{attributes}>", 'form', $action);
     }
-    //-
 
     /**
      * Form textbox
@@ -82,38 +76,39 @@ class Form
      * --
      * @return  string
      */
-    public function textbox($name, $label=null)
+    public function textbox($name, $label = null)
     {
-        $this->FormData['attributes']['name'] = $name;
-        $this->FormData['attributes']['type'] = isset($this->FormData['attributes']['type']) ? $this->FormData['attributes']['type'] : 'text';
+        $this->form_data['attributes']['name'] = $name;
+        $this->form_data['attributes']['type'] = isset($this->form_data['attributes']['type'])
+                                                    ? $this->form_data['attributes']['type']
+                                                    : 'text';
 
         # Label?
         if (!is_null($label)) {
-            if (isset($this->FormData['attributes']['id'])) {
-                $id = $this->FormData['attributes']['id'];
+            if (isset($this->form_data['attributes']['id'])) {
+                $id = $this->form_data['attributes']['id'];
             }
             else {
                 # Generate ID!
                 $id = "aff__{$name}";
-                $this->FormData['attributes']['id'] = $id;
+                $this->form_data['attributes']['id'] = $id;
             }
             $label = "\n\t<label class=\"lf_textbox\" for=\"{$id}\">{$label}</label>";
         }
 
         # Check for recovery...
-        if ($this->FormData['recover'] === true && isset($_POST[$name])) {
-            $this->FormData['attributes']['value'] = $_POST[$name];
+        if ($this->form_data['recover'] === true && isset($_POST[$name])) {
+            $this->form_data['attributes']['value'] = $_POST[$name];
         }
-        elseif (isset($this->Defaults[$name])) {
-            $this->FormData['attributes']['value'] = $this->Defaults[$name];
+        elseif (isset($this->defaults[$name])) {
+            $this->form_data['attributes']['value'] = $this->defaults[$name];
         }
 
         # The "masked" field will proxy through this method
-        $type = $this->FormData['attributes']['type'] == 'text' ? 'textbox' : 'masked';
+        $type = $this->form_data['attributes']['type'] == 'text' ? 'textbox' : 'masked';
 
         return $this->returner("{$label}\n\t<input{attributes} />", $type, $name);
     }
-    //-
 
     /**
      * Form masked
@@ -124,12 +119,11 @@ class Form
      * --
      * @return  string
      */
-    public function masked($name, $label=null)
+    public function masked($name, $label = null)
     {
-        $this->FormData['attributes']['type'] = 'password';
+        $this->form_data['attributes']['type'] = 'password';
         return $this->textbox($name, $label);
     }
-    //-
 
     /**
      * Form upload
@@ -140,94 +134,93 @@ class Form
      * --
      * @return  string
      */
-    public function upload($name, $label=null)
+    public function upload($name, $label = null)
     {
-        $this->FormData['attributes']['type'] = 'file';
+        $this->form_data['attributes']['type'] = 'file';
         return $this->textbox($name, $label);
     }
-    //-
 
     /**
      * Form radio
      * Will create <input type="radio" />
      * --
      * @param   string  $name
-     * @param   array   $Options    In format array('value' => 'label')
+     * @param   array   $options    In format array('value' => 'label')
      *                              OR array('value' => 'label="My label" id="myId" class="myClass"')
      *                              If you want label with link (not to be parser), put \ in front of it!
      * @param   string  $selected
      * --
      * @return  string
      */
-    public function radio($name, $Options, $selected=null)
+    public function radio($name, array $options, $selected = null)
     {
-        $fields            = '';
-        $DefaultAttributes = $this->FormData['attributes'];
-        $DefaultAttributes['name'] = $name;
-        $DefaultAttributes['type'] = 'radio';
+        $fields             = '';
+        $default_attributes = $this->form_data['attributes'];
+        $default_attributes['name'] = $name;
+        $default_attributes['type'] = 'radio';
 
         # Set defaults
-        if (isset($this->Defaults[$name])) {
-            $selected = $this->Defaults[$name];
+        if (isset($this->defaults[$name])) {
+            $selected = $this->defaults[$name];
         }
 
-        foreach ($Options as $val => $params) {
+        foreach ($options as $val => $params) {
             if (strpos($params, '="') !== false && substr($params,0,1) != '\\') {
                 # We have multiple params...
                 # Process them...
-                $this->att($params);
-                $FieldAttributes = $this->FormData['attributes'];
+                $this->attr($params);
+                $field_attributes = $this->form_data['attributes'];
             }
             else {
                 # Else we have only label
-                $FieldAttributes['label'] = ltrim($params, '\\');
+                $field_attributes['label'] = ltrim($params, '\\');
             }
 
             # Reset Label before we merge...
-            $label = isset($FieldAttributes['label']) ? $FieldAttributes['label'] : null;
-            unset($FieldAttributes['label']);
+            $label = isset($field_attributes['label']) ? $field_attributes['label'] : null;
+            unset($field_attributes['label']);
 
             # Merge field + Default Attributes
-            $FieldAttributes = array_merge($DefaultAttributes, $FieldAttributes);
+            $field_attributes = array_merge($default_attributes, $field_attributes);
 
             # Do we have label?
             if (!is_null($label)) {
-                if (isset($FieldAttributes['id'])) {
-                    $id = $FieldAttributes['id'];
+                if (isset($field_attributes['id'])) {
+                    $id = $field_attributes['id'];
                 }
                 else {
                     # Generate ID!
                     $id = "aff__{$name}_{$val}";
-                    $FieldAttributes['id'] = $id;
+                    $field_attributes['id'] = $id;
                 }
                 $label = "\n\t<label class=\"lf_radio\" for=\"{$id}\">{$label}</label>";
             }
 
             # Check for recovery...
-            if ($this->FormData['recover'] === true && !empty($_POST)) {
+            if ($this->form_data['recover'] === true && !empty($_POST)) {
                 if (isset($_POST[$name])) {
-                    $selectedS = $_POST[$name];
-                    if ($selectedS == $val) {
-                        $FieldAttributes['checked'] = 'checked';
+                    $selected_s = $_POST[$name];
+                    if ($selected_s == $val) {
+                        $field_attributes['checked'] = 'checked';
                     }
                 }
             }
             else {
                 # Check for default...
                 if ($selected == $val) {
-                    $FieldAttributes['checked'] = 'checked';
+                    $field_attributes['checked'] = 'checked';
                 }
             }
 
             # Set Value
-            $FieldAttributes['value'] = $val;
+            $field_attributes['value'] = $val;
 
             # Process attributes
-            $attributes = $this->processAttributes($FieldAttributes);
+            $attributes = $this->process_attributes($field_attributes);
 
             # Reset...
-            $this->FormData['attributes'] = null;
-            $FieldAttributes              = null;
+            $this->form_data['attributes'] = null;
+            $field_attributes              = null;
 
             $fields .= "\n\t<input{$attributes} />{$label}";
         }
@@ -235,90 +228,89 @@ class Form
         # We'll use returned only to put template (if any) arround all radio fields...
         return $this->returner($fields, 'radio', $name);
     }
-    //-
 
     /**
      * Form checkbox
      * Will create <input type="checkbox" />
      * --
      * @param   string  $name
-     * @param   array   $Options    In format array('value' => 'label')
+     * @param   array   $options    In format array('value' => 'label')
      *                              OR array('value' => 'label="My label" id="myId" class="myClass"')
      *                              If you want label with link (not to be parser), put \ in front of it!
      * @param   string  $selected   Use comma to list more elements, eg: dogs,cats
      * --
      * @return  string
      */
-    public function checkbox($name, $Options, $selected=null)
+    public function checkbox($name, array $options, $selected = null)
     {
-        $fields            = '';
-        $Selected          = Str::explode_trim(',', $selected);
-        $DefaultAttributes = $this->FormData['attributes'];
-        $DefaultAttributes['name'] = $name.'[]';
-        $DefaultAttributes['type'] = 'checkbox';
+        $fields             = '';
+        $selected_items     = Str::explode_trim(',', $selected);
+        $default_attributes = $this->form_data['attributes'];
+        $default_attributes['name'] = $name.'[]';
+        $default_attributes['type'] = 'checkbox';
 
         # Set defaults
-        if (isset($this->Defaults[$name])) {
-            $selected = $this->Defaults[$name];
+        if (isset($this->defaults[$name])) {
+            $selected = $this->defaults[$name];
         }
 
-        foreach ($Options as $val => $params) {
+        foreach ($options as $val => $params) {
             if (strpos($params, '="') !== false && substr($params,0,1) != '\\') {
                 # We have multiple params...
                 # Process them...
-                $this->att($params);
-                $FieldAttributes = $this->FormData['attributes'];
+                $this->attr($params);
+                $field_attributes = $this->form_data['attributes'];
             }
             else {
                 # Else we have only label
-                $FieldAttributes['label'] = ltrim($params, '\\');
+                $field_attributes['label'] = ltrim($params, '\\');
             }
 
             # Reset Label before we merge...
-            $label = isset($FieldAttributes['label']) ? $FieldAttributes['label'] : null;
-            unset($FieldAttributes['label']);
+            $label = isset($field_attributes['label']) ? $field_attributes['label'] : null;
+            unset($field_attributes['label']);
 
             # Merge field + Default Attributes
-            $FieldAttributes = array_merge($DefaultAttributes, $FieldAttributes);
+            $field_attributes = array_merge($default_attributes, $field_attributes);
 
             # Do we have label?
             if (!is_null($label)) {
-                if (isset($FieldAttributes['id'])) {
-                    $id = $FieldAttributes['id'];
+                if (isset($field_attributes['id'])) {
+                    $id = $field_attributes['id'];
                 }
                 else {
                     # Generate ID!
                     $id = "aff__{$name}_{$val}";
-                    $FieldAttributes['id'] = $id;
+                    $field_attributes['id'] = $id;
                 }
                 $label = "\n\t<label class=\"lf_checkbox\" for=\"{$id}\">{$label}</label>";
             }
 
             # Check for recovery...
-            if ($this->FormData['recover'] === true && !empty($_POST)) {
+            if ($this->form_data['recover'] === true && !empty($_POST)) {
                 if (isset($_POST[$name])) {
-                    $selectedS = $_POST[$name];
-                    if (in_array($val, $selectedS)) {
-                        $FieldAttributes['checked'] = 'checked';
+                    $selected_s = $_POST[$name];
+                    if (in_array($val, $selected_s)) {
+                        $field_attributes['checked'] = 'checked';
                     }
                 }
             }
             else {
                 # Check for default...
-                if (in_array($val, $Selected)) {
-                    $FieldAttributes['checked'] = 'checked';
+                if (in_array($val, $selected_items)) {
+                    $field_attributes['checked'] = 'checked';
                 }
             }
 
             # Set Value
-            $FieldAttributes['value'] = $val;
+            $field_attributes['value'] = $val;
 
             # Process attributes
-            $attributes = $this->processAttributes($FieldAttributes);
+            $attributes = $this->process_attributes($field_attributes);
 
             # Reset...
-            $this->FormData['attributes'] = null;
-            $FieldAttributes              = null;
+            $this->form_data['attributes'] = null;
+            $field_attributes              = null;
 
             $fields .= "\n\t<input{$attributes} />{$label}";
         }
@@ -326,72 +318,76 @@ class Form
         # We'll use returned only to put template (if any) arround all radio fields...
         return $this->returner($fields, 'checkbox', $name);
     }
-    //-
 
     /**
      * Form select
      * Will create <select><option>...
      * --
      * @param   string  $name
-     * @param   array   $Options    array('val' => 'label')
+     * @param   array   $options    array('val' => 'label')
      * @param   string  $selected   In case of multi select use comma
      *                              to list more elements, eg: dogs,cats
      * @param   boolean $multi      Multi or single select?
      * --
      * @return  string
      */
-    public function select($name, $Options, $label=null, $selected=null, $multi=false)
+    public function select(
+        $name,
+        array $options,
+        $label = null,
+        $selected = null,
+        $multi = false)
     {
         $fields            = '';
-        $Selected          = Str::explode_trim(',', $selected);
-        $this->FormData['attributes']['name'] = $name . ($multi ? '[]' : '');
-        $this->FormData['attributes']['type'] = 'select';
+        $selected_items    = Str::explode_trim(',', $selected);
+        $this->form_data['attributes']['name'] = $name . ($multi ? '[]' : '');
+        $this->form_data['attributes']['type'] = 'select';
         if ($multi) {
-            $this->FormData['attributes']['multiple'] = 'multiple';
+            $this->form_data['attributes']['multiple'] = 'multiple';
         }
 
         # Set defaults
-        if (isset($this->Defaults[$name])) {
-            $selected = $this->Defaults[$name];
+        if (isset($this->defaults[$name])) {
+            $selected = $this->defaults[$name];
             if ($multi && strpos($selected,',')!==false) {
                 $selected = Str::explode_trim(',',$selected);
             }
         }
 
-        foreach ($Options as $val => $lbl)
+        foreach ($options as $val => $lbl)
         {
             # Is selected? )
-            $selOpt = null;
+            $sel_opt = null;
 
             # Check for recovery...
-            if ($this->FormData['recover'] === true && !empty($_POST)) {
+            if ($this->form_data['recover'] === true && !empty($_POST)) {
                 if (isset($_POST[$name])) {
-                    $selectedS = $_POST[$name];
-                    $selectedS = $multi ? $selectedS : array($selectedS);
-                    if (in_array($val, $selectedS)) {
-                        $selOpt = ' selected="selected"';
+                    $selected_s = $_POST[$name];
+                    $selected_s = $multi ? $selected_s : array($selected_s);
+                    if (in_array($val, $selected_s)) {
+                        $sel_opt = ' selected="selected"';
                     }
                 }
             }
             else {
                 # Check for default...
-                if (in_array($val, $Selected)) {
-                    $selOpt = ' selected="selected"';
+                if (in_array($val, $selected_items)) {
+                    $sel_opt = ' selected="selected"';
                 }
             }
 
-            $fields .= "\n\t\t<option value=\"{$val}\"{$selOpt}>{$lbl}</option>";
+            $fields .= "\n\t\t<option value=\"{$val}\"{$sel_opt}>{$lbl}</option>";
         }
 
         # Label?
         if (!is_null($label)) {
-            if (isset($this->FormData['attributes']['id'])) {
-                $id = $this->FormData['attributes']['id'];
+            if (isset($this->form_data['attributes']['id'])) {
+                $id = $this->form_data['attributes']['id'];
             }
             else {
                 # Generate ID!
                 $id = "aff__{$name}";
-                $this->FormData['attributes']['id'] = $id;
+                $this->form_data['attributes']['id'] = $id;
             }
             $label = "\n\t<label class=\"lf_select\" for=\"{$id}\">{$label}</label>";
         }
@@ -399,7 +395,6 @@ class Form
         # We'll use returned only to put template (if any) arround all radio fields...
         return $this->returner("{$label}\n\t<select{attributes}>".$fields."\n\t</select>", 'select', $name);
     }
-    //-
 
     /**
      * Form date (old)
@@ -411,19 +406,19 @@ class Form
      * --
      * @return  string
      */
-    public function date($name, $label=null, $selected=null)
+    public function date($name, $label = null, $selected = null)
     {
-        $Days   = array();
-        for ($i=0; $i<32; $i++) { $Days[$i] = ($i==0) ? l('DAY') : $i; }
+        $days = array();
+        for ($i=0; $i<32; $i++) { $days[$i] = ($i==0) ? l('DAY') : $i; }
 
         # Set defaults
-        if (isset($this->Defaults[$name]['day'])) {
-            $selected = $this->Defaults[$name]['day'] . '.' .
-                        $this->Defaults[$name]['month'] . '.' .
-                        $this->Defaults[$name]['year'];
+        if (isset($this->defaults[$name]['day'])) {
+            $selected = $this->defaults[$name]['day'] . '.' .
+                        $this->defaults[$name]['month'] . '.' .
+                        $this->defaults[$name]['year'];
         }
 
-        $Months = array(
+        $months = array(
             '00' => l('MONTH'),
             '01' => l('JANUARY'),
             '02' => l('FEBRUARY'),
@@ -439,42 +434,40 @@ class Form
             '12' => l('DECEMBER')
         );
 
-        $Years = array();
-        for ($i=1900; $i<date('Y'); $i++) { $Years[$i] = $i; }
+        $years = array();
+        for ($i=1900; $i<date('Y'); $i++) { $years[$i] = $i; }
 
         # Label?
         if (!is_null($label)) {
             $label = "\n\t<label class=\"lf_date\">{$label}</label>";
         }
 
+        $sel_day   = null;
+        $sel_month = null;
+        $sel_year  = null;
 
-        $selDay   = null;
-        $selMonth = null;
-        $selYear  = null;
-
-        if ($this->FormData['recover'] === true && !empty($_POST)) {
-            $selDay   = isset($_POST[$name]['day'])   ? $_POST[$name]['day']   : null;
-            $selMonth = isset($_POST[$name]['month']) ? $_POST[$name]['month'] : null;
-            $selYear  = isset($_POST[$name]['year'])  ? $_POST[$name]['year']  : null;
+        if ($this->form_data['recover'] === true && !empty($_POST)) {
+            $sel_day   = isset($_POST[$name]['day'])   ? $_POST[$name]['day']   : null;
+            $sel_month = isset($_POST[$name]['month']) ? $_POST[$name]['month'] : null;
+            $sel_year  = isset($_POST[$name]['year'])  ? $_POST[$name]['year']  : null;
         }
         else {
             if (!is_null($selected)) {
-                $Selected = explode('.', $selected, 3);
-                $selDay   = isset($Selected[0]) ? $Selected[0] : null;
-                $selMonth = isset($Selected[1]) ? $Selected[1] : null;
-                $selYear  = isset($Selected[2]) ? $Selected[2] : null;
+                $selected_items = explode('.', $selected, 3);
+                $sel_day   = isset($selected_items[0]) ? $selected_items[0] : null;
+                $sel_month = isset($selected_items[1]) ? $selected_items[1] : null;
+                $sel_year  = isset($selected_items[2]) ? $selected_items[2] : null;
             }
         }
 
         $fields  = '';
         $fields .= $label;
-        $fields .= $this->rec(false)->att($this->FormData['attributes_raw'])->wrap(false)->select($name.'[day]',   $Days,   null, $selDay);
-        $fields .= $this->rec(false)->att($this->FormData['attributes_raw'])->wrap(false)->select($name.'[month]', $Months, null, $selMonth);
-        $fields .= $this->rec(false)->att($this->FormData['attributes_raw'])->wrap(false)->select($name.'[year]',  $Years,  null, $selYear);
+        $fields .= $this->recover(false)->attr($this->form_data['attributes_raw'])->wrap(false)->select($name.'[day]',   $days,   null, $sel_day);
+        $fields .= $this->recover(false)->attr($this->form_data['attributes_raw'])->wrap(false)->select($name.'[month]', $months, null, $sel_month);
+        $fields .= $this->recover(false)->attr($this->form_data['attributes_raw'])->wrap(false)->select($name.'[year]',  $years,  null, $sel_year);
 
         return $this->returner($fields, 'date', $name);
     }
-    //-
 
     /**
      * Form hidden
@@ -489,7 +482,6 @@ class Form
     {
         return "\n\t<input type=\"hidden\" name=\"{$name}\" value=\"{$value}\" />";
     }
-    //-
 
     /**
      * Form textarea
@@ -501,32 +493,32 @@ class Form
      * --
      * @return  string
      */
-    public function textarea($name, $label=null, $content=null)
+    public function textarea($name, $label = null, $content = null)
     {
-        $this->FormData['attributes']['name'] = $name;
-        $this->FormData['attributes']['rows'] = isset($this->FormData['attributes']['rows']) ? $this->FormData['attributes']['rows'] : 10;
-        $this->FormData['attributes']['cols'] = isset($this->FormData['attributes']['cols']) ? $this->FormData['attributes']['cols'] : 40;
+        $this->form_data['attributes']['name'] = $name;
+        $this->form_data['attributes']['rows'] = isset($this->form_data['attributes']['rows']) ? $this->form_data['attributes']['rows'] : 10;
+        $this->form_data['attributes']['cols'] = isset($this->form_data['attributes']['cols']) ? $this->form_data['attributes']['cols'] : 40;
 
         # Set defaults
-        if (isset($this->Defaults[$name])) {
-            $content = $this->Defaults[$name];
+        if (isset($this->defaults[$name])) {
+            $content = $this->defaults[$name];
         }
 
         # Label?
         if (!is_null($label)) {
-            if (isset($this->FormData['attributes']['id'])) {
-                $id = $this->FormData['attributes']['id'];
+            if (isset($this->form_data['attributes']['id'])) {
+                $id = $this->form_data['attributes']['id'];
             }
             else {
                 # Generate ID!
                 $id = "aff__{$name}";
-                $this->FormData['attributes']['id'] = $id;
+                $this->form_data['attributes']['id'] = $id;
             }
             $label = "\n\t<label class=\"lf_textarea\" for=\"{$id}\">{$label}</label>";
         }
 
         # Check for recovery...
-        if ($this->FormData['recover'] === true) {
+        if ($this->form_data['recover'] === true) {
             if (isset($_POST[$name])) {
                 $content = $_POST[$name];
             }
@@ -534,7 +526,6 @@ class Form
 
         return $this->returner("{$label}\n\t<textarea{attributes}>{$content}</textarea>", 'textarea', $name);
     }
-    //-
 
     /**
      * Will add button
@@ -545,14 +536,13 @@ class Form
      * --
      * @return  string
      */
-    public function button($label=null, $name='submit', $type='submit')
+    public function button($label = null, $name = 'submit', $type = 'submit')
     {
-        $this->FormData['attributes']['name'] = $name;
-        $this->FormData['attributes']['type'] = $type;
+        $this->form_data['attributes']['name'] = $name;
+        $this->form_data['attributes']['type'] = $type;
 
         return $this->returner("\n\t<button{attributes}>{$label}</button>", 'button', $name);
     }
-    //-
 
     /**
      * Will create empty wrapper field
@@ -563,7 +553,6 @@ class Form
     {
         return $this->returner('<div class="fieldSpacer">&nbsp;</div>', 'spacer', false);
     }
-    //-
 
     /**
      * Form end
@@ -573,34 +562,28 @@ class Form
      */
     public function end()
     {
-        //$this->FormData = array('wrap' => false);
+        //$this->form_data = array('wrap' => false);
         return "\n</form>";
     }
-    //-
-
-    /*  ****************************************************** *
-     *          Private / Helpers
-     *  **************************************  */
 
     /**
      * Will set wrapper for all fields
      * --
-     * @param   string  $mask   Options:
-     *      {field}    -- the field itself
-     *      {id}       -- field's ID -- note, if not ID was set, the aff_name will be used
-     *      {name}     -- field's name
-     *      {type}     -- field's type
-     *      {oddEven}  -- will return odd or even
-     *      {hasError} -- if validation enabled has error (return hasError)
+     * @param   string  $mask   options:
+     *      {field}     -- the field itself
+     *      {id}        -- field's ID -- note, if not ID was set, the aff_name will be used
+     *      {name}      -- field's name
+     *      {type}      -- field's type
+     *      {odd_even}  -- will return odd or even
+     *      {has_error} -- if validation enabled has error (return has_error)
      * --
      * @return  void
      */
-    public function wrapFields($mask)
+    public function wrap_fields($mask)
     {
-        $this->FormData['template'] = $mask;
-        $this->FormData['wrap']     = true;
+        $this->form_data['template'] = $mask;
+        $this->form_data['wrap']     = true;
     }
-    //-
 
     /**
      * For current field set wrapper on / off
@@ -611,12 +594,11 @@ class Form
      */
     public function wrap($do)
     {
-        $this->FormData['wrap_default'] = $this->FormData['wrap'];
-        $this->FormData['wrap'] = $do;
+        $this->form_data['wrap_default'] = $this->form_data['wrap'];
+        $this->form_data['wrap'] = $do;
 
         return $this;
     }
-    //-
 
     /**
      * Will start wrapper, to wrap multiple fields...
@@ -624,99 +606,95 @@ class Form
      * @param   string  $name
      * @param   string  $type
      * @param   string  $id
-     * @param   mixed   $processOddEven Should we automatically process oddEven
+     * @param   mixed   $process_odd_even  Should we automatically process odd_even
      * --
      * @return  string
      */
-    public function wrapStart($name, $type='manual', $id=null, $processOddEven=true)
+    public function wrap_start($name, $type = 'manual', $id = null, $process_odd_even = true)
     {
         # Process template...
-        if (isset($this->FormData['template']))
+        if (isset($this->form_data['template']))
         {
-            $this->FormData['wrap']    = false;
-            if ($processOddEven === true) {
-                $oddEven                   = isset($this->FormData['oddEven']) ? $this->FormData['oddEven'] : false;
-                $oddEven                   = $oddEven != 'even' ? 'even' : 'odd';
-                $this->FormData['oddEven'] = $oddEven;
+            $this->form_data['wrap']    = false;
+            if ($process_odd_even === true) {
+                $odd_even                    = isset($this->form_data['odd_even']) ? $this->form_data['odd_even'] : false;
+                $odd_even                    = $odd_even != 'even' ? 'even' : 'odd';
+                $this->form_data['odd_even'] = $odd_even;
             }
-            elseif ($processOddEven !== false) {
-                $oddEven = $processOddEven;
-                $this->FormData['oddEven'] = $oddEven;
+            elseif ($process_odd_even !== false) {
+                $odd_even = $process_odd_even;
+                $this->form_data['odd_even'] = $odd_even;
             }
             else {
-                $oddEven = '';
+                $odd_even = '';
             }
 
-            $template = $this->FormData['template'];
+            $template = $this->form_data['template'];
 
             $template = str_replace('{id}',      $id,      $template);
             $template = str_replace('{name}',    $name,    $template);
             $template = str_replace('{type}',    $type,    $template);
-            $template = str_replace('{oddEven}', $oddEven, $template);
-            # {hasError} -- if validation enabled has error (return hasError)
-            $Template = explode('{field}', $template, 2);
-            $this->FormData['wrapperTemplateProcessed'] = $Template;
-            return $Template[0];
+            $template = str_replace('{odd_even}', $odd_even, $template);
+            # {has_error} -- if validation enabled has error (return has_error)
+            $template_array = explode('{field}', $template, 2);
+            $this->form_data['wrapper_template_processed'] = $template_array;
+            return $template_array[0];
         }
     }
-    //-
 
     /**
      * Will end wrapper, (wrap multiple fields...)
      * --
      * @return  string
      */
-    public function wrapEnd()
+    public function wrap_end()
     {
-        if (isset($this->FormData['wrapperTemplateProcessed']))
+        if (isset($this->form_data['wrapper_template_processed']))
         {
-            $this->FormData['wrap'] = true;
-            $template = $this->FormData['wrapperTemplateProcessed'][1];
-            unset($this->FormData['wrapperTemplateProcessed']);
+            $this->form_data['wrap'] = true;
+            $template = $this->form_data['wrapper_template_processed'][1];
+            unset($this->form_data['wrapper_template_processed']);
             return $template;
         }
     }
-    //-
 
     /**
      * Set defaults in form
      * --
-     * @param   array   $Defaults
+     * @param   array   $defaults
      * --
      * @return  $this
      */
-    public function defaults($Defaults)
+    public function defaults($defaults)
     {
-        $this->Defaults = array_merge($Defaults);
+        $this->defaults = array_merge($defaults);
         return $this;
     }
-    //-
 
     /**
      * Will set attributes for current field
      * --
-     * @param   string  $att    In format: 'class="myClass" id="myID" method="post"'
+     * @param   string  $att  In format: 'class="myClass" id="myID" method="post"'
      * --
      * @return  $this
      */
-    public function att($att)
+    public function attr($att)
     {
         if (empty($att)) { return $this; }
 
-        $this->FormData['attributes_raw'] = $att;
-        $Att   = explode('" ', $att);
-        $Final = array();
+        $this->form_data['attributes_raw'] = $att;
+        $att_array = explode('" ', $att);
+        $final     = array();
 
-        foreach ($Att as $attribute) {
-            $Attribute = explode('=', $attribute, 2);
-            $Final[trim($Attribute[0])] = trim($Attribute[1], '"');
+        foreach ($att_array as $attribute) {
+            $attribute = explode('=', $attribute, 2);
+            $final[trim($attribute[0])] = trim($attribute[1], '"');
         }
 
-        $this->FormData['attributes'] = $Final;
+        $this->form_data['attributes'] = $final;
 
         return $this;
     }
-    //-
 
     /**
      * For current field set recovery option
@@ -725,34 +703,32 @@ class Form
      * --
      * @return  $this
      */
-    public function rec($do)
+    public function recover($do)
     {
-        $this->FormData['default_recover'] = $this->FormData['recover'];
-        $this->FormData['recover'] = $do;
+        $this->form_data['default_recover'] = $this->form_data['recover'];
+        $this->form_data['recover'] = $do;
 
         return $this;
     }
-    //-
 
     /**
      * Insert element in front of field or behind it...
      * For example, if we say prefix for textbox is Enter your name:,
-     * and set inFront to true we'll get following result:
+     * and set in_front to true we'll get following result:
      * Enter your name: <input ...
      * --
      * @param   string  $content
-     * @param   boolean $inFront    Insert content in front of field or after field
+     * @param   boolean $in_front  Insert content in front of field or after field
      * --
      * @return  $this
      */
-    public function ins($content, $inFront=true)
+    public function ins($content, $in_front = true)
     {
-        $pos = $inFront ? 'front' : 'back';
-        $this->FormData['insertion'][$pos] = $content;
+        $pos = $in_front ? 'front' : 'back';
+        $this->form_data['insertion'][$pos] = $content;
 
         return $this;
     }
-    //-
 
     /**
      * Return correctly formated field
@@ -765,88 +741,86 @@ class Form
      */
     private function returner($field, $type, $name)
     {
-        $attributes = $this->processAttributes();
+        $attributes = $this->process_attributes();
 
         # Add attributes to field
         $field = str_replace('{attributes}', $attributes, $field);
 
         # Insertion
-        if (isset($this->FormData['insertion']) && !empty($this->FormData['insertion'])) {
-            foreach ($this->FormData['insertion'] as $pos => $insCnt) {
+        if (isset($this->form_data['insertion']) && !empty($this->form_data['insertion'])) {
+            foreach ($this->form_data['insertion'] as $pos => $ins_cnt) {
                 if ($pos == 'front') {
-                    $field = $insCnt . "\n" . $field;
+                    $field = $ins_cnt . "\n" . $field;
                 }
                 else {
-                    $field = $field . "\n" . $insCnt;
+                    $field = $field . "\n" . $ins_cnt;
                 }
             }
         }
 
         # Process template...
-        if (isset($this->FormData['template']) && $type != 'form' && $this->FormData['wrap']) {
-            $oddEven                   = isset($this->FormData['oddEven']) ? $this->FormData['oddEven'] : false;
-            $oddEven                   = $oddEven != 'even' ? 'even' : 'odd';
-            $this->FormData['oddEven'] = $oddEven;
-            $template = $this->FormData['template'];
+        if (isset($this->form_data['template']) && $type != 'form' && $this->form_data['wrap']) {
+            $odd_even = isset($this->form_data['odd_even']) ? $this->form_data['odd_even'] : false;
+            $odd_even = $odd_even != 'even' ? 'even' : 'odd';
+            $this->form_data['odd_even'] = $odd_even;
+            $template = $this->form_data['template'];
 
-            if (isset($this->FormData['attributes']['id'])) {
-                $id = $this->FormData['attributes']['id'];
+            if (isset($this->form_data['attributes']['id'])) {
+                $id = $this->form_data['attributes']['id'];
             }
             else {
                 # Generate ID!
                 $id = null;
             }
-            $template = str_replace('{id}',      $id,      $template);
-            $template = str_replace('{name}',    $name,    $template);
-            $template = str_replace('{type}',    $type,    $template);
-            $template = str_replace('{oddEven}', $oddEven, $template);
-            # {hasError} -- if validation enabled has error (return hasError)
-            $template = str_replace('{field}',   $field,   $template);
+            $template = str_replace('{id}',       $id,       $template);
+            $template = str_replace('{name}',     $name,     $template);
+            $template = str_replace('{type}',     $type,     $template);
+            $template = str_replace('{odd_even}', $odd_even, $template);
+            # {has_error} -- if validation enabled has error (return has_error)
+            $template = str_replace('{field}',    $field,    $template);
         }
         else {
             $template = $field;
         }
 
         # Reset settings....
-        if (isset($this->FormData['default_recover'])) {
-            $this->FormData['recover'] = $this->FormData['default_recover'];
-            unset($this->FormData['default_recover']);
+        if (isset($this->form_data['default_recover'])) {
+            $this->form_data['recover'] = $this->form_data['default_recover'];
+            unset($this->form_data['default_recover']);
         }
-        if (isset($this->FormData['wrap_default'])) {
-            $this->FormData['wrap'] = $this->FormData['wrap_default'];
-            unset($this->FormData['wrap_default']);
+        if (isset($this->form_data['wrap_default'])) {
+            $this->form_data['wrap'] = $this->form_data['wrap_default'];
+            unset($this->form_data['wrap_default']);
         }
-        $this->FormData['attributes'] = '';
-        $this->FormData['insertion']  = array();
+        $this->form_data['attributes'] = '';
+        $this->form_data['insertion']  = array();
 
         # Finally return actual field
         return $template;
     }
-    //-
 
     /**
      * Will process attributes
      * --
-     * @param   array   $Attributes
+     * @param   array   $attributes
      * --
      * @return  string
      */
-    private function processAttributes($Attributes=null)
+    private function process_attributes(array $attributes = array())
     {
-        if (is_null($Attributes)) {
-            $Attributes = $this->FormData['attributes'];
+        if (empty($attributes)) {
+            $attributes = $this->form_data['attributes'];
         }
 
         $result = '';
 
-        if (is_array($Attributes) && !empty($Attributes)) {
-            foreach ($Attributes as $key => $att) {
+        if (is_array($attributes) && !empty($attributes)) {
+            foreach ($attributes as $key => $att) {
                 $result .= ' ' . $key . '="' . $att . '"';
             }
         }
 
         return $result;
     }
-    //-
+
 }
-//--

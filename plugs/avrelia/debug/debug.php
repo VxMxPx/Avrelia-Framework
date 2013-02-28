@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Plug as Plug;
 use Avrelia\Core\Log  as Log;
@@ -32,7 +34,7 @@ class Debug
         HTML::add_header(
             '<style>'.
                 FileSystem::Read(ds(dirname(__FILE__).'/libraries/debug.css')).
-            '</style>', 
+            '</style>',
             'Plug/Avrelia/Debug');
 
         Event::on('/plug/html/get_footers', function() {
@@ -55,8 +57,8 @@ class Debug
                      ))->do_return();
 
             $output = str_replace(
-                        '<!-- {{Plug/Avrelia/Debug/Placeholder}} -->', 
-                        $panel, 
+                        '<!-- {{Plug/Avrelia/Debug/Placeholder}} -->',
+                        $panel,
                         $output);
 
             return true;

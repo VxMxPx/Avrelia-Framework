@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 class DatabaseException      extends \Exception {}
 class DatabaseValueException extends \Exception {}

@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Log as Log;
 use Avrelia\Core\Str as Str;
@@ -99,12 +101,12 @@ class DatabaseQuery
      */
     public function insert($key, $value=false)
     {
-        if (!is_array($key)) 
+        if (!is_array($key))
             { $key = array($key => $value); }
 
         $this->type   = 'INSERT';
-        $this->values = is_array($this->values) 
-                            ? Arr::merge($this->values, $key) 
+        $this->values = is_array($this->values)
+                            ? Arr::merge($this->values, $key)
                             : $key;
         return $this;
     }
@@ -230,9 +232,9 @@ class DatabaseQuery
     /**
      * ORDER BY
      * --
-     * @param   mixed   $field  string || 
+     * @param   mixed   $field  string ||
      *                          ['name' => 'DESC'] ||
-     *                          ['name' => 'DESC', 'date' => 'ASC'] || 
+     *                          ['name' => 'DESC', 'date' => 'ASC'] ||
      *                          ['name', 'id' => 'DESC']
      * @param   string  $type   ASC || DESC
      * --
@@ -240,9 +242,9 @@ class DatabaseQuery
      */
     public function order($field, $type=false)
     {
-        if (!is_array($field)) 
+        if (!is_array($field))
             { $order = array($field => $type); }
-        else 
+        else
             { $order = $field; }
 
         # Prepear order sql
@@ -289,13 +291,13 @@ class DatabaseQuery
      */
     public function set($key, $value=false)
     {
-        if (!is_array($key)) 
+        if (!is_array($key))
             { $values = array($key => $value); }
-        else 
+        else
             { $values = $key; }
 
-        $this->values = is_array($this->values) 
-                            ? Arr::merge($this->values, $values) 
+        $this->values = is_array($this->values)
+                            ? Arr::merge($this->values, $values)
                             : $values;
         return $this;
     }
@@ -427,7 +429,7 @@ class DatabaseQuery
     }
 
     /**
-     * From all parameters create valid SQL string, 
+     * From all parameters create valid SQL string,
      * and list of values for binding.
      * --
      * @return  void
@@ -478,7 +480,7 @@ class DatabaseQuery
                 # Build insert statement
                 $values = $this->prepare_bind($this->values, 'v_');
                 $sql = 'INSERT INTO ' . $this->table .
-                        ' (' . Arr::implode_keys(', ', $values) .  ') VALUES ('. 
+                        ' (' . Arr::implode_keys(', ', $values) .  ') VALUES ('.
                         implode(', ', $values) . ')';
                 break;
 
@@ -530,8 +532,8 @@ class DatabaseQuery
                 else {
                     $cls_group = '';
                 }
-                $divider = strpos(str_replace(array('AND ', 'OR '), '', $k), ' ') !== false 
-                                ? ' ' 
+                $divider = strpos(str_replace(array('AND ', 'OR '), '', $k), ' ') !== false
+                                ? ' '
                                 : ' = ';
 
                 $where_str .= "{$k}{$divider}{$v}{$cls_group} ";

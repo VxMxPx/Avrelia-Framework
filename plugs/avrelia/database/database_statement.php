@@ -1,6 +1,7 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
 
-use Avrelia\Core\Log as Log;
+namespace Plug\Avrelia;
+
 use Avrelia\Core\Event as Event;
 
 /**
@@ -90,7 +91,7 @@ class DatabaseStatement
      * @return  DatabaseResult
      */
     public function execute()
-    {        
+    {
         $params = array(
             'statement' => $this->statement,
             'bind'      => $this->bind

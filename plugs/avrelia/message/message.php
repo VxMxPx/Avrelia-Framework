@@ -1,4 +1,8 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
+
+use Avrelia\Core\Log as Log;
 
 /**
  * Message Class
@@ -19,7 +23,7 @@ class Message
      * If you added OK or INF true will be returned else false.
      * --
      * @param   string  $message
-     * @param   string  $type       inf|war|err|ok == information, warning, 
+     * @param   string  $type       inf|war|err|ok == information, warning,
      *                              error, successfully done
      * @param   string  $group      Any particular group?
      * --
@@ -63,7 +67,7 @@ class Message
      * If you added OK or INF true will be returned else false.
      * --
      * @param   string  $message
-     * @param   string  $type       inf|war|err|ok == information, warning, 
+     * @param   string  $type       inf|war|err|ok == information, warning,
      *                              error, successfully done
      * @param   string  $group      Any particular group?
      * --
@@ -144,7 +148,7 @@ class Message
     /**
      * Return plain (array) list of messages
      * --
-     * @param   boolean $plain  If true, you'll get regular array instead of 
+     * @param   boolean $plain  If true, you'll get regular array instead of
      *                          associative array.
      * --
      * @return  array

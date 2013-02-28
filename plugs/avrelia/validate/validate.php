@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Plug as Plug;
 
@@ -15,7 +17,7 @@ class Validate
      * @var array  List of fields to be validated
      */
     private static $validations_list = array();
-    
+
     /**
      * Get files, ...
      * --
@@ -85,7 +87,7 @@ class Validate
      * Check if value is valid e-mail address
      * --
      * @param   string  $value
-     * @param   string  $domain Check if is on particular domain 
+     * @param   string  $domain Check if is on particular domain
      *                          (example: @gmail.com)
      * --
      * @return  boolean

@@ -1,4 +1,6 @@
-<?php namespace Plug\Avrelia; if (!defined('AVRELIA')) die('Access is denied!');
+<?php
+
+namespace Plug\Avrelia;
 
 use Avrelia\Core\Plug as Plug;
 use Avrelia\Core\Cfg  as Cfg;
@@ -26,7 +28,7 @@ class JQuery
         Plug::need(array(
             'Plug\\Avrelia\\HTML'
         ));
-        
+
         self::$config = Plug::get_config(__FILE__);
 
         if (self::$config['local']) {
