@@ -260,7 +260,7 @@ class Language
      * Return file's content as string, this doesn't take regular .lng files,
      * but .lng.html files, which are without !KEY:Value syntax
      *
-     * This will convert \n in your file to <br />
+     * // NOT: This will convert \n in your file to <br />
      * --
      * @param  string  $file  Following options:
      *     - enter short name: "my_lang", and the path will be calculated 
@@ -276,7 +276,8 @@ class Language
     public static function as_html($file, $params)
     {
         $contents = self::as_string($file, $params);
-        $contents = nl2br( Str::standardize_line_endings($contents) );
+        //$contents = nl2br( Str::standardize_line_endings($contents) );
+        $contents = Str::standardize_line_endings($contents);
 
         return $contents;
     }
